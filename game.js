@@ -2944,6 +2944,7 @@
 
   createPips();
   syncSettingsUI();
+  saveSettings();
   updateUI();
   requestAnimationFrame(loop);
 })();
