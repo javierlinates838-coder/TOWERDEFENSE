@@ -264,6 +264,7 @@
   let musicTimer = null;
   let musicStep = 0;
   let soundOn = true;
+  let compactRender = false;
   const savedSettings = (() => {
     try {
       return JSON.parse(localStorage.getItem("rootbound-settings") || "{}");
@@ -1343,6 +1344,7 @@
   }
 
   function drawNodes() {
+    const nodeScale = compactRender ? 1.65 : 1;
     nodes.forEach((node, index) => {
       if (node.tower) return;
       const hovered = state.hoverNode === node;
@@ -1350,6 +1352,7 @@
       const pulse = 0.5 + Math.sin(state.elapsed * 2.2 + index * 0.9) * 0.18;
       ctx.save();
       ctx.translate(node.x, node.y);
+      ctx.scale(nodeScale, nodeScale);
       ctx.strokeStyle = hovered ? TOWERS[state.selectedType]?.color || "#c9f76f" : `rgba(156, 213, 166, ${canPlant ? 0.34 : 0.16})`;
       ctx.fillStyle = hovered ? "rgba(201, 247, 111, .08)" : "rgba(11, 27, 21, .55)";
       ctx.lineWidth = hovered ? 2 : 1;
@@ -1392,6 +1395,9 @@
       ctx.stroke();
       ctx.globalAlpha = 1;
     }
+
+    const modelScale = compactRender ? 1.38 : 1;
+    ctx.scale(modelScale, modelScale);
 
     ctx.save();
     ctx.scale(1, 0.48);
@@ -1474,6 +1480,7 @@
     if (tower.synergy > 0) {
       ctx.save();
       ctx.translate(tower.x, tower.y);
+      const orbitRadius = compactRender ? 34 : 27;
       for (let i = 0; i < tower.synergy; i += 1) {
         const angle = state.elapsed * 0.8 + (i / tower.synergy) * TAU + tower.animOffset;
         ctx.fillStyle = "#aaf2cc";
@@ -1481,7 +1488,7 @@
         ctx.shadowColor = "#aaf2cc";
         ctx.shadowBlur = 8;
         ctx.beginPath();
-        ctx.arc(Math.cos(angle) * 27, Math.sin(angle) * 27, 2.1, 0, TAU);
+        ctx.arc(Math.cos(angle) * orbitRadius, Math.sin(angle) * orbitRadius, compactRender ? 2.8 : 2.1, 0, TAU);
         ctx.fill();
       }
       ctx.restore();
@@ -1489,10 +1496,10 @@
 
     ctx.save();
     ctx.fillStyle = data.color;
-    ctx.font = "500 9px 'DM Mono', monospace";
+    ctx.font = `500 ${compactRender ? 11 : 9}px 'DM Mono', monospace`;
     ctx.textAlign = "center";
     ctx.globalAlpha = 0.78;
-    ctx.fillText(["", "I", "II", "III"][tower.level], tower.x, tower.y + 34);
+    ctx.fillText(["", "I", "II", "III"][tower.level], tower.x, tower.y + (compactRender ? 43 : 34));
     ctx.restore();
   }
 
@@ -1779,6 +1786,8 @@
     const data = ENEMIES[enemy.type];
     ctx.save();
     ctx.translate(enemy.x, enemy.y);
+    const enemyScale = compactRender ? 1.48 : 1;
+    ctx.scale(enemyScale, enemyScale);
     ctx.rotate(enemy.angle);
     ctx.globalAlpha = enemy.hitFlash > 0 ? 0.5 : 1;
     ctx.shadowColor = data.color;
@@ -1864,8 +1873,8 @@
     }
     ctx.restore();
 
-    const barWidth = enemy.type === "sovereign" ? 54 : enemy.radius * 2.2;
-    const y = enemy.y - enemy.radius - 10;
+    const barWidth = (enemy.type === "sovereign" ? 54 : enemy.radius * 2.2) * (compactRender ? 1.32 : 1);
+    const y = enemy.y - enemy.radius * enemyScale - (compactRender ? 12 : 10);
     ctx.fillStyle = "rgba(1, 7, 5, .75)";
     ctx.fillRect(enemy.x - barWidth / 2, y, barWidth, 3);
     ctx.fillStyle = enemy.slow < 1 ? "#75d9e6" : data.color;
@@ -1884,6 +1893,8 @@
     const flap = Math.sin(state.elapsed * 9) * 5;
     ctx.save();
     ctx.translate(warden.x, warden.y);
+    const wardenScale = compactRender ? 1.32 : 1;
+    ctx.scale(wardenScale, wardenScale);
 
     const aura = ctx.createRadialGradient(0, 0, 2, 0, 0, 45);
     aura.addColorStop(0, `rgba(185, 255, 120, ${0.16 + warden.pulse * 0.14})`);
@@ -1959,9 +1970,9 @@
 
     ctx.save();
     ctx.fillStyle = "rgba(201, 247, 111, .72)";
-    ctx.font = "500 7px 'DM Mono', monospace";
     ctx.textAlign = "center";
-    ctx.fillText("SYLVA • WARDEN", warden.x, warden.y - 39);
+    ctx.font = `500 ${compactRender ? 9 : 7}px 'DM Mono', monospace`;
+    ctx.fillText("SYLVA • WARDEN", warden.x, warden.y - (compactRender ? 50 : 39));
     ctx.restore();
   }
 
@@ -1971,7 +1982,7 @@
     const health = state.hearts / 20;
     ctx.save();
     ctx.translate(x, y);
-    const pulse = 1 + Math.sin(state.elapsed * 2.4) * 0.05;
+    const pulse = (compactRender ? 1.16 : 1) + Math.sin(state.elapsed * 2.4) * 0.05;
     ctx.scale(pulse, pulse);
 
     const glow = ctx.createRadialGradient(0, 0, 5, 0, 0, 67);
@@ -2050,6 +2061,7 @@
 
       ctx.globalAlpha = 1;
       ctx.translate(projectile.x, projectile.y);
+      if (compactRender) ctx.scale(1.3, 1.3);
       ctx.rotate(projectile.rotation || 0);
       ctx.shadowColor = projectile.color;
       ctx.shadowBlur = projectile.type === "wyrm" ? 18 : 12;
@@ -2234,6 +2246,7 @@
   }
 
   function draw() {
+    compactRender = canvas.getBoundingClientRect().width < 650;
     ctx.clearRect(0, 0, W, H);
     ctx.save();
     if (state.screenShake > 0) {
