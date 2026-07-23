@@ -592,6 +592,9 @@
       links: [],
       invested: data.cost,
       pulse: 0,
+      recoil: 0,
+      muzzle: 0,
+      animOffset: Math.random() * TAU,
     };
     state.towers.push(tower);
     node.tower = tower;
@@ -649,14 +652,24 @@
   function fireTower(tower, target, stats) {
     tower.angle = Math.atan2(target.y - tower.y, target.x - tower.x);
     tower.pulse = 1;
+    tower.recoil = 1;
+    tower.muzzle = 1;
     if (tower.type === "prism") {
       chainLightning(tower, target, stats);
+      burst(
+        tower.x + Math.cos(tower.angle) * 24,
+        tower.y + Math.sin(tower.angle) * 24,
+        TOWERS.prism.color,
+        8,
+        58,
+      );
       tone(620 + tower.level * 50, 0.055, "square", 0.008, -140);
       return;
     }
+    const muzzleDistance = tower.type === "thorn" ? 25 : tower.type === "dew" ? 23 : 26;
     state.projectiles.push({
-      x: tower.x + Math.cos(tower.angle) * 15,
-      y: tower.y + Math.sin(tower.angle) * 15,
+      x: tower.x + Math.cos(tower.angle) * muzzleDistance,
+      y: tower.y + Math.sin(tower.angle) * muzzleDistance,
       targetId: target.id,
       targetX: target.x,
       targetY: target.y,
@@ -667,8 +680,19 @@
       splash: stats.splash,
       slow: stats.slow,
       radius: tower.type === "thorn" ? 5 : 3.2,
+      rotation: tower.angle,
+      age: 0,
+      trail: [],
+      phase: Math.random() * TAU,
       alive: true,
     });
+    burst(
+      tower.x + Math.cos(tower.angle) * muzzleDistance,
+      tower.y + Math.sin(tower.angle) * muzzleDistance,
+      TOWERS[tower.type].color,
+      tower.type === "thorn" ? 7 : 5,
+      tower.type === "thorn" ? 85 : 48,
+    );
     if (tower.type === "thorn") {
       tone(175, 0.06, "sawtooth", 0.011, -35);
     } else if (tower.type === "dew") {
@@ -704,9 +728,10 @@
         y1: from.y,
         x2: enemy.x,
         y2: enemy.y,
-        life: 0.16,
-        maxLife: 0.16,
+        life: 0.22,
+        maxLife: 0.22,
         color: TOWERS.prism.color,
+        seed: tower.id * 17.3 + index * 11.7 + state.elapsed,
       });
       damageEnemy(enemy, damage, TOWERS.prism.color);
       from = enemy;
@@ -776,6 +801,10 @@
       splash: 24,
       slow: 0,
       radius: 5,
+      rotation: warden.angle,
+      age: 0,
+      trail: [],
+      phase: Math.random() * TAU,
       alive: true,
     });
     warden.cooldown = state.overgrow > 0 ? 0.7 : 1.55;
@@ -799,6 +828,12 @@
       damageEnemy(enemy, projectile.damage, projectile.color);
     }
     burst(projectile.x, projectile.y, projectile.color, projectile.type === "thorn" ? 8 : 4, 55);
+    if (projectile.type === "sun") ring(projectile.x, projectile.y, "#fff1a8", 20);
+    if (projectile.type === "thorn") {
+      ring(projectile.x, projectile.y, "#ef738f", 31);
+      state.screenShake = settings.reducedEffects ? 0 : Math.max(state.screenShake, 0.12);
+    }
+    if (projectile.type === "wyrm") ring(projectile.x, projectile.y, "#b9ff78", 36);
     if (projectile.type === "thorn") noiseBurst(0.07, 0.018, 620);
     if (projectile.type === "wyrm") {
       noiseBurst(0.11, 0.012, 1250);
@@ -845,9 +880,17 @@
     state.towers.forEach((tower) => {
       tower.cooldown -= dt;
       tower.pulse = Math.max(0, tower.pulse - dt * 4);
+      tower.recoil = Math.max(0, tower.recoil - dt * 7.5);
+      tower.muzzle = Math.max(0, tower.muzzle - dt * 10);
       const stats = towerStats(tower);
+      const trackingTarget = findTarget(tower, stats.range);
+      if (trackingTarget) {
+        const desiredAngle = Math.atan2(trackingTarget.y - tower.y, trackingTarget.x - tower.x);
+        const angleDelta = Math.atan2(Math.sin(desiredAngle - tower.angle), Math.cos(desiredAngle - tower.angle));
+        tower.angle += angleDelta * Math.min(1, dt * (tower.type === "thorn" ? 4.5 : 7.5));
+      }
       if (tower.cooldown <= 0) {
-        const target = findTarget(tower, stats.range);
+        const target = trackingTarget;
         if (target) {
           fireTower(tower, target, stats);
           tower.cooldown = 1 / stats.rate;
@@ -859,6 +902,9 @@
 
     state.projectiles.forEach((projectile) => {
       if (!projectile.alive) return;
+      projectile.age += dt;
+      projectile.trail.unshift({ x: projectile.x, y: projectile.y });
+      projectile.trail.length = Math.min(projectile.trail.length, settings.reducedEffects ? 4 : 11);
       const target = state.enemies.find((enemy) => enemy.id === projectile.targetId && enemy.alive);
       if (target) {
         projectile.targetX = target.x;
@@ -871,6 +917,7 @@
         if (target) projectileImpact(projectile, target);
         else projectile.alive = false;
       } else {
+        projectile.rotation = Math.atan2(dy, dx);
         projectile.x += (dx / d) * projectile.speed * dt;
         projectile.y += (dy / d) * projectile.speed * dt;
         if (Math.random() < 0.35) particle(projectile.x, projectile.y, projectile.color, 0, 0, 0.18, 1.5);
@@ -1330,39 +1377,92 @@
     ctx.translate(tower.x, tower.y);
 
     if (selected) {
-      ctx.globalAlpha = 0.14;
+      ctx.globalAlpha = 0.18;
       ctx.strokeStyle = data.color;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([4, 8]);
+      ctx.lineWidth = 1.3;
+      ctx.setLineDash([5, 9]);
+      ctx.lineDashOffset = -state.elapsed * 15;
       ctx.beginPath();
       ctx.arc(0, 0, stats.range, 0, TAU);
       ctx.stroke();
       ctx.setLineDash([]);
+      ctx.globalAlpha = 0.38;
+      ctx.beginPath();
+      ctx.arc(0, 0, 27 + Math.sin(state.elapsed * 3) * 2, 0, TAU);
+      ctx.stroke();
       ctx.globalAlpha = 1;
     }
 
-    const baseGlow = ctx.createRadialGradient(0, 0, 2, 0, 0, 30);
-    baseGlow.addColorStop(0, `${data.color}33`);
+    ctx.save();
+    ctx.scale(1, 0.48);
+    const shadow = ctx.createRadialGradient(0, 2, 2, 0, 2, 34);
+    shadow.addColorStop(0, "rgba(0, 0, 0, .66)");
+    shadow.addColorStop(1, "rgba(0, 0, 0, 0)");
+    ctx.fillStyle = shadow;
+    ctx.beginPath();
+    ctx.arc(0, 3, 34, 0, TAU);
+    ctx.fill();
+    ctx.restore();
+
+    const baseGlow = ctx.createRadialGradient(0, 0, 2, 0, 0, 39);
+    baseGlow.addColorStop(0, `${data.color}${tower.muzzle > 0 ? "66" : "38"}`);
     baseGlow.addColorStop(1, `${data.color}00`);
     ctx.fillStyle = baseGlow;
     ctx.beginPath();
-    ctx.arc(0, 0, 30 + tower.pulse * 7, 0, TAU);
+    ctx.arc(0, 0, 36 + tower.pulse * 9, 0, TAU);
     ctx.fill();
 
-    ctx.fillStyle = "rgba(3, 12, 9, .76)";
-    ctx.strokeStyle = selected ? data.color : "rgba(150, 193, 160, .26)";
-    ctx.lineWidth = selected ? 2 : 1;
+    ctx.strokeStyle = `${data.color}3d`;
+    ctx.lineWidth = 1.4;
+    for (let i = 0; i < 6; i += 1) {
+      const angle = (i / 6) * TAU + tower.animOffset;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(angle) * 12, Math.sin(angle) * 12);
+      ctx.quadraticCurveTo(Math.cos(angle + 0.25) * 23, Math.sin(angle + 0.25) * 23, Math.cos(angle) * 31, Math.sin(angle) * 31);
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = "rgba(3, 11, 9, .94)";
+    ctx.strokeStyle = selected ? data.color : "rgba(164, 205, 174, .28)";
+    ctx.lineWidth = selected ? 1.8 : 1;
+    ctx.beginPath();
+    for (let i = 0; i < 12; i += 1) {
+      const angle = (i / 12) * TAU - Math.PI / 2;
+      const radius = i % 2 ? 20 : 23;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.strokeStyle = `${data.color}52`;
+    ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.arc(0, 0, 16, 0, TAU);
-    ctx.fill();
     ctx.stroke();
 
-    ctx.strokeStyle = `${data.color}88`;
-    ctx.lineWidth = 2.2;
+    const reloadProgress = Math.max(0, Math.min(1, 1 - Math.max(0, tower.cooldown) * stats.rate));
+    ctx.strokeStyle = data.color;
+    ctx.globalAlpha = 0.48;
+    ctx.lineWidth = 1.6;
     ctx.beginPath();
-    ctx.moveTo(-6, 12);
-    ctx.quadraticCurveTo(-3, 0, Math.cos(tower.angle) * 9, Math.sin(tower.angle) * 9);
+    ctx.arc(0, 0, 20, -Math.PI / 2, -Math.PI / 2 + reloadProgress * TAU);
     ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    for (let i = 0; i < 6; i += 1) {
+      const angle = (i / 6) * TAU + state.elapsed * 0.08;
+      ctx.save();
+      ctx.translate(Math.cos(angle) * 18.5, Math.sin(angle) * 18.5);
+      ctx.rotate(angle + Math.PI / 4);
+      ctx.fillStyle = i < tower.level * 2 ? data.color : "rgba(129, 157, 139, .18)";
+      ctx.globalAlpha = i < tower.level * 2 ? 0.7 : 1;
+      ctx.fillRect(-1.5, -1.5, 3, 3);
+      ctx.restore();
+    }
 
     ctx.rotate(tower.angle + Math.PI / 2);
     if (tower.type === "sun") drawSunTower(data, tower);
@@ -1375,11 +1475,13 @@
       ctx.save();
       ctx.translate(tower.x, tower.y);
       for (let i = 0; i < tower.synergy; i += 1) {
-        const angle = state.elapsed * 0.65 + (i / tower.synergy) * TAU;
+        const angle = state.elapsed * 0.8 + (i / tower.synergy) * TAU + tower.animOffset;
         ctx.fillStyle = "#aaf2cc";
-        ctx.globalAlpha = 0.65;
+        ctx.globalAlpha = 0.82;
+        ctx.shadowColor = "#aaf2cc";
+        ctx.shadowBlur = 8;
         ctx.beginPath();
-        ctx.arc(Math.cos(angle) * 22, Math.sin(angle) * 22, 1.8, 0, TAU);
+        ctx.arc(Math.cos(angle) * 27, Math.sin(angle) * 27, 2.1, 0, TAU);
         ctx.fill();
       }
       ctx.restore();
@@ -1389,89 +1491,288 @@
     ctx.fillStyle = data.color;
     ctx.font = "500 9px 'DM Mono', monospace";
     ctx.textAlign = "center";
-    ctx.globalAlpha = 0.65;
-    ctx.fillText(["", "I", "II", "III"][tower.level], tower.x, tower.y + 29);
+    ctx.globalAlpha = 0.78;
+    ctx.fillText(["", "I", "II", "III"][tower.level], tower.x, tower.y + 34);
     ctx.restore();
   }
 
   function drawSunTower(data, tower) {
-    ctx.fillStyle = data.color;
-    ctx.shadowColor = data.color;
-    ctx.shadowBlur = 9 + tower.pulse * 8;
-    for (let i = 0; i < 5; i += 1) {
+    const recoil = tower.recoil * 4.5;
+    const spin = state.elapsed * (1.2 + tower.level * 0.12) + tower.animOffset;
+    ctx.translate(0, recoil);
+
+    const stem = ctx.createLinearGradient(-7, 8, 7, -18);
+    stem.addColorStop(0, "#5d6f2b");
+    stem.addColorStop(0.5, "#a8b944");
+    stem.addColorStop(1, "#ffe382");
+    ctx.strokeStyle = stem;
+    ctx.lineWidth = 7;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(0, 9);
+    ctx.quadraticCurveTo(-3, -3, 0, -13);
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(0, -14);
+    ctx.rotate(spin);
+    ctx.fillStyle = "#d9892a";
+    ctx.strokeStyle = "#ffe18a";
+    ctx.lineWidth = 0.8;
+    for (let i = 0; i < 8; i += 1) {
       ctx.save();
-      ctx.rotate((i / 5) * TAU);
+      ctx.rotate((i / 8) * TAU);
       ctx.beginPath();
-      ctx.ellipse(0, -9, 3.5, 9, 0, 0, TAU);
+      ctx.moveTo(-3, -2);
+      ctx.quadraticCurveTo(-7, -15, 0, -20 - tower.level);
+      ctx.quadraticCurveTo(7, -15, 3, -2);
+      ctx.closePath();
       ctx.fill();
+      ctx.stroke();
       ctx.restore();
     }
-    ctx.fillStyle = "#fff4bf";
+    ctx.restore();
+
+    const lens = ctx.createRadialGradient(-2, -16, 1, 0, -14, 9);
+    lens.addColorStop(0, "#ffffff");
+    lens.addColorStop(0.28, "#fff3ae");
+    lens.addColorStop(0.65, data.color);
+    lens.addColorStop(1, "#8d4c1c");
+    ctx.fillStyle = lens;
+    ctx.shadowColor = data.color;
+    ctx.shadowBlur = 13 + tower.pulse * 12;
     ctx.beginPath();
-    ctx.arc(0, 0, 4.2, 0, TAU);
+    ctx.arc(0, -14, 7 + tower.pulse * 1.5, 0, TAU);
     ctx.fill();
+
+    ctx.strokeStyle = "rgba(255, 245, 179, .72)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(0, -14, 10 + Math.sin(state.elapsed * 4 + tower.animOffset), 0, TAU);
+    ctx.stroke();
+
+    if (tower.muzzle > 0) {
+      ctx.translate(0, -27);
+      ctx.globalAlpha = tower.muzzle;
+      ctx.fillStyle = "#fff9d2";
+      ctx.shadowBlur = 22;
+      ctx.beginPath();
+      ctx.arc(0, 0, 5 + tower.muzzle * 4, 0, TAU);
+      ctx.fill();
+      ctx.strokeStyle = data.color;
+      ctx.lineWidth = 1.5;
+      ctx.save();
+      for (let i = 0; i < 6; i += 1) {
+        ctx.rotate(TAU / 6);
+        ctx.beginPath();
+        ctx.moveTo(0, -5);
+        ctx.lineTo(0, -14 - tower.muzzle * 8);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
   }
 
   function drawDewTower(data, tower) {
-    ctx.fillStyle = `${data.color}cc`;
-    ctx.shadowColor = data.color;
-    ctx.shadowBlur = 8;
-    for (let i = -1; i <= 1; i += 1) {
-      ctx.save();
-      ctx.rotate(i * 0.75);
-      ctx.beginPath();
-      ctx.moveTo(0, -3);
-      ctx.quadraticCurveTo(-8, -11, 0, -17);
-      ctx.quadraticCurveTo(8, -11, 0, -3);
-      ctx.fill();
-      ctx.restore();
-    }
-    ctx.fillStyle = "#d9fbff";
-    ctx.beginPath();
-    ctx.arc(0, -1, 3.5 + tower.pulse * 1.5, 0, TAU);
-    ctx.fill();
-  }
+    const recoil = tower.recoil * 3.5;
+    ctx.translate(0, recoil);
 
-  function drawThornTower(data) {
-    ctx.fillStyle = data.color;
-    ctx.shadowColor = data.color;
-    ctx.shadowBlur = 7;
+    ctx.fillStyle = "#1d5b62";
+    ctx.strokeStyle = "#75d9e6";
+    ctx.lineWidth = 1.2;
     ctx.beginPath();
-    for (let i = 0; i < 8; i += 1) {
-      const angle = (i / 8) * TAU;
-      const r = i % 2 ? 7 : 15;
-      const x = Math.cos(angle) * r;
-      const y = Math.sin(angle) * r;
-      if (!i) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.closePath();
-    ctx.fill();
-    ctx.fillStyle = "#ffd2d8";
-    ctx.beginPath();
-    ctx.arc(0, 0, 3.5, 0, TAU);
-    ctx.fill();
-  }
-
-  function drawPrismTower(data) {
-    ctx.rotate(state.elapsed * 0.35);
-    ctx.fillStyle = `${data.color}dd`;
-    ctx.strokeStyle = "#e8ddff";
-    ctx.lineWidth = 1;
-    ctx.shadowColor = data.color;
-    ctx.shadowBlur = 11;
-    ctx.beginPath();
-    for (let i = 0; i < 6; i += 1) {
-      const angle = (i / 6) * TAU - Math.PI / 2;
-      const r = i % 2 ? 7 : 15;
-      const x = Math.cos(angle) * r;
-      const y = Math.sin(angle) * r;
-      if (!i) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
+    ctx.moveTo(-11, 8);
+    ctx.quadraticCurveTo(-14, -1, -8, -11);
+    ctx.lineTo(8, -11);
+    ctx.quadraticCurveTo(14, -1, 11, 8);
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
+
+    const reservoir = ctx.createRadialGradient(-4, -6, 1, 0, -3, 13);
+    reservoir.addColorStop(0, "#e9ffff");
+    reservoir.addColorStop(0.25, "#80e9f2");
+    reservoir.addColorStop(0.72, "#287e8a");
+    reservoir.addColorStop(1, "#123f48");
+    ctx.fillStyle = reservoir;
+    ctx.shadowColor = data.color;
+    ctx.shadowBlur = 10 + tower.pulse * 8;
+    ctx.beginPath();
+    ctx.arc(0, -3, 10, 0, TAU);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(213, 255, 255, .65)";
+    ctx.stroke();
+
+    ctx.strokeStyle = "#9af5fb";
+    ctx.lineWidth = 5;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(0, -10);
+    ctx.lineTo(0, -23);
+    ctx.stroke();
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(0, -24, 5.5, 0, TAU);
+    ctx.stroke();
+
+    for (let i = 0; i < 3 + tower.level; i += 1) {
+      const phase = state.elapsed * (0.8 + i * 0.08) + tower.animOffset + i * 1.7;
+      const bx = Math.sin(phase) * 5;
+      const by = 4 - ((phase * 7) % 16);
+      ctx.fillStyle = "rgba(220, 255, 255, .72)";
+      ctx.beginPath();
+      ctx.arc(bx, by, 1 + (i % 2) * 0.5, 0, TAU);
+      ctx.fill();
+    }
+
+    if (tower.muzzle > 0) {
+      const flash = ctx.createRadialGradient(0, -29, 0, 0, -29, 13);
+      flash.addColorStop(0, "rgba(240, 255, 255, 1)");
+      flash.addColorStop(0.35, "rgba(117, 217, 230, .9)");
+      flash.addColorStop(1, "rgba(117, 217, 230, 0)");
+      ctx.fillStyle = flash;
+      ctx.globalAlpha = tower.muzzle;
+      ctx.beginPath();
+      ctx.arc(0, -29, 13, 0, TAU);
+      ctx.fill();
+    }
+  }
+
+  function drawThornTower(data, tower) {
+    const recoil = tower.recoil * 6;
+    const jaw = 4 + tower.muzzle * 6;
+    ctx.translate(0, recoil);
+
+    ctx.fillStyle = "#54243a";
+    ctx.strokeStyle = "#ef738f";
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 14, 16, 0, 0, TAU);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = "#9e3858";
+    for (const side of [-1, 1]) {
+      ctx.save();
+      ctx.scale(side, 1);
+      ctx.beginPath();
+      ctx.moveTo(1, 5);
+      ctx.quadraticCurveTo(13 + jaw, -7, 7, -24);
+      ctx.lineTo(1, -16);
+      ctx.quadraticCurveTo(5, -5, 1, 5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      for (let i = 0; i < 3; i += 1) {
+        ctx.fillStyle = "#ffd0d9";
+        ctx.beginPath();
+        ctx.moveTo(5 + i * 2, -7 - i * 5);
+        ctx.lineTo(11 + jaw * 0.3, -10 - i * 5);
+        ctx.lineTo(6, -13 - i * 5);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    const core = ctx.createRadialGradient(-2, -8, 1, 0, -8, 8);
+    core.addColorStop(0, "#ffe0e6");
+    core.addColorStop(0.35, data.color);
+    core.addColorStop(1, "#601a38");
+    ctx.fillStyle = core;
+    ctx.shadowColor = data.color;
+    ctx.shadowBlur = 10 + tower.pulse * 9;
+    ctx.beginPath();
+    ctx.arc(0, -8, 6, 0, TAU);
+    ctx.fill();
+
+    if (tower.muzzle > 0) {
+      ctx.globalAlpha = tower.muzzle;
+      ctx.translate(0, -29);
+      ctx.rotate(Math.PI / 4);
+      ctx.fillStyle = "#fff0f3";
+      ctx.shadowBlur = 20;
+      ctx.fillRect(-4, -4, 8, 8);
+    }
+  }
+
+  function drawPrismTower(data, tower) {
+    const recoil = tower.recoil * 2.5;
+    const spin = state.elapsed * (0.8 + tower.level * 0.1) + tower.animOffset;
+    ctx.translate(0, recoil);
+
+    ctx.strokeStyle = "rgba(182, 151, 255, .48)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(-10, 8);
+    ctx.lineTo(-5, -10);
+    ctx.moveTo(10, 8);
+    ctx.lineTo(5, -10);
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(0, -8);
+    ctx.rotate(spin);
+    for (let i = 0; i < 3 + tower.level; i += 1) {
+      const angle = (i / (3 + tower.level)) * TAU;
+      ctx.save();
+      ctx.translate(Math.cos(angle) * 15, Math.sin(angle) * 8);
+      ctx.rotate(-spin + angle);
+      ctx.fillStyle = i % 2 ? "#7759cb" : "#b697ff";
+      ctx.strokeStyle = "#eee6ff";
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(0, -7);
+      ctx.lineTo(4, 0);
+      ctx.lineTo(0, 7);
+      ctx.lineTo(-4, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.restore();
+
+    ctx.translate(0, -10);
+    const crystal = ctx.createLinearGradient(-8, -13, 8, 12);
+    crystal.addColorStop(0, "#f4edff");
+    crystal.addColorStop(0.32, "#cdb9ff");
+    crystal.addColorStop(0.68, "#8565dc");
+    crystal.addColorStop(1, "#3d286e");
+    ctx.fillStyle = crystal;
+    ctx.strokeStyle = "#e8ddff";
+    ctx.lineWidth = 1.2;
+    ctx.shadowColor = data.color;
+    ctx.shadowBlur = 14 + tower.pulse * 14;
+    ctx.beginPath();
+    ctx.moveTo(0, -17);
+    ctx.lineTo(9, -2);
+    ctx.lineTo(4, 12);
+    ctx.lineTo(-5, 12);
+    ctx.lineTo(-9, -2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.strokeStyle = "rgba(255, 255, 255, .72)";
+    ctx.beginPath();
+    ctx.moveTo(0, -14);
+    ctx.lineTo(-3, 7);
+    ctx.stroke();
+
+    if (tower.muzzle > 0) {
+      ctx.globalAlpha = tower.muzzle;
+      ctx.fillStyle = "#ffffff";
+      ctx.shadowBlur = 30;
+      ctx.beginPath();
+      ctx.arc(0, -22, 7 + tower.muzzle * 5, 0, TAU);
+      ctx.fill();
+      ctx.strokeStyle = data.color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, -22, 12 + (1 - tower.muzzle) * 16, 0, TAU);
+      ctx.stroke();
+    }
   }
 
   function drawEnemy(enemy) {
@@ -1730,33 +2031,136 @@
   function drawProjectiles() {
     state.projectiles.forEach((projectile) => {
       ctx.save();
-      ctx.fillStyle = projectile.color;
+      if (projectile.trail.length > 1) {
+        ctx.lineCap = "round";
+        for (let i = projectile.trail.length - 1; i > 0; i -= 1) {
+          const point = projectile.trail[i];
+          const next = projectile.trail[i - 1];
+          const alpha = (1 - i / projectile.trail.length) * 0.55;
+          ctx.globalAlpha = alpha;
+          ctx.strokeStyle = projectile.color;
+          ctx.lineWidth =
+            projectile.type === "thorn" ? 1.5 : projectile.type === "wyrm" ? 5 * (1 - i / projectile.trail.length) : 3;
+          ctx.beginPath();
+          ctx.moveTo(point.x, point.y);
+          ctx.lineTo(next.x, next.y);
+          ctx.stroke();
+        }
+      }
+
+      ctx.globalAlpha = 1;
+      ctx.translate(projectile.x, projectile.y);
+      ctx.rotate(projectile.rotation || 0);
       ctx.shadowColor = projectile.color;
-      ctx.shadowBlur = 10;
-      ctx.beginPath();
-      ctx.arc(projectile.x, projectile.y, projectile.radius, 0, TAU);
-      ctx.fill();
+      ctx.shadowBlur = projectile.type === "wyrm" ? 18 : 12;
+
+      if (projectile.type === "sun") {
+        const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, 10);
+        glow.addColorStop(0, "#ffffff");
+        glow.addColorStop(0.25, "#fff4b0");
+        glow.addColorStop(0.7, projectile.color);
+        glow.addColorStop(1, "rgba(255, 198, 99, 0)");
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(0, 0, 10, 0, TAU);
+        ctx.fill();
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.ellipse(1, 0, 6, 2.4, 0, 0, TAU);
+        ctx.fill();
+      } else if (projectile.type === "dew") {
+        const droplet = ctx.createRadialGradient(-2, -2, 0, 0, 0, 8);
+        droplet.addColorStop(0, "#ffffff");
+        droplet.addColorStop(0.3, "#c8fbff");
+        droplet.addColorStop(0.72, "#4bc3d2");
+        droplet.addColorStop(1, "#176a79");
+        ctx.fillStyle = droplet;
+        ctx.rotate(projectile.age * 8);
+        ctx.beginPath();
+        ctx.moveTo(7, 0);
+        ctx.quadraticCurveTo(0, -7, -6, 0);
+        ctx.quadraticCurveTo(0, 7, 7, 0);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(230, 255, 255, .8)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      } else if (projectile.type === "thorn") {
+        ctx.fillStyle = "#ef738f";
+        ctx.strokeStyle = "#ffd0da";
+        ctx.lineWidth = 0.9;
+        ctx.beginPath();
+        ctx.moveTo(13, 0);
+        ctx.lineTo(-6, -5);
+        ctx.lineTo(-3, 0);
+        ctx.lineTo(-6, 5);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = "#8e2949";
+        ctx.beginPath();
+        ctx.moveTo(2, 0);
+        ctx.lineTo(-11, -7);
+        ctx.lineTo(-7, 0);
+        ctx.lineTo(-11, 7);
+        ctx.closePath();
+        ctx.fill();
+      } else if (projectile.type === "wyrm") {
+        const flame = ctx.createLinearGradient(-15, 0, 10, 0);
+        flame.addColorStop(0, "rgba(93, 255, 114, 0)");
+        flame.addColorStop(0.45, "#62df7d");
+        flame.addColorStop(0.75, "#d7ff8c");
+        flame.addColorStop(1, "#ffffff");
+        ctx.fillStyle = flame;
+        ctx.beginPath();
+        ctx.moveTo(10, 0);
+        ctx.quadraticCurveTo(-2, -7, -16 - Math.sin(projectile.age * 20) * 4, 0);
+        ctx.quadraticCurveTo(-2, 7, 10, 0);
+        ctx.fill();
+        ctx.fillStyle = "#f2ffcb";
+        ctx.beginPath();
+        ctx.arc(6, 0, 3, 0, TAU);
+        ctx.fill();
+      }
       ctx.restore();
     });
 
     state.beams.forEach((beam) => {
       const alpha = beam.life / beam.maxLife;
       ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.strokeStyle = beam.color;
       ctx.shadowColor = beam.color;
-      ctx.shadowBlur = 12;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(beam.x1, beam.y1);
       const dx = beam.x2 - beam.x1;
       const dy = beam.y2 - beam.y1;
-      for (let i = 1; i < 5; i += 1) {
-        const t = i / 5;
-        ctx.lineTo(beam.x1 + dx * t + random(-4, 4), beam.y1 + dy * t + random(-4, 4));
+      const points = [{ x: beam.x1, y: beam.y1 }];
+      for (let i = 1; i < 7; i += 1) {
+        const t = i / 7;
+        const jitter = Math.sin(beam.seed * 9.7 + i * 17.3) * 5 * alpha;
+        points.push({
+          x: beam.x1 + dx * t + (-dy / Math.max(1, Math.hypot(dx, dy))) * jitter,
+          y: beam.y1 + dy * t + (dx / Math.max(1, Math.hypot(dx, dy))) * jitter,
+        });
       }
-      ctx.lineTo(beam.x2, beam.y2);
-      ctx.stroke();
+      points.push({ x: beam.x2, y: beam.y2 });
+      const strokeBeam = (width, color, opacity, blur) => {
+        ctx.globalAlpha = alpha * opacity;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.shadowBlur = blur;
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        points.slice(1).forEach((point) => ctx.lineTo(point.x, point.y));
+        ctx.stroke();
+      };
+      strokeBeam(9, beam.color, 0.14, 20);
+      strokeBeam(4, beam.color, 0.75, 14);
+      strokeBeam(1.2, "#ffffff", 1, 7);
+
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = "#ffffff";
+      for (let i = 1; i < points.length - 1; i += 2) {
+        ctx.beginPath();
+        ctx.arc(points[i].x, points[i].y, 1.6, 0, TAU);
+        ctx.fill();
+      }
       ctx.restore();
     });
   }
