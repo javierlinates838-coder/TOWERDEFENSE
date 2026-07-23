@@ -1520,16 +1520,22 @@ footer {
   .game-shell {
     width: 100%;
     min-height: 100dvh;
-    padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
+    padding:
+      max(8px, env(safe-area-inset-top, 0))
+      max(10px, env(safe-area-inset-right, 0))
+      max(14px, env(safe-area-inset-bottom, 0))
+      max(10px, env(safe-area-inset-left, 0));
     background:
       radial-gradient(circle at 50% 35%, rgba(37, 79, 59, 0.16), transparent 60%),
       #07110f;
   }
 
   .topbar {
-    height: 56px;
-    padding-right: max(14px, env(safe-area-inset-right));
-    padding-left: max(14px, env(safe-area-inset-left));
+    height: 58px;
+    padding-inline: 14px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: rgba(8, 20, 16, 0.86);
   }
 
   .brand {
@@ -1541,8 +1547,11 @@ footer {
   }
 
   .hud {
-    min-height: 64px;
+    min-height: 68px;
+    margin-top: 8px;
     grid-template-columns: 1fr auto;
+    border: 1px solid var(--line);
+    border-radius: 11px;
   }
 
   .hud-group {
@@ -1565,7 +1574,10 @@ footer {
   .game-stage {
     height: clamp(380px, 51dvh, 430px);
     min-height: 0;
+    margin-top: 10px;
     aspect-ratio: auto;
+    border: 1px solid var(--line);
+    border-radius: 13px;
     background:
       linear-gradient(180deg, rgba(201, 247, 111, 0.025), transparent 20%, transparent 80%, rgba(124, 226, 187, 0.025)),
       repeating-linear-gradient(90deg, transparent 0 31px, rgba(201, 247, 111, 0.018) 32px),
@@ -1591,25 +1603,28 @@ footer {
   }
 
   .command-deck {
-    position: sticky;
+    position: relative;
     z-index: 12;
-    bottom: 0;
+    margin-top: 10px;
     grid-template-columns: 1fr;
-    box-shadow: 0 -18px 45px rgba(2, 9, 7, 0.42);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    box-shadow: 0 16px 45px rgba(2, 9, 7, 0.3);
   }
 
   .seed-bank {
-    padding: 8px;
+    padding: 12px;
   }
 
   .tower-cards {
     grid-template-columns: repeat(3, 1fr);
-    gap: 5px;
+    gap: 8px;
   }
 
   .tower-card {
     display: flex;
-    height: 68px;
+    height: 72px;
     flex-direction: column;
     gap: 3px;
     justify-content: center;
@@ -1642,7 +1657,8 @@ footer {
   }
 
   .deck-actions {
-    padding: 9px 8px 11px;
+    gap: 8px;
+    padding: 11px 12px 13px;
     border-top: 1px solid var(--line);
     border-left: 0;
   }
@@ -1650,7 +1666,7 @@ footer {
   .ability-button,
   .wave-button {
     width: 50%;
-    height: 62px;
+    height: 68px;
   }
 
   .ability-button {
@@ -1787,7 +1803,7 @@ footer {
 
   .tower-card {
     min-width: 0;
-    height: 64px;
+    height: 72px;
   }
 
   .card-copy strong {
@@ -1872,10 +1888,11 @@ footer {
     min-height: max(100dvh, 320px);
     margin: 0;
     padding:
-      env(safe-area-inset-top, 0)
-      env(safe-area-inset-right, 0)
-      env(safe-area-inset-bottom, 0)
-      env(safe-area-inset-left, 0);
+      max(6px, env(safe-area-inset-top, 0))
+      max(6px, env(safe-area-inset-right, 0))
+      max(6px, env(safe-area-inset-bottom, 0))
+      max(6px, env(safe-area-inset-left, 0));
+    gap: 6px;
     grid-template-columns: minmax(0, 1fr) clamp(260px, 34vw, 310px);
     grid-template-rows: 44px 48px minmax(228px, 1fr);
     background:
@@ -1888,6 +1905,8 @@ footer {
     padding-inline: 12px;
     grid-column: 1 / -1;
     grid-row: 1;
+    border: 1px solid var(--line);
+    border-radius: 9px;
   }
 
   .brand {
@@ -1915,6 +1934,9 @@ footer {
     min-height: 0;
     grid-column: 1 / -1;
     grid-row: 2;
+    margin-top: 0;
+    border: 1px solid var(--line);
+    border-radius: 9px;
   }
 
   .hud-group {
@@ -1954,7 +1976,8 @@ footer {
     grid-row: 3;
     aspect-ratio: auto;
     border-top: 0;
-    border-left: 0;
+    border: 1px solid var(--line);
+    border-radius: 11px;
     background:
       linear-gradient(180deg, rgba(201, 247, 111, 0.025), transparent 20%, transparent 80%, rgba(124, 226, 187, 0.025)),
       #07110f;
@@ -1968,7 +1991,7 @@ footer {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: min(100%, calc((100dvh - 92px) * 1.7742));
+    width: min(100%, calc((100dvh - 116px) * 1.7742));
     height: auto;
     aspect-ratio: 1100 / 620;
     transform: translate(-50%, -50%);
@@ -2054,17 +2077,18 @@ footer {
     flex-direction: column;
     grid-column: 2;
     grid-row: 3;
-    border-top: 0;
-    border-right: 0;
-    border-bottom: 0;
-    border-left: 1px solid var(--line);
+    margin-top: 0;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    box-shadow: 0 12px 35px rgba(2, 9, 7, 0.26);
   }
 
   .seed-bank {
     display: block;
     min-height: 0;
     flex: 1;
-    padding: 7px;
+    padding: 8px;
   }
 
   .deck-title {
@@ -2075,7 +2099,7 @@ footer {
     height: 100%;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: repeat(3, minmax(0, 1fr));
-    gap: 6px;
+    gap: 8px;
   }
 
   .tower-card {
@@ -2114,8 +2138,8 @@ footer {
   .deck-actions {
     height: 72px;
     flex: none;
-    gap: 6px;
-    padding: 6px 7px;
+    gap: 8px;
+    padding: 7px 8px;
     border-top: 1px solid var(--line);
     border-left: 0;
   }

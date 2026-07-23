@@ -319,6 +319,7 @@
   let musicStep = 0;
   let soundOn = true;
   let compactRender = false;
+  const AUDIO_SETTINGS_VERSION = 2;
   const savedSettings = (() => {
     try {
       return JSON.parse(localStorage.getItem("rootbound-settings") || "{}");
@@ -326,9 +327,11 @@
       return {};
     }
   })();
+  const savedAudioIsCurrent = savedSettings.audioVersion === AUDIO_SETTINGS_VERSION;
   const settings = {
-    music: Number.isFinite(savedSettings.music) ? savedSettings.music : 38,
-    sfx: Number.isFinite(savedSettings.sfx) ? savedSettings.sfx : 62,
+    audioVersion: AUDIO_SETTINGS_VERSION,
+    music: savedAudioIsCurrent && Number.isFinite(savedSettings.music) ? savedSettings.music : 58,
+    sfx: savedAudioIsCurrent && Number.isFinite(savedSettings.sfx) ? savedSettings.sfx : 78,
     reducedEffects: Boolean(savedSettings.reducedEffects),
   };
 
@@ -422,7 +425,7 @@
         applyAudioSettings();
       }
     }
-    if (audio?.state === "suspended") audio.resume();
+    if (audio?.state === "suspended") audio.resume().catch(() => {});
   }
 
   function tone(frequency, duration = 0.08, type = "sine", volume = 0.025, slide = 0) {
@@ -434,7 +437,8 @@
     oscillator.type = type;
     oscillator.frequency.setValueAtTime(frequency, audio.currentTime);
     if (slide) oscillator.frequency.exponentialRampToValueAtTime(Math.max(20, frequency + slide), audio.currentTime + duration);
-    gain.gain.setValueAtTime(volume, audio.currentTime);
+    const audibleVolume = Math.min(0.24, volume * 3.2);
+    gain.gain.setValueAtTime(audibleVolume, audio.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + duration);
     oscillator.connect(gain);
     gain.connect(sfxBus);
@@ -463,7 +467,7 @@
     filter.type = "bandpass";
     filter.frequency.value = frequency;
     filter.Q.value = 0.8;
-    gain.gain.setValueAtTime(volume, audio.currentTime);
+    gain.gain.setValueAtTime(Math.min(0.2, volume * 2.5), audio.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + duration);
     source.connect(filter);
     filter.connect(gain);
@@ -496,7 +500,7 @@
     oscillator.type = type;
     oscillator.frequency.setValueAtTime(frequency, when);
     filter.type = "lowpass";
-    filter.frequency.setValueAtTime(state.waveActive ? 1250 : 760, when);
+    filter.frequency.setValueAtTime(state.waveActive ? 2200 : 1450, when);
     gain.gain.setValueAtTime(0.0001, when);
     gain.gain.exponentialRampToValueAtTime(volume, when + 0.08);
     gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
@@ -509,21 +513,22 @@
 
   function musicPulse() {
     if (!audio || !state.started || state.paused || state.ended || !soundOn || settings.music <= 0) return;
-    const roots = [110, 130.81, 98, 146.83];
-    const melodies = [293.66, 349.23, 440, 392, 329.63, 440, 523.25, 392];
+    const roots = [196, 220, 174.61, 261.63];
+    const melodies = [392, 440, 523.25, 659.25, 587.33, 523.25, 698.46, 493.88];
     const root = roots[Math.floor(musicStep / 8) % roots.length];
     if (musicStep % 8 === 0) {
-      musicNote(root, 5.3, 0.035, "sine");
-      musicNote(root * 1.2, 4.8, 0.021, "sine", 0.05);
-      musicNote(root * 1.5, 4.6, 0.017, "triangle", 0.1);
+      musicNote(root, 5.3, 0.07, "sine");
+      musicNote(root * 1.2, 4.8, 0.048, "sine", 0.05);
+      musicNote(root * 1.5, 4.6, 0.035, "triangle", 0.1);
     }
     if (musicStep % 2 === 0) {
       const note = melodies[(musicStep / 2 + state.wave * 2) % melodies.length];
-      musicNote(note, state.waveActive ? 0.62 : 1.25, state.waveActive ? 0.032 : 0.018, "triangle");
+      musicNote(note, state.waveActive ? 0.62 : 1.25, state.waveActive ? 0.07 : 0.045, "triangle");
     }
     if (state.waveActive) {
-      musicNote(root / 2, 0.38, 0.045, "sine");
-      if (musicStep % 4 === 2) musicNote(root * 2, 0.2, 0.018, "square");
+      musicNote(root, 0.38, 0.075, "sine");
+      musicNote(root * 1.5, 0.24, 0.035, "triangle", 0.08);
+      if (musicStep % 4 === 2) musicNote(root * 2, 0.2, 0.04, "square");
     }
     musicStep += 1;
   }
@@ -2832,6 +2837,7 @@
     startMusic();
     chord([220, 330, 440]);
     toast("CHOOSE A SEED • PLANT ON A GLOWING NODE");
+    window.setTimeout(() => toast("♫ ADAPTIVE SCORE ONLINE • USE ⚙ TO MIX"), 900);
     updateUI();
   });
   ui.waveBtn.addEventListener("click", startWave);
@@ -2919,6 +2925,13 @@
   document.addEventListener("visibilitychange", () => {
     if (document.hidden && state.started && !state.ended) setPaused(true, false);
   });
+  document.addEventListener(
+    "pointerdown",
+    () => {
+      if (audio?.state === "suspended") audio.resume().catch(() => {});
+    },
+    { passive: true },
+  );
 
   const refreshViewport = () => {
     state.hoverNode = null;
