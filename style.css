@@ -1279,17 +1279,22 @@ footer {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  border: 1px solid var(--lime);
-  border-radius: 4px;
+  border: 3px solid var(--anime-ink);
+  border-radius: 2px;
   background: var(--lime);
-  color: #102017;
+  box-shadow: 0 4px 0 var(--anime-ink);
+  color: var(--anime-ink);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.13em;
   cursor: pointer;
+  transform: translateY(0);
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
 }
 
 .primary-button:hover {
+  transform: translateY(1px);
+  box-shadow: 0 3px 0 var(--anime-ink);
   background: var(--lime-bright);
 }
 
