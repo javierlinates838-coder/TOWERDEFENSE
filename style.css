@@ -295,6 +295,16 @@ footer {
   animation: breathe 1.2s infinite;
 }
 
+.wave-pips i.boss-pip {
+  width: 7px;
+}
+
+.wave-pips i.boss-pip.complete,
+.wave-pips i.boss-pip.active {
+  background: var(--mint);
+  box-shadow: 0 0 10px rgba(255, 94, 200, 0.55);
+}
+
 .hud-controls {
   justify-content: flex-end;
   gap: 8px;

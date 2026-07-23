@@ -10,10 +10,12 @@ Specter Squad replaces random loot and fixed tower upgrades with a deterministic
 - Every different gear type linked grants +12% attack speed.
 - Six complementary loadouts support rapid fire, slowing, burst damage, chain attacks, burning, and knockback.
 - Every turret can upgrade through five visual and statistical tiers.
+- **28 deploy nodes** across the ward for deep build variety.
+- **Infinite waves** scale forever with milestone bonuses every 5 waves.
+- Phantom Lords arrive every 10 waves; Elder Oni every 25.
 - Kills charge **Overcharge**, an eight-second squad-wide surge.
 - Rapid kills build an **Exorcism Chain** that awards bonus ecto.
 - **Nova**, a spirit-fox drone, patrols the reactor and joins every battle.
-- Fifteen hand-balanced waves introduce Void Shades, the Phantom Lord, and the final Elder Oni.
 
 The complete game runs in the browser with no dependencies, accounts, ads, or microtransactions. It includes an adaptive synthwave soundtrack, layered effects, persistent audio controls, fullscreen play, reduced-effects accessibility, and responsive touch controls for phones and tablets.
 

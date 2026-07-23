@@ -284,7 +284,7 @@
     },
   };
 
-  const WAVES = [
+  const WAVE_TEMPLATES = [
     { mite: 8 },
     { mite: 10, wisp: 3 },
     { mite: 8, wisp: 7 },
@@ -301,6 +301,51 @@
     { shade: 18, spore: 10, brute: 8, sovereign: 1 },
     { shade: 16, brute: 10, spore: 8, colossus: 1 },
   ];
+
+  const WAVE_PIP_COUNT = 10;
+
+  function generateWave(index) {
+    if (index < WAVE_TEMPLATES.length) return { ...WAVE_TEMPLATES[index] };
+
+    const tier = index + 1;
+    const depth = index - WAVE_TEMPLATES.length + 1;
+    const composition = {
+      mite: Math.min(28, Math.floor(8 + tier * 0.55 + depth * 0.15)),
+      wisp: Math.min(20, Math.floor(tier * 0.35 + depth * 0.08)),
+    };
+
+    if (tier >= 4) composition.spore = Math.min(14, Math.floor(tier * 0.2 + depth * 0.05));
+    if (tier >= 5) composition.brute = Math.min(12, Math.floor(tier * 0.18 + depth * 0.06));
+    if (tier >= 11) composition.shade = Math.min(18, Math.floor((tier - 10) * 0.4 + depth * 0.1));
+
+    if (tier % 25 === 0) {
+      composition.colossus = 1;
+      composition.mite = Math.floor(composition.mite * 0.6);
+    } else if (tier % 10 === 0) {
+      composition.sovereign = 1;
+      composition.mite = Math.floor(composition.mite * 0.75);
+    }
+
+    let total = Object.values(composition).reduce((sum, count) => sum + count, 0);
+    if (total > 50) {
+      const scale = 50 / total;
+      Object.keys(composition).forEach((key) => {
+        if (key !== "sovereign" && key !== "colossus") {
+          composition[key] = Math.max(key === "mite" ? 4 : 1, Math.floor(composition[key] * scale));
+        }
+      });
+    }
+
+    return composition;
+  }
+
+  function waveMeta(composition) {
+    return {
+      colossus: Boolean(composition.colossus),
+      sovereign: Boolean(composition.sovereign),
+      total: Object.values(composition).reduce((sum, count) => sum + count, 0),
+    };
+  }
 
   const ENEMY_PLURALS = {
     mite: "POLTERGEISTS",
@@ -329,21 +374,34 @@
   ];
 
   const nodes = [
+    { x: 52, y: 280 },
     { x: 68, y: 210 },
     { x: 90, y: 458 },
+    { x: 140, y: 300 },
+    { x: 155, y: 165 },
     { x: 224, y: 116 },
     { x: 245, y: 420 },
+    { x: 290, y: 320 },
     { x: 360, y: 145 },
     { x: 407, y: 492 },
+    { x: 430, y: 280 },
+    { x: 448, y: 430 },
     { x: 500, y: 174 },
+    { x: 535, y: 320 },
     { x: 560, y: 456 },
+    { x: 620, y: 175 },
     { x: 649, y: 110 },
     { x: 678, y: 398 },
+    { x: 720, y: 310 },
     { x: 778, y: 166 },
+    { x: 800, y: 120 },
     { x: 814, y: 475 },
+    { x: 870, y: 400 },
     { x: 899, y: 140 },
     { x: 934, y: 440 },
+    { x: 980, y: 220 },
     { x: 1022, y: 178 },
+    { x: 1050, y: 380 },
   ];
 
   const backdropSeeds = Array.from({ length: 85 }, (_, i) => ({
@@ -411,13 +469,25 @@
     reducedEffects: Boolean(savedSettings.reducedEffects),
   };
 
+  const savedBestWave = (() => {
+    try {
+      const value = Number(localStorage.getItem("specter-squad-best-wave"));
+      return Number.isFinite(value) && value >= 0 ? value : 0;
+    } catch {
+      return 0;
+    }
+  })();
+
   const state = {
     started: false,
     paused: false,
     speed: 1,
-    sap: 240,
+    sap: 280,
     hearts: 20,
     wave: 0,
+    wavesCleared: 0,
+    bestWave: savedBestWave,
+    currentComposition: null,
     waveActive: false,
     spawnQueue: [],
     spawnTimer: 0,
@@ -628,12 +698,21 @@
     window.setTimeout(() => item.remove(), 2600);
   }
 
+  function saveBestWave(wave) {
+    try {
+      localStorage.setItem("specter-squad-best-wave", String(wave));
+    } catch {
+      // Storage can be unavailable in private browsing.
+    }
+  }
+
   function createPips() {
     ui.wavePips.innerHTML = "";
-    WAVES.forEach(() => {
+    for (let i = 0; i < WAVE_PIP_COUNT; i += 1) {
       const pip = document.createElement("i");
+      if (i === WAVE_PIP_COUNT - 1) pip.classList.add("boss-pip");
       ui.wavePips.append(pip);
-    });
+    }
   }
 
   function renderCodex() {
@@ -689,13 +768,11 @@
       .join("");
   }
 
-  function buildWave(index) {
-    const composition = WAVES[index];
+  function buildWave(composition) {
     const queue = [];
     Object.entries(composition).forEach(([type, count]) => {
       for (let i = 0; i < count; i += 1) queue.push(type);
     });
-    // Deterministic interleaving keeps hard enemies legible and avoids luck-driven spikes.
     queue.sort((a, b) => {
       const order = { mite: 0, wisp: 1, shade: 2, spore: 3, brute: 4, sovereign: 5, colossus: 6 };
       const hashA = (queue.indexOf(a) * 7 + order[a] * 11) % 17;
@@ -706,38 +783,43 @@
   }
 
   function startWave() {
-    if (!state.started || state.waveActive || state.ended || state.wave >= WAVES.length) return;
+    if (!state.started || state.waveActive || state.ended) return;
     state.waveActive = true;
-    state.spawnQueue = buildWave(state.wave);
+    state.currentComposition = generateWave(state.wave);
+    state.spawnQueue = buildWave(state.currentComposition);
     state.spawnTimer = 0;
     state.selectedType = null;
     updateCards();
     updateUI();
     announceWave();
-    const bossName = WAVES[state.wave].colossus ? "ELDER ONI" : WAVES[state.wave].sovereign ? "PHANTOM LORD" : null;
+    const meta = waveMeta(state.currentComposition);
+    const bossName = meta.colossus ? "ELDER ONI" : meta.sovereign ? "PHANTOM LORD" : null;
     toast(bossName ? `⚠ ${bossName} APPROACHES` : `WAVE ${state.wave + 1} • SQUAD, DEPLOY`);
     tone(196, 0.22, "triangle", 0.035, 96);
   }
 
   function waveThreatCount(index) {
-    if (index >= WAVES.length) return 0;
-    return Object.values(WAVES[index]).reduce((total, count) => total + count, 0);
+    return waveMeta(generateWave(index)).total;
   }
 
   function threatSummary(index) {
-    if (index >= WAVES.length) return "CITY SECURED";
-    return Object.entries(WAVES[index])
+    return Object.entries(generateWave(index))
       .map(([type, count]) => `${count} ${ENEMY_PLURALS[type]}`)
       .join("  •  ");
   }
 
   function announceWave() {
-    const isBoss = state.wave === WAVES.length - 1;
-    ui.announcementTop.textContent = isBoss ? "ONI SIGNAL DETECTED" : "SQUAD, DEPLOY";
-    ui.announcementMain.textContent = isBoss ? "FINAL HUNT" : `WAVE ${state.wave + 1}`;
-    ui.announcementThreat.textContent = `${waveThreatCount(state.wave)} HOSTILES DETECTED`;
+    const composition = state.currentComposition || generateWave(state.wave);
+    const meta = waveMeta(composition);
+    ui.announcementTop.textContent = meta.colossus
+      ? "ONI SIGNAL DETECTED"
+      : meta.sovereign
+        ? "PHANTOM LORD INBOUND"
+        : "SQUAD, DEPLOY";
+    ui.announcementMain.textContent = meta.colossus ? `WAVE ${state.wave + 1} • ONI HUNT` : `WAVE ${state.wave + 1}`;
+    ui.announcementThreat.textContent = `${meta.total} HOSTILES DETECTED`;
     ui.waveAnnouncement.classList.add("visible");
-    window.setTimeout(() => ui.waveAnnouncement.classList.remove("visible"), isBoss ? 2400 : 1700);
+    window.setTimeout(() => ui.waveAnnouncement.classList.remove("visible"), meta.colossus ? 2400 : 1700);
   }
 
   function spawnEnemy(type) {
@@ -1082,7 +1164,9 @@
       state.spawnTimer -= dt;
       if (state.spawnTimer <= 0) {
         spawnEnemy(state.spawnQueue.shift());
-        state.spawnTimer = WAVES[state.wave].colossus ? 0.82 : Math.max(0.32, 0.8 - state.wave * 0.032);
+        const composition = state.currentComposition || generateWave(state.wave);
+        const meta = waveMeta(composition);
+        state.spawnTimer = meta.colossus ? 0.82 : meta.sovereign ? 0.68 : Math.max(0.22, 0.85 - state.wave * 0.028);
       }
     }
 
@@ -1194,23 +1278,42 @@
     vibrate([25, 35, 25]);
     ring(1061, 300, "#ff7d71", 65);
     burst(1061, 300, "#ff7d71", 16, 110);
-    floating(1035, 253, `−${enemy.damage} HEART`, "#ff7d71");
+    floating(1035, 253, `−${enemy.damage} REACTOR`, "#ff6b8a");
     tone(85, 0.28, "sawtooth", 0.035, -35);
     noiseBurst(0.22, 0.035, 180);
-    if (state.hearts <= 0) endGame(false);
+    if (state.hearts <= 0) endGame();
   }
 
   function completeWave() {
     state.waveActive = false;
-    const bonus = 25 + state.wave * 6;
+    const composition = state.currentComposition || generateWave(state.wave);
+    const meta = waveMeta(composition);
+    const cleared = state.wave + 1;
+    let bonus = 25 + state.wave * 6;
+    if (meta.sovereign) bonus += 55;
+    if (meta.colossus) bonus += 120;
+    if (cleared % 5 === 0) bonus += 40;
     state.sap += bonus;
+    state.wavesCleared = cleared;
+    const newRecord = cleared > state.bestWave;
+    if (newRecord) {
+      state.bestWave = cleared;
+      saveBestWave(cleared);
+    }
     state.wave += 1;
-    floating(1040, 255, `WAVE CLEAR +${bonus}`, "#c9f76f");
+    state.currentComposition = null;
+    floating(1040, 255, `WAVE CLEAR +${bonus}`, "#5ef0ff");
     chord([330, 415, 494]);
-    if (state.wave >= WAVES.length) {
-      window.setTimeout(() => endGame(true), 700);
+    if (newRecord) {
+      toast(`NEW BEST • WAVE ${cleared} • +${bonus} ECTO`);
+    } else if (cleared % 5 === 0) {
+      toast(`MILESTONE WAVE ${cleared} • +${bonus} ECTO`);
+    } else if (meta.colossus) {
+      toast(`ONI BANISHED • WAVE ${cleared} • +${bonus} ECTO`);
+    } else if (meta.sovereign) {
+      toast(`LORD BANISHED • WAVE ${cleared} • +${bonus} ECTO`);
     } else {
-      toast(`WAVE ${state.wave} HELD • +${bonus} ECTO`);
+      toast(`WAVE ${cleared} HELD • +${bonus} ECTO`);
     }
     updateUI();
   }
@@ -1842,33 +1945,29 @@
     const spin = state.elapsed * (1.2 + tower.level * 0.12) + tower.animOffset;
     ctx.translate(0, recoil);
 
-    const stem = ctx.createLinearGradient(-7, 8, 7, -18);
-    stem.addColorStop(0, "#5d6f2b");
-    stem.addColorStop(0.5, "#a8b944");
-    stem.addColorStop(1, "#ffe382");
-    ctx.strokeStyle = stem;
-    ctx.lineWidth = 7;
+    const barrel = ctx.createLinearGradient(-7, 8, 7, -18);
+    barrel.addColorStop(0, "#3a2f5c");
+    barrel.addColorStop(0.5, "#6a5a9a");
+    barrel.addColorStop(1, "#ffd15e");
+    ctx.strokeStyle = barrel;
+    ctx.lineWidth = 6;
     ctx.lineCap = "round";
     ctx.beginPath();
     ctx.moveTo(0, 9);
-    ctx.quadraticCurveTo(-3, -3, 0, -13);
+    ctx.lineTo(0, -13);
     ctx.stroke();
 
     ctx.save();
     ctx.translate(0, -14);
     ctx.rotate(spin);
-    ctx.fillStyle = "#d9892a";
-    ctx.strokeStyle = "#ffe18a";
-    ctx.lineWidth = 0.8;
-    for (let i = 0; i < 8; i += 1) {
+    ctx.strokeStyle = "#ffd15e";
+    ctx.lineWidth = 1.2;
+    for (let i = 0; i < 6; i += 1) {
       ctx.save();
-      ctx.rotate((i / 8) * TAU);
+      ctx.rotate((i / 6) * TAU);
       ctx.beginPath();
-      ctx.moveTo(-3, -2);
-      ctx.quadraticCurveTo(-7, -15, 0, -20 - tower.level);
-      ctx.quadraticCurveTo(7, -15, 3, -2);
-      ctx.closePath();
-      ctx.fill();
+      ctx.moveTo(0, -6);
+      ctx.lineTo(0, -18 - tower.level);
       ctx.stroke();
       ctx.restore();
     }
@@ -2813,23 +2912,26 @@
     ui.heart.textContent = state.hearts;
     ui.heart.style.color = state.hearts <= 6 ? "#ff7d71" : "";
 
-    if (!state.started) ui.waveLabel.textContent = "ALL CLEAR";
+    if (!state.started) ui.waveLabel.textContent = state.bestWave ? `ALL CLEAR • BEST ${state.bestWave}` : "ALL CLEAR";
     else if (state.waveActive) {
       const remaining = state.spawnQueue.length + state.enemies.length;
-      ui.waveLabel.textContent = `WAVE ${state.wave + 1} // ${remaining} REMAIN`;
-    } else if (state.wave >= WAVES.length) ui.waveLabel.textContent = "CITY SECURED";
-    else ui.waveLabel.textContent = `WAVE ${state.wave + 1} READY`;
+      ui.waveLabel.textContent = `WAVE ${state.wave + 1} // ${remaining} LEFT`;
+    } else {
+      const untilBoss = WAVE_PIP_COUNT - (state.wave % WAVE_PIP_COUNT) || WAVE_PIP_COUNT;
+      ui.waveLabel.textContent = `WAVE ${state.wave + 1} READY • BOSS IN ${untilBoss}`;
+    }
 
+    const chunk = state.wave % WAVE_PIP_COUNT;
     [...ui.wavePips.children].forEach((pip, index) => {
-      pip.classList.toggle("complete", index < state.wave);
-      pip.classList.toggle("active", state.waveActive && index === state.wave);
+      pip.classList.toggle("complete", !state.waveActive && index < chunk);
+      pip.classList.toggle("active", state.waveActive && index === chunk);
     });
 
-    ui.waveBtn.disabled = !state.started || state.waveActive || state.wave >= WAVES.length || state.ended;
+    ui.waveBtn.disabled = !state.started || state.waveActive || state.ended;
     ui.waveButtonTop.textContent = state.wave === 0 ? "BEGIN" : state.waveActive ? "INCOMING" : "SUMMON";
-    ui.waveButtonMain.textContent = state.wave >= WAVES.length ? "COMPLETE" : `WAVE ${state.wave + 1}`;
+    ui.waveButtonMain.textContent = `WAVE ${state.wave + 1}`;
     ui.speedLabel.textContent = `${state.speed}×`;
-    ui.threatPreview.classList.toggle("hidden", state.waveActive || state.wave >= WAVES.length || state.ended);
+    ui.threatPreview.classList.toggle("hidden", state.waveActive || state.ended);
     ui.threatText.textContent = threatSummary(state.wave);
 
     const abilityReady = state.ability >= 100;
@@ -3018,29 +3120,29 @@
     }
   }
 
-  function endGame(won) {
+  function endGame() {
     if (state.ended) return;
     state.ended = true;
-    ui.endEyebrow.textContent = won ? "THE REACTOR HOLDS" : "THE WARD FALLS";
-    ui.endTitle.textContent = won ? "The ward is clear." : "The ghosts break through.";
-    ui.endCopy.textContent = won
-      ? "Your synced squad held the line. The neon ward breathes again."
-      : "Specters reached the reactor. Build a more diverse loadout and return.";
-    ui.endWaves.textContent = state.wave;
+    const wavesReached = Math.max(state.wavesCleared, state.wave + (state.waveActive ? 1 : 0));
+    ui.endEyebrow.textContent = "THE WARD FALLS";
+    ui.endTitle.textContent = "The ghosts break through.";
+    ui.endCopy.textContent = `You held ${wavesReached} wave${wavesReached === 1 ? "" : "s"}. Build a stronger squad and push past wave ${state.bestWave}.`;
+    ui.endWaves.textContent = wavesReached;
     ui.endKills.textContent = state.kills;
-    ui.endHarmony.textContent = state.peakHarmony;
+    ui.endHarmony.textContent = state.bestWave;
     ui.endCombo.textContent = `${state.bestCombo}×`;
-    ui.endSigil.textContent = won ? "✦" : "◇";
-    ui.endSigil.style.color = won ? "" : "#ff7d71";
+    ui.endSigil.textContent = "◇";
+    ui.endSigil.style.color = "#ff6b8a";
     ui.endModal.classList.add("visible");
-    if (won) chord([262, 330, 392, 523, 659]);
-    else tone(110, 0.8, "sine", 0.04, -60);
+    tone(110, 0.8, "sine", 0.04, -60);
   }
 
   function resetGame() {
-    state.sap = 240;
+    state.sap = 280;
     state.hearts = 20;
     state.wave = 0;
+    state.wavesCleared = 0;
+    state.currentComposition = null;
     state.waveActive = false;
     state.spawnQueue = [];
     state.spawnTimer = 0;
