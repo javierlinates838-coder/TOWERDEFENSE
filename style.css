@@ -1333,6 +1333,10 @@ footer {
     aspect-ratio: auto;
   }
 
+  .game-stage:has(.modal-backdrop.visible) {
+    z-index: 100;
+  }
+
   #gameCanvas {
     position: absolute;
     inset: 0;
