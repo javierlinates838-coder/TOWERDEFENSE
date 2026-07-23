@@ -10,9 +10,11 @@ Rootbound replaces random loot and fixed tower upgrades with a deterministic liv
 - Every different species linked to a tower grants it +12% attack speed.
 - Four complementary species support rapid fire, slowing, burst damage, and chain attacks.
 - Kills charge **Overgrow**, an eight-second network-wide surge.
+- Rapid kills build a **Rootchain** that awards bonus sap.
+- **Sylva**, a living dragon warden, patrols the Heartseed and joins every battle.
 - Ten hand-balanced waves culminate in the Rift Sovereign boss.
 
-The complete game runs in the browser with no dependencies, accounts, ads, or microtransactions.
+The complete game runs in the browser with no dependencies, accounts, ads, or microtransactions. It includes an adaptive procedural soundtrack, layered effects, persistent audio controls, fullscreen play, reduced-effects accessibility, and responsive touch controls for phones and tablets.
 
 ## Run locally
 
