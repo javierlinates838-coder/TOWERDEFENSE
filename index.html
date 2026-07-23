@@ -43,6 +43,11 @@
               <path d="m19.4 15 .1.1 1 1.8-2.1 2.1-1.8-1a8 8 0 0 1-2.1.9l-.6 2.1h-3.8l-.6-2.1a8 8 0 0 1-2.1-.9l-1.8 1-2.1-2.1 1-1.8a8 8 0 0 1-.9-2.1l-2.1-.6V9.6L3.6 9a8 8 0 0 1 .9-2.1l-1-1.8L5.6 3l1.8 1a8 8 0 0 1 2.1-.9l.6-2.1h3.8l.6 2.1a8 8 0 0 1 2.1.9l1.8-1 2.1 2.1-1 1.8a8 8 0 0 1 .9 2.1l2.1.6v2.8l-2.1.6a8 8 0 0 1-1 2Z" />
             </svg>
           </button>
+          <button class="icon-button" id="codexBtn" type="button" aria-label="Open tower and enemy codex" title="Codex">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H11v17H6.5A2.5 2.5 0 0 0 4 21.5v-17Zm16 0A2.5 2.5 0 0 0 17.5 2H13v17h4.5a2.5 2.5 0 0 1 2.5 2.5v-17Z" />
+            </svg>
+          </button>
           <button class="icon-button" id="helpBtn" type="button" aria-label="How to play" title="How to play">
             <span>?</span>
           </button>
@@ -119,8 +124,15 @@
           <div class="tower-copy">
             <small id="selectedType">SUN</small>
             <h2 id="selectedName">Sunspire</h2>
-            <p id="selectedStats">Fast • 12 damage • 2.4 shots/s</p>
+            <span class="evolution-name" id="selectedEvolution">Helios Seed</span>
+            <p id="selectedStats">Rapid light striker</p>
           </div>
+          <div class="tower-stat-grid">
+            <div><small>DAMAGE</small><strong id="statDamage">12</strong></div>
+            <div><small>RANGE</small><strong id="statRange">145</strong></div>
+            <div><small>RATE</small><strong id="statRate">2.4/s</strong></div>
+          </div>
+          <p class="tower-trait" id="selectedTrait">Precise solar bolts excel against fast single targets.</p>
           <div class="synergy-meter">
             <div class="synergy-label"><span>BIODIVERSITY</span><strong id="synergyValue">+0%</strong></div>
             <div class="meter-track"><span id="synergyFill"></span></div>
@@ -170,8 +182,25 @@
               <li><strong>Overgrow.</strong> Charge the Heartseed, then awaken every root link at once.</li>
               <li><strong>Chain.</strong> Defeat enemies rapidly to earn Rootchain bonus sap.</li>
               <li><strong>Sylva.</strong> Your dragon warden patrols the Heartseed and attacks automatically.</li>
+              <li><strong>Study.</strong> Open the Codex or press C to compare every tower and enemy.</li>
             </ol>
             <button class="primary-button" id="helpDone" type="button">BACK TO THE GARDEN</button>
+          </div>
+        </div>
+
+        <div class="modal-backdrop" id="codexModal">
+          <div class="modal codex-card">
+            <button class="modal-close" id="codexClose" type="button" aria-label="Close codex">×</button>
+            <div class="eyebrow"><span></span> LIVING ARCHIVE</div>
+            <h2>Field Codex</h2>
+            <p>Know every seed. Read every threat. Build the right ecosystem.</p>
+            <div class="codex-tabs" role="tablist" aria-label="Codex sections">
+              <button class="active" data-codex-tab="arsenal" role="tab" aria-selected="true" type="button">ARSENAL</button>
+              <button data-codex-tab="invaders" role="tab" aria-selected="false" type="button">INVADERS</button>
+            </div>
+            <div class="codex-panel active" id="codexArsenal" data-codex-panel="arsenal" role="tabpanel"></div>
+            <div class="codex-panel" id="codexInvaders" data-codex-panel="invaders" role="tabpanel"></div>
+            <small class="codex-tip">Press C anytime • Towers gain +12% speed per different linked species</small>
           </div>
         </div>
 
@@ -216,6 +245,7 @@
               <div><strong id="endWaves">15</strong><small>WAVES</small></div>
               <div><strong id="endKills">0</strong><small>INVADERS</small></div>
               <div><strong id="endHarmony">0</strong><small>PEAK HARMONY</small></div>
+              <div><strong id="endCombo">0×</strong><small>BEST CHAIN</small></div>
             </div>
             <button class="primary-button" id="restartBtn" type="button">GROW AGAIN</button>
           </div>

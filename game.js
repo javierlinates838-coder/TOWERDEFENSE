@@ -36,6 +36,11 @@
     reducedEffects: $("reducedEffects"),
     audioTestBtn: $("audioTestBtn"),
     fullscreenBtn: $("fullscreenBtn"),
+    codexBtn: $("codexBtn"),
+    codexModal: $("codexModal"),
+    codexClose: $("codexClose"),
+    codexArsenal: $("codexArsenal"),
+    codexInvaders: $("codexInvaders"),
     helpBtn: $("helpBtn"),
     helpModal: $("helpModal"),
     helpClose: $("helpClose"),
@@ -50,7 +55,12 @@
     selectedOrb: $("selectedOrb"),
     selectedType: $("selectedType"),
     selectedName: $("selectedName"),
+    selectedEvolution: $("selectedEvolution"),
     selectedStats: $("selectedStats"),
+    selectedTrait: $("selectedTrait"),
+    statDamage: $("statDamage"),
+    statRange: $("statRange"),
+    statRate: $("statRate"),
     synergyValue: $("synergyValue"),
     synergyFill: $("synergyFill"),
     upgradeBtn: $("upgradeBtn"),
@@ -69,6 +79,7 @@
     endWaves: $("endWaves"),
     endKills: $("endKills"),
     endHarmony: $("endHarmony"),
+    endCombo: $("endCombo"),
     endSigil: $("endSigil"),
   };
 
@@ -78,6 +89,11 @@
     sun: {
       name: "Sunspire",
       label: "SOLAR FLORA",
+      role: "STRIKER",
+      glyph: "☀",
+      trait: "Precise rapid-fire solar bolts excel against fast single targets.",
+      best: "Speed • finishers • early lanes",
+      evolutions: ["Helios Seed", "Daylance", "Starpetal", "Solar Crown", "Dawn Engine"],
       color: "#ffc663",
       cost: 65,
       range: 145,
@@ -89,6 +105,11 @@
     dew: {
       name: "Dewbell",
       label: "TIDAL FLORA",
+      role: "CONTROL",
+      glyph: "◉",
+      trait: "Splashing dew chills clustered enemies and extends their time in every firing lane.",
+      best: "Swarms • chokepoints • support",
+      evolutions: ["Mist Bud", "Tide Bell", "Frost Chalice", "Monsoon Heart", "Absolute Bloom"],
       color: "#75d9e6",
       cost: 85,
       range: 132,
@@ -102,6 +123,11 @@
     thorn: {
       name: "Thornmaw",
       label: "FERAL FLORA",
+      role: "ARTILLERY",
+      glyph: "✦",
+      trait: "Slow, brutal thorn lances punish armored enemies from exceptional range.",
+      best: "Armor • elites • boss damage",
+      evolutions: ["Briar Cub", "Fangbud", "Siege Maw", "Bloodrose", "Apex Devourer"],
       color: "#ef738f",
       cost: 110,
       range: 172,
@@ -113,6 +139,11 @@
     prism: {
       name: "Prismbloom",
       label: "ARC FLORA",
+      role: "CHAIN CASTER",
+      glyph: "◇",
+      trait: "Lightning jumps through nearby bodies, turning dense formations against themselves.",
+      best: "Dense waves • mixed packs • chains",
+      evolutions: ["Shardling", "Arc Iris", "Spectrum Crown", "Storm Oracle", "Aurora Nexus"],
       color: "#b697ff",
       cost: 135,
       range: 152,
@@ -125,6 +156,11 @@
     ember: {
       name: "Emberpod",
       label: "CINDER FLORA",
+      role: "BURNER",
+      glyph: "▲",
+      trait: "Explosive seeds ignite every target in their splash and keep dealing true burn damage.",
+      best: "Regeneration • groups • damage over time",
+      evolutions: ["Coal Seed", "Cinder Pod", "Wildfire Heart", "Phoenix Bloom", "Sunforge"],
       color: "#ff8b52",
       cost: 100,
       range: 142,
@@ -138,6 +174,11 @@
     gale: {
       name: "Galefern",
       label: "TEMPEST FLORA",
+      role: "DISPLACER",
+      glyph: "≋",
+      trait: "Compressed air bursts push entire groups backward, reopening exhausted firing lanes.",
+      best: "Crowd control • lane resets • combos",
+      evolutions: ["Whisper Sprout", "Windwheel", "Tempest Fern", "Cyclone Crown", "Skybreaker"],
       color: "#86f0cf",
       cost: 145,
       range: 158,
@@ -154,6 +195,9 @@
     mite: {
       name: "Rift mite",
       color: "#ffaf69",
+      role: "SCOUT",
+      glyph: "•",
+      trait: "Fragile but fast. Dangerous when ignored in large packs.",
       hp: 42,
       speed: 78,
       radius: 9,
@@ -163,6 +207,9 @@
     wisp: {
       name: "Hollow wisp",
       color: "#8bdcc7",
+      role: "DRIFTER",
+      glyph: "◌",
+      trait: "Balanced spectral infantry with no singular weakness.",
       hp: 82,
       speed: 57,
       radius: 11,
@@ -172,6 +219,9 @@
     brute: {
       name: "Bark brute",
       color: "#e87974",
+      role: "ARMORED",
+      glyph: "◆",
+      trait: "Heavy bark plating reduces incoming direct damage.",
       hp: 225,
       speed: 35,
       radius: 16,
@@ -182,6 +232,9 @@
     spore: {
       name: "Sporeling",
       color: "#d2e781",
+      role: "REGENERATOR",
+      glyph: "♧",
+      trait: "Regrows health continuously. Burn damage shuts down its advantage.",
       hp: 120,
       speed: 49,
       radius: 13,
@@ -192,6 +245,9 @@
     sovereign: {
       name: "Rift sovereign",
       color: "#f38cff",
+      role: "BOSS",
+      glyph: "✹",
+      trait: "Armored command organism with massive health and devastating Heartseed damage.",
       hp: 1250,
       speed: 26,
       radius: 25,
@@ -202,6 +258,9 @@
     shade: {
       name: "Rift shade",
       color: "#7fa5ff",
+      role: "ASSASSIN",
+      glyph: "◈",
+      trait: "Extremely fast and lightly armored. Slow effects are essential.",
       hp: 190,
       speed: 82,
       radius: 12,
@@ -212,6 +271,9 @@
     colossus: {
       name: "Elder colossus",
       color: "#ff6fb7",
+      role: "FINAL BOSS",
+      glyph: "⬢",
+      trait: "Regenerating fortress organism with armor, knockback resistance, and catastrophic damage.",
       hp: 2850,
       speed: 19,
       radius: 31,
@@ -558,6 +620,59 @@
       const pip = document.createElement("i");
       ui.wavePips.append(pip);
     });
+  }
+
+  function renderCodex() {
+    ui.codexArsenal.innerHTML = Object.entries(TOWERS)
+      .map(([type, tower]) => {
+        const special = tower.slow
+          ? `${Math.round((1 - tower.slow) * 100)}% SLOW`
+          : tower.chain
+            ? `${tower.chain} TARGET CHAIN`
+            : tower.burn
+              ? `${tower.burn}/S BURN`
+              : tower.knockback
+                ? `${tower.knockback} KNOCKBACK`
+                : "DIRECT DAMAGE";
+        return `
+          <article class="codex-entry" style="--entry-color:${tower.color}" data-codex-tower="${type}">
+            <div class="codex-sigil" aria-hidden="true">${tower.glyph}</div>
+            <div class="codex-copy">
+              <div class="codex-heading"><strong>${tower.name}</strong><span>${tower.role}</span></div>
+              <p>${tower.trait}</p>
+              <div class="codex-stats">
+                <span>${tower.cost} SAP</span><span>${tower.damage} DMG</span><span>${tower.range} RNG</span>
+                <span>${tower.rate}/S</span><span>${special}</span>
+              </div>
+              <div class="codex-evolutions">I–V: ${tower.evolutions.join(" → ")}</div>
+            </div>
+          </article>`;
+      })
+      .join("");
+
+    ui.codexInvaders.innerHTML = Object.values(ENEMIES)
+      .map((enemy) => {
+        const defenses = [
+          enemy.armor ? `${Math.round(enemy.armor * 100)}% ARMOR` : null,
+          enemy.regen ? `${enemy.regen}/S REGEN` : null,
+        ]
+          .filter(Boolean)
+          .join(" • ");
+        return `
+          <article class="codex-entry" style="--entry-color:${enemy.color}">
+            <div class="codex-sigil" aria-hidden="true">${enemy.glyph}</div>
+            <div class="codex-copy">
+              <div class="codex-heading"><strong>${enemy.name}</strong><span>${enemy.role}</span></div>
+              <p>${enemy.trait}</p>
+              <div class="codex-stats">
+                <span>${enemy.hp} BASE HP</span><span>${enemy.speed} SPEED</span>
+                <span>${enemy.damage} HEART DMG</span><span>${enemy.bounty} SAP</span>
+                ${defenses ? `<span>${defenses}</span>` : ""}
+              </div>
+            </div>
+          </article>`;
+      })
+      .join("");
   }
 
   function buildWave(index) {
@@ -1115,7 +1230,12 @@
     tower.level += 1;
     burst(tower.x, tower.y, TOWERS[tower.type].color, 24, 125);
     ring(tower.x, tower.y, TOWERS[tower.type].color, 70);
-    floating(tower.x, tower.y - 35, `EVOLVED • ${["", "I", "II", "III", "IV", "V"][tower.level]}`, TOWERS[tower.type].color);
+    floating(
+      tower.x,
+      tower.y - 35,
+      `EVOLVED • ${TOWERS[tower.type].evolutions[tower.level - 1].toUpperCase()}`,
+      TOWERS[tower.type].color,
+    );
     chord([330, 415, 554]);
     updateSelectionPanel();
     updateUI();
@@ -2576,9 +2696,15 @@
   function updateCards() {
     towerCards.forEach((card) => {
       const type = card.dataset.tower;
+      const data = TOWERS[type];
       card.classList.toggle("selected", state.selectedType === type);
-      card.disabled = state.sap < TOWERS[type].cost;
+      card.disabled = state.sap < data.cost;
       card.setAttribute("aria-pressed", state.selectedType === type ? "true" : "false");
+      card.setAttribute(
+        "aria-label",
+        `${data.name}, ${data.role}. Costs ${data.cost} sap. ${data.trait}`,
+      );
+      card.title = `${data.role} — ${data.trait}`;
     });
   }
 
@@ -2630,11 +2756,18 @@
     ui.selectedOrb.style.setProperty("--orb-color", data.color);
     ui.selectedType.textContent = `${data.label} • LVL ${tower.level}`;
     ui.selectedName.textContent = data.name;
-    ui.selectedStats.textContent = `${data.description} • ${Math.round(stats.damage)} damage • ${stats.rate.toFixed(1)} shots/s`;
+    ui.selectedEvolution.textContent = `${["I", "II", "III", "IV", "V"][tower.level - 1]} • ${data.evolutions[tower.level - 1]}`;
+    ui.selectedStats.textContent = `${data.role} • ${data.description}`;
+    ui.selectedTrait.textContent = `${data.trait} Best for: ${data.best}.`;
+    ui.statDamage.textContent = Math.round(stats.damage);
+    ui.statRange.textContent = Math.round(stats.range);
+    ui.statRate.textContent = `${stats.rate.toFixed(1)}/s`;
     ui.synergyValue.textContent = `+${tower.synergy * 12}%`;
     ui.synergyFill.style.width = `${(tower.synergy / 5) * 100}%`;
     ui.upgradeCost.textContent = tower.level >= 5 ? "MAX" : `${upgrade} ◈`;
     ui.upgradeBtn.disabled = tower.level >= 5 || state.sap < upgrade;
+    ui.upgradeBtn.title =
+      tower.level >= 5 ? "Maximum evolution reached" : `Evolve into ${data.evolutions[tower.level]}`;
     ui.sellValue.textContent = `${sell} ◈`;
   }
 
@@ -2739,6 +2872,22 @@
     }
   }
 
+  function openCodex() {
+    ui.codexModal.classList.add("visible");
+    if (state.started && !state.paused) {
+      ui.codexModal.dataset.pausedGame = "true";
+      setPaused(true, false);
+    }
+  }
+
+  function closeCodex() {
+    ui.codexModal.classList.remove("visible");
+    if (ui.codexModal.dataset.pausedGame === "true") {
+      setPaused(false, false);
+      delete ui.codexModal.dataset.pausedGame;
+    }
+  }
+
   function syncSettingsUI() {
     ui.musicVolume.value = settings.music;
     ui.musicValue.textContent = `${settings.music}%`;
@@ -2779,6 +2928,7 @@
     ui.endWaves.textContent = state.wave;
     ui.endKills.textContent = state.kills;
     ui.endHarmony.textContent = state.peakHarmony;
+    ui.endCombo.textContent = `${state.bestCombo}×`;
     ui.endSigil.textContent = won ? "✦" : "◇";
     ui.endSigil.style.color = won ? "" : "#ff7d71";
     ui.endModal.classList.add("visible");
@@ -2853,6 +3003,22 @@
   ui.helpBtn.addEventListener("click", openHelp);
   ui.helpClose.addEventListener("click", closeHelp);
   ui.helpDone.addEventListener("click", closeHelp);
+  ui.codexBtn.addEventListener("click", openCodex);
+  ui.codexClose.addEventListener("click", closeCodex);
+  document.querySelectorAll("[data-codex-tab]").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const section = tab.dataset.codexTab;
+      document.querySelectorAll("[data-codex-tab]").forEach((candidate) => {
+        const active = candidate === tab;
+        candidate.classList.toggle("active", active);
+        candidate.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      document.querySelectorAll("[data-codex-panel]").forEach((panel) => {
+        panel.classList.toggle("active", panel.dataset.codexPanel === section);
+      });
+      tone(section === "arsenal" ? 410 : 270, 0.05, "sine", 0.012, 35);
+    });
+  });
   ui.settingsBtn.addEventListener("click", openSettings);
   ui.settingsClose.addEventListener("click", closeSettings);
   ui.musicVolume.addEventListener("input", () => {
@@ -2901,12 +3067,19 @@
   });
 
   window.addEventListener("keydown", (event) => {
+    const modalOpen = [ui.introModal, ui.helpModal, ui.codexModal, ui.settingsModal, ui.endModal].some((modal) =>
+      modal.classList.contains("visible"),
+    );
+    const codexToggle = ui.codexModal.classList.contains("visible") && event.key.toLowerCase() === "c";
+    if (modalOpen && event.key !== "Escape" && !codexToggle) return;
     if (event.key >= "1" && event.key <= "6") {
       selectType(Object.keys(TOWERS)[Number(event.key) - 1]);
     } else if (event.key === "Escape" && ui.settingsModal.classList.contains("visible")) {
       closeSettings();
     } else if (event.key === "Escape" && ui.helpModal.classList.contains("visible")) {
       closeHelp();
+    } else if (event.key === "Escape" && ui.codexModal.classList.contains("visible")) {
+      closeCodex();
     } else if (event.key === "Escape") {
       state.selectedType = null;
       state.selectedTower = null;
@@ -2919,6 +3092,9 @@
       cycleSpeed();
     } else if (event.key.toLowerCase() === "r" && state.ability >= 100) {
       activateAbility();
+    } else if (event.key.toLowerCase() === "c") {
+      if (ui.codexModal.classList.contains("visible")) closeCodex();
+      else openCodex();
     }
   });
 
@@ -2943,6 +3119,7 @@
   screen.orientation?.addEventListener("change", () => window.setTimeout(refreshViewport, 120));
 
   createPips();
+  renderCodex();
   syncSettingsUI();
   saveSettings();
   updateUI();

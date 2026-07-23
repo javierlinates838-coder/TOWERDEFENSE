@@ -33,3 +33,4 @@ Then open [http://localhost:4173](http://localhost:4173).
 - `Space`: pause
 - `F`: change speed
 - `R`: activate Overgrow when charged
+- `C`: open the tower and enemy Codex
