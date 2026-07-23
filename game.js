@@ -87,30 +87,30 @@
 
   const TOWERS = {
     sun: {
-      name: "Sunspire",
-      label: "SOLAR FLORA",
+      name: "Photon Cell",
+      label: "PHOTON BLASTER",
       role: "STRIKER",
       glyph: "☀",
-      trait: "Precise rapid-fire solar bolts excel against fast single targets.",
+      trait: "Precise rapid-fire photon bolts excel against fast single targets.",
       best: "Speed • finishers • early lanes",
-      evolutions: ["Helios Seed", "Daylance", "Starpetal", "Solar Crown", "Dawn Engine"],
-      color: "#ffc663",
+      evolutions: ["Mk I Blaster", "Daybeam", "Starcell", "Solar Crown", "Nova Cannon"],
+      color: "#ffd15e",
       cost: 65,
       range: 145,
       damage: 12,
       rate: 2.4,
       projectile: 390,
-      description: "Rapid light",
+      description: "Rapid photon",
     },
     dew: {
-      name: "Dewbell",
-      label: "TIDAL FLORA",
+      name: "Spirit Seal",
+      label: "CRYO TRAP",
       role: "CONTROL",
       glyph: "◉",
-      trait: "Splashing dew chills clustered enemies and extends their time in every firing lane.",
+      trait: "Spirit seals chill clustered ghosts and extend their time in every firing lane.",
       best: "Swarms • chokepoints • support",
-      evolutions: ["Mist Bud", "Tide Bell", "Frost Chalice", "Monsoon Heart", "Absolute Bloom"],
-      color: "#75d9e6",
+      evolutions: ["Seal Mk I", "Frost Sigil", "Ice Chalice", "Absolute Zero", "Void Lock"],
+      color: "#5ef0ff",
       cost: 85,
       range: 132,
       damage: 9,
@@ -118,17 +118,17 @@
       projectile: 300,
       slow: 0.56,
       splash: 42,
-      description: "Slow splash",
+      description: "Freeze splash",
     },
     thorn: {
-      name: "Thornmaw",
-      label: "FERAL FLORA",
+      name: "Proton Lance",
+      label: "PROTON CANNON",
       role: "ARTILLERY",
       glyph: "✦",
-      trait: "Slow, brutal thorn lances punish armored enemies from exceptional range.",
+      trait: "Slow, brutal proton lances punish armored specters from exceptional range.",
       best: "Armor • elites • boss damage",
-      evolutions: ["Briar Cub", "Fangbud", "Siege Maw", "Bloodrose", "Apex Devourer"],
-      color: "#ef738f",
+      evolutions: ["Lance Mk I", "Proton Spike", "Siege Cannon", "Void Lance", "Omega Breaker"],
+      color: "#ff6b8a",
       cost: 110,
       range: 172,
       damage: 42,
@@ -137,14 +137,14 @@
       description: "Heavy burst",
     },
     prism: {
-      name: "Prismbloom",
-      label: "ARC FLORA",
+      name: "Arc Conduit",
+      label: "TESLA GRID",
       role: "CHAIN CASTER",
       glyph: "◇",
       trait: "Lightning jumps through nearby bodies, turning dense formations against themselves.",
       best: "Dense waves • mixed packs • chains",
-      evolutions: ["Shardling", "Arc Iris", "Spectrum Crown", "Storm Oracle", "Aurora Nexus"],
-      color: "#b697ff",
+      evolutions: ["Coil Mk I", "Arc Iris", "Spectrum Crown", "Storm Oracle", "Thunder Nexus"],
+      color: "#b88cff",
       cost: 135,
       range: 152,
       damage: 20,
@@ -154,13 +154,13 @@
       description: "Chain spark",
     },
     ember: {
-      name: "Emberpod",
-      label: "CINDER FLORA",
+      name: "Holy Ember",
+      label: "PURIFY FLAME",
       role: "BURNER",
       glyph: "▲",
-      trait: "Explosive seeds ignite every target in their splash and keep dealing true burn damage.",
+      trait: "Holy fire ignites every target in its splash and keeps dealing true burn damage.",
       best: "Regeneration • groups • damage over time",
-      evolutions: ["Coal Seed", "Cinder Pod", "Wildfire Heart", "Phoenix Bloom", "Sunforge"],
+      evolutions: ["Ember Mk I", "Cinder Core", "Wildfire Heart", "Phoenix Seal", "Sunforge"],
       color: "#ff8b52",
       cost: 100,
       range: 142,
@@ -172,13 +172,13 @@
       description: "Burning splash",
     },
     gale: {
-      name: "Galefern",
-      label: "TEMPEST FLORA",
+      name: "Vacuum Pulse",
+      label: "EXORCISM FAN",
       role: "DISPLACER",
       glyph: "≋",
-      trait: "Compressed air bursts push entire groups backward, reopening exhausted firing lanes.",
+      trait: "Compressed vacuum bursts push entire groups backward, reopening exhausted firing lanes.",
       best: "Crowd control • lane resets • combos",
-      evolutions: ["Whisper Sprout", "Windwheel", "Tempest Fern", "Cyclone Crown", "Skybreaker"],
+      evolutions: ["Pulse Mk I", "Windwheel", "Tempest Fan", "Cyclone Crown", "Skybreaker"],
       color: "#86f0cf",
       cost: 145,
       range: 158,
@@ -193,8 +193,8 @@
 
   const ENEMIES = {
     mite: {
-      name: "Rift mite",
-      color: "#ffaf69",
+      name: "Poltergeist",
+      color: "#ffb86b",
       role: "SCOUT",
       glyph: "•",
       trait: "Fragile but fast. Dangerous when ignored in large packs.",
@@ -205,8 +205,8 @@
       damage: 1,
     },
     wisp: {
-      name: "Hollow wisp",
-      color: "#8bdcc7",
+      name: "Restless spirit",
+      color: "#8bd4ff",
       role: "DRIFTER",
       glyph: "◌",
       trait: "Balanced spectral infantry with no singular weakness.",
@@ -217,11 +217,11 @@
       damage: 1,
     },
     brute: {
-      name: "Bark brute",
-      color: "#e87974",
+      name: "Onryo brute",
+      color: "#ff7d9a",
       role: "ARMORED",
       glyph: "◆",
-      trait: "Heavy bark plating reduces incoming direct damage.",
+      trait: "Heavy cursed plating reduces incoming direct damage.",
       hp: 225,
       speed: 35,
       radius: 16,
@@ -230,8 +230,8 @@
       armor: 0.22,
     },
     spore: {
-      name: "Sporeling",
-      color: "#d2e781",
+      name: "Cursed echo",
+      color: "#d4b8ff",
       role: "REGENERATOR",
       glyph: "♧",
       trait: "Regrows health continuously. Burn damage shuts down its advantage.",
@@ -243,11 +243,11 @@
       regen: 2.2,
     },
     sovereign: {
-      name: "Rift sovereign",
+      name: "Phantom lord",
       color: "#f38cff",
       role: "BOSS",
       glyph: "✹",
-      trait: "Armored command organism with massive health and devastating Heartseed damage.",
+      trait: "Armored command specter with massive health and devastating reactor damage.",
       hp: 1250,
       speed: 26,
       radius: 25,
@@ -256,7 +256,7 @@
       armor: 0.16,
     },
     shade: {
-      name: "Rift shade",
+      name: "Void shade",
       color: "#7fa5ff",
       role: "ASSASSIN",
       glyph: "◈",
@@ -269,11 +269,11 @@
       armor: 0.1,
     },
     colossus: {
-      name: "Elder colossus",
+      name: "Elder oni",
       color: "#ff6fb7",
       role: "FINAL BOSS",
       glyph: "⬢",
-      trait: "Regenerating fortress organism with armor, knockback resistance, and catastrophic damage.",
+      trait: "Regenerating fortress specter with armor, knockback resistance, and catastrophic damage.",
       hp: 2850,
       speed: 19,
       radius: 31,
@@ -303,13 +303,13 @@
   ];
 
   const ENEMY_PLURALS = {
-    mite: "RIFT MITES",
-    wisp: "HOLLOW WISPS",
-    brute: "BARK BRUTES",
-    spore: "SPORELINGS",
-    sovereign: "RIFT SOVEREIGN",
-    shade: "RIFT SHADES",
-    colossus: "ELDER COLOSSUS",
+    mite: "POLTERGEISTS",
+    wisp: "RESTLESS SPIRITS",
+    brute: "ONRYO BRUTES",
+    spore: "CURSED ECHOES",
+    sovereign: "PHANTOM LORD",
+    shade: "VOID SHADES",
+    colossus: "ELDER ONI",
   };
 
   const path = [
@@ -365,14 +365,14 @@
     y: 34 + ((i * 127.3 + 43) % (H - 68)),
     size: 0.75 + ((i * 11) % 9) / 10,
     phase: i * 1.37,
-    color: ["#80edb0", "#c9f76f", "#7ddce6", "#bd91ff"][i % 4],
+    color: ["#5ef0ff", "#ff5ec8", "#b88cff", "#ffd15e"][i % 4],
   }));
 
   const livingPools = [
-    { x: 310, y: 82, rx: 76, ry: 28, color: "#4fc998" },
-    { x: 486, y: 540, rx: 92, ry: 31, color: "#6dc7d4" },
-    { x: 830, y: 78, rx: 68, ry: 24, color: "#9b72dd" },
-    { x: 1000, y: 540, rx: 74, ry: 26, color: "#72d49c" },
+    { x: 310, y: 82, rx: 76, ry: 28, color: "#5ef0ff" },
+    { x: 486, y: 540, rx: 92, ry: 31, color: "#ff5ec8" },
+    { x: 830, y: 78, rx: 68, ry: 24, color: "#b88cff" },
+    { x: 1000, y: 540, rx: 74, ry: 26, color: "#7b6dff" },
   ];
 
   const segments = [];
@@ -399,12 +399,11 @@
   const AUDIO_SETTINGS_VERSION = 2;
   const savedSettings = (() => {
     try {
-      return JSON.parse(localStorage.getItem("rootbound-settings") || "{}");
+      return JSON.parse(localStorage.getItem("specter-squad-settings") || localStorage.getItem("rootbound-settings") || "{}");
     } catch {
       return {};
     }
   })();
-  const savedAudioIsCurrent = savedSettings.audioVersion === AUDIO_SETTINGS_VERSION;
   const settings = {
     audioVersion: AUDIO_SETTINGS_VERSION,
     music: savedAudioIsCurrent && Number.isFinite(savedSettings.music) ? savedSettings.music : 58,
@@ -562,7 +561,7 @@
 
   function saveSettings() {
     try {
-      localStorage.setItem("rootbound-settings", JSON.stringify(settings));
+      localStorage.setItem("specter-squad-settings", JSON.stringify(settings));
     } catch {
       // Storage can be unavailable in private browsing; gameplay still works.
     }
@@ -656,7 +655,7 @@
               <div class="codex-heading"><strong>${tower.name}</strong><span>${tower.role}</span></div>
               <p>${tower.trait}</p>
               <div class="codex-stats">
-                <span>${tower.cost} SAP</span><span>${tower.damage} DMG</span><span>${tower.range} RNG</span>
+                <span>${tower.cost} ECTO</span><span>${tower.damage} DMG</span><span>${tower.range} RNG</span>
                 <span>${tower.rate}/S</span><span>${special}</span>
               </div>
               <div class="codex-evolutions">I–V: ${tower.evolutions.join(" → ")}</div>
@@ -681,7 +680,7 @@
               <p>${enemy.trait}</p>
               <div class="codex-stats">
                 <span>${enemy.hp} BASE HP</span><span>${enemy.speed} SPEED</span>
-                <span>${enemy.damage} HEART DMG</span><span>${enemy.bounty} SAP</span>
+                <span>${enemy.damage} REACTOR DMG</span><span>${enemy.bounty} ECTO</span>
                 ${defenses ? `<span>${defenses}</span>` : ""}
               </div>
             </div>
@@ -715,8 +714,8 @@
     updateCards();
     updateUI();
     announceWave();
-    const bossName = WAVES[state.wave].colossus ? "ELDER COLOSSUS" : WAVES[state.wave].sovereign ? "RIFT SOVEREIGN" : null;
-    toast(bossName ? `⚠ ${bossName} APPROACHES` : `WAVE ${state.wave + 1} • ROOTS, AWAKEN`);
+    const bossName = WAVES[state.wave].colossus ? "ELDER ONI" : WAVES[state.wave].sovereign ? "PHANTOM LORD" : null;
+    toast(bossName ? `⚠ ${bossName} APPROACHES` : `WAVE ${state.wave + 1} • SQUAD, DEPLOY`);
     tone(196, 0.22, "triangle", 0.035, 96);
   }
 
@@ -726,7 +725,7 @@
   }
 
   function threatSummary(index) {
-    if (index >= WAVES.length) return "RIFT SEALED";
+    if (index >= WAVES.length) return "CITY SECURED";
     return Object.entries(WAVES[index])
       .map(([type, count]) => `${count} ${ENEMY_PLURALS[type]}`)
       .join("  •  ");
@@ -734,8 +733,8 @@
 
   function announceWave() {
     const isBoss = state.wave === WAVES.length - 1;
-    ui.announcementTop.textContent = isBoss ? "COLOSSUS SIGNAL DETECTED" : "ROOTS, AWAKEN";
-    ui.announcementMain.textContent = isBoss ? "FINAL BLOOM" : `WAVE ${state.wave + 1}`;
+    ui.announcementTop.textContent = isBoss ? "ONI SIGNAL DETECTED" : "SQUAD, DEPLOY";
+    ui.announcementMain.textContent = isBoss ? "FINAL HUNT" : `WAVE ${state.wave + 1}`;
     ui.announcementThreat.textContent = `${waveThreatCount(state.wave)} HOSTILES DETECTED`;
     ui.waveAnnouncement.classList.add("visible");
     window.setTimeout(() => ui.waveAnnouncement.classList.remove("visible"), isBoss ? 2400 : 1700);
@@ -965,7 +964,7 @@
     if (state.combo > 1 && state.combo % 5 === 0) {
       const chainBonus = Math.min(15, state.combo);
       state.sap += chainBonus;
-      floating(enemy.x, enemy.y - 32, `ROOTCHAIN ${state.combo}×  +${chainBonus}`, "#ffc663");
+      floating(enemy.x, enemy.y - 32, `EXORCISM ${state.combo}×  +${chainBonus}`, "#5ef0ff");
       tone(440 + state.combo * 8, 0.12, "triangle", 0.025, 120);
     }
     const isBoss = enemy.type === "sovereign" || enemy.type === "colossus";
@@ -1211,7 +1210,7 @@
     if (state.wave >= WAVES.length) {
       window.setTimeout(() => endGame(true), 700);
     } else {
-      toast(`WAVE ${state.wave} HELD • +${bonus} SAP`);
+      toast(`WAVE ${state.wave} HELD • +${bonus} ECTO`);
     }
     updateUI();
   }
@@ -1227,7 +1226,7 @@
     ring(1061, 300, "#7ce2bb", 450);
     chord([220, 330, 440, 659]);
     vibrate([20, 25, 45]);
-    toast("OVERGROW • NETWORK SPEED +75%");
+    toast("OVERCHARGE • SQUAD SPEED +75%");
     updateUI();
   }
 
@@ -1236,7 +1235,7 @@
     if (!tower || tower.level >= 5) return;
     const cost = getUpgradeCost(tower);
     if (state.sap < cost) {
-      toast(`NEED ${Math.ceil(cost - state.sap)} MORE SAP • CLEAR ENEMIES OR PRUNE`);
+      toast(`NEED ${Math.ceil(cost - state.sap)} MORE ECTO • BANISH GHOSTS OR SCRAP`);
       tone(120, 0.08, "square", 0.015, -20);
       vibrate([18, 35, 18]);
       return;
@@ -1249,7 +1248,7 @@
     floating(
       tower.x,
       tower.y - 35,
-      `EVOLVED • ${TOWERS[tower.type].evolutions[tower.level - 1].toUpperCase()}`,
+      `UPGRADED • ${TOWERS[tower.type].evolutions[tower.level - 1].toUpperCase()}`,
       TOWERS[tower.type].color,
     );
     chord([330, 415, 554]);
@@ -1265,7 +1264,7 @@
     tower.node.tower = null;
     state.towers = state.towers.filter((candidate) => candidate !== tower);
     burst(tower.x, tower.y, TOWERS[tower.type].color, 13, 85);
-    floating(tower.x, tower.y - 25, `+${value} SAP`, "#c9f76f");
+    floating(tower.x, tower.y - 25, `+${value} ECTO`, "#5ef0ff");
     tone(260, 0.12, "sine", 0.02, -100);
     state.selectedTower = null;
     recalculateLinks();
@@ -1309,19 +1308,19 @@
 
   function drawBackdrop() {
     const gradient = ctx.createLinearGradient(0, 0, W, H);
-    gradient.addColorStop(0, "#0b2119");
-    gradient.addColorStop(0.48, "#153326");
-    gradient.addColorStop(1, "#0a2119");
+    gradient.addColorStop(0, "#0a0618");
+    gradient.addColorStop(0.48, "#140d2e");
+    gradient.addColorStop(1, "#08051a");
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, W, H);
 
     ctx.save();
     ctx.globalCompositeOperation = "screen";
     const aurora = ctx.createLinearGradient(130, 0, 900, H);
-    aurora.addColorStop(0, "rgba(86, 205, 148, 0)");
-    aurora.addColorStop(0.38, `rgba(86, 205, 148, ${state.overgrow > 0 ? 0.16 : 0.07})`);
-    aurora.addColorStop(0.7, "rgba(158, 111, 226, 0.065)");
-    aurora.addColorStop(1, "rgba(158, 111, 226, 0)");
+    aurora.addColorStop(0, "rgba(94, 240, 255, 0)");
+    aurora.addColorStop(0.38, `rgba(94, 240, 255, ${state.overgrow > 0 ? 0.18 : 0.08})`);
+    aurora.addColorStop(0.7, "rgba(255, 94, 200, 0.08)");
+    aurora.addColorStop(1, "rgba(184, 140, 255, 0)");
     ctx.fillStyle = aurora;
     ctx.beginPath();
     ctx.moveTo(80, 0);
@@ -1333,15 +1332,15 @@
     ctx.restore();
 
     const glow = ctx.createRadialGradient(1020, 290, 15, 1020, 290, 330);
-    glow.addColorStop(0, "rgba(186, 240, 128, .11)");
-    glow.addColorStop(1, "rgba(186, 240, 128, 0)");
+    glow.addColorStop(0, "rgba(94, 240, 255, .14)");
+    glow.addColorStop(1, "rgba(94, 240, 255, 0)");
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, W, H);
 
     ctx.save();
     ctx.globalAlpha = 0.72;
     mossPatches.forEach((patch) => {
-      const colors = ["#18372a", "#244331", "#152d27"];
+      const colors = ["#1a1238", "#241a4a", "#15102e"];
       const radial = ctx.createRadialGradient(patch.x, patch.y, 0, patch.x, patch.y, patch.r);
       radial.addColorStop(0, colors[patch.hue]);
       radial.addColorStop(1, "rgba(10,24,19,0)");
@@ -1353,7 +1352,7 @@
     ctx.restore();
 
     ctx.save();
-    ctx.fillStyle = "#c8f4aa";
+    ctx.fillStyle = "#c8f0ff";
     backdropSeeds.forEach((seed) => {
       ctx.globalAlpha = seed.alpha + Math.sin(state.elapsed * 0.35 + seed.x) * 0.025;
       ctx.beginPath();
@@ -1418,7 +1417,7 @@
 
   function drawContourLines() {
     ctx.save();
-    ctx.strokeStyle = "rgba(124, 178, 143, .055)";
+    ctx.strokeStyle = "rgba(140, 120, 220, .055)";
     ctx.lineWidth = 1;
     for (let i = 0; i < 7; i += 1) {
       ctx.beginPath();
@@ -1467,7 +1466,7 @@
       const stemHeight = 8 + bloom.size * 8;
       ctx.save();
       ctx.translate(bloom.x, bloom.y);
-      ctx.strokeStyle = "rgba(93, 172, 118, .42)";
+      ctx.strokeStyle = "rgba(94, 240, 255, .38)";
       ctx.lineWidth = 1.2;
       ctx.beginPath();
       ctx.moveTo(0, 5);
@@ -1477,18 +1476,15 @@
       ctx.rotate(state.elapsed * 0.08 + bloom.phase);
       ctx.fillStyle = bloom.color;
       ctx.shadowColor = bloom.color;
-      ctx.shadowBlur = 8 + Math.sin(state.elapsed * 2 + bloom.phase) * 3;
-      ctx.globalAlpha = 0.58;
-      for (let petal = 0; petal < 4; petal += 1) {
-        ctx.rotate(Math.PI / 2);
-        ctx.beginPath();
-        ctx.ellipse(0, -3.5 * bloom.size, 1.6 * bloom.size, 4.2 * bloom.size, 0, 0, TAU);
-        ctx.fill();
-      }
-      ctx.fillStyle = "#efffc6";
-      ctx.globalAlpha = 0.9;
+      ctx.shadowBlur = 10 + Math.sin(state.elapsed * 2 + bloom.phase) * 4;
+      ctx.globalAlpha = 0.62;
       ctx.beginPath();
-      ctx.arc(0, 0, 1.5 * bloom.size, 0, TAU);
+      ctx.arc(0, 0, 3.5 * bloom.size, 0, TAU);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.globalAlpha = 0.85;
+      ctx.beginPath();
+      ctx.arc(0, 0, 1.2 * bloom.size, 0, TAU);
       ctx.fill();
       ctx.restore();
     });
@@ -1502,7 +1498,7 @@
         ctx.save();
         ctx.translate(x, y);
         ctx.rotate(state.elapsed * 1.3 + i);
-        ctx.fillStyle = i % 3 ? "rgba(129, 220, 154, .24)" : "rgba(201, 247, 111, .28)";
+        ctx.fillStyle = i % 3 ? "rgba(94, 240, 255, .28)" : "rgba(255, 94, 200, .32)";
         ctx.beginPath();
         ctx.ellipse(0, 0, 3, 7, 0.5, 0, TAU);
         ctx.fill();
@@ -1529,33 +1525,19 @@
       [280, 612, 4.3],
       [35, 580, 5.4],
     ];
-    ctx.strokeStyle = "rgba(95, 152, 115, .16)";
-    ctx.fillStyle = "rgba(40, 88, 61, .18)";
+    ctx.strokeStyle = "rgba(120, 100, 200, .2)";
+    ctx.fillStyle = "rgba(30, 18, 58, .35)";
     positions.forEach(([x, y, phase]) => {
-      for (let j = 0; j < 4; j += 1) {
-        const angle = phase + j * 1.35;
-        const length = 26 + j * 7;
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.quadraticCurveTo(
-          x + Math.cos(angle + 0.3) * length * 0.5,
-          y + Math.sin(angle + 0.3) * length * 0.5,
-          x + Math.cos(angle) * length,
-          y + Math.sin(angle) * length,
-        );
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.ellipse(
-          x + Math.cos(angle) * length,
-          y + Math.sin(angle) * length,
-          5,
-          11,
-          angle,
-          0,
-          TAU,
-        );
-        ctx.fill();
+      for (let j = 0; j < 3; j += 1) {
+        const width = 18 + j * 14;
+        const height = 42 + j * 22 + Math.sin(state.elapsed * 0.5 + phase) * 4;
+        ctx.fillRect(x - width / 2, y - height, width, height);
+        ctx.strokeRect(x - width / 2, y - height, width, height);
+        if (j === 0) {
+          ctx.fillStyle = j % 2 ? "rgba(94, 240, 255, .55)" : "rgba(255, 94, 200, .55)";
+          ctx.fillRect(x - 3, y - height - 8, 6, 3);
+          ctx.fillStyle = "rgba(30, 18, 58, .35)";
+        }
       }
     });
     ctx.restore();
@@ -1567,26 +1549,26 @@
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.lineWidth = 68;
-    ctx.strokeStyle = "rgba(2, 9, 8, .65)";
+    ctx.strokeStyle = "rgba(2, 4, 12, .72)";
     ctx.stroke();
 
     roundedPath(path);
     ctx.lineWidth = 56;
-    ctx.strokeStyle = "#17271f";
+    ctx.strokeStyle = "#1a1238";
     ctx.stroke();
 
     roundedPath(path);
     ctx.lineWidth = 48;
     const pathGradient = ctx.createLinearGradient(0, 0, W, 0);
-    pathGradient.addColorStop(0, "#1d3026");
-    pathGradient.addColorStop(0.5, "#23382b");
-    pathGradient.addColorStop(1, "#1d3026");
+    pathGradient.addColorStop(0, "#22183f");
+    pathGradient.addColorStop(0.5, "#2a1f4d");
+    pathGradient.addColorStop(1, "#22183f");
     ctx.strokeStyle = pathGradient;
     ctx.stroke();
 
     roundedPath(path);
     ctx.lineWidth = 1.4;
-    ctx.strokeStyle = "rgba(200, 238, 176, .1)";
+    ctx.strokeStyle = "rgba(180, 160, 255, .12)";
     ctx.setLineDash([2, 15]);
     ctx.lineDashOffset = -state.elapsed * 8;
     ctx.stroke();
@@ -1598,7 +1580,7 @@
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(p.angle + Math.PI / 2);
-      ctx.strokeStyle = "rgba(165, 202, 169, .06)";
+      ctx.strokeStyle = "rgba(140, 120, 220, .08)";
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(-17, 0);
@@ -1608,7 +1590,7 @@
     }
 
     ctx.save();
-    ctx.strokeStyle = state.waveActive ? "rgba(201, 247, 111, .24)" : "rgba(201, 247, 111, .11)";
+    ctx.strokeStyle = state.waveActive ? "rgba(94, 240, 255, .28)" : "rgba(255, 94, 200, .14)";
     ctx.lineWidth = 1.5;
     ctx.lineCap = "round";
     for (let i = 0; i < 11; i += 1) {
@@ -1643,7 +1625,7 @@
         ctx.strokeStyle = rootGradient;
         ctx.globalAlpha = active ? 0.7 : diverse ? 0.28 : 0.11;
         ctx.lineWidth = active ? 3 : diverse ? 1.5 : 1;
-        ctx.shadowColor = "#7ce2bb";
+        ctx.shadowColor = "#5ef0ff";
         ctx.shadowBlur = active ? 12 : 0;
         ctx.setLineDash(diverse ? [] : [3, 7]);
         ctx.beginPath();
@@ -1656,7 +1638,7 @@
           const mx = (1 - t) * (1 - t) * tower.x + 2 * (1 - t) * t * ((tower.x + other.x) / 2 + bend) + t * t * other.x;
           const my = (1 - t) * (1 - t) * tower.y + 2 * (1 - t) * t * ((tower.y + other.y) / 2 - bend) + t * t * other.y;
           ctx.globalAlpha = active ? 1 : 0.75;
-          ctx.fillStyle = "#a9f3cd";
+          ctx.fillStyle = "#b8f0ff";
           ctx.beginPath();
           ctx.arc(mx, my, active ? 3 : 1.7, 0, TAU);
           ctx.fill();
@@ -1676,7 +1658,7 @@
       ctx.save();
       ctx.translate(node.x, node.y);
       ctx.scale(nodeScale, nodeScale);
-      ctx.strokeStyle = hovered ? TOWERS[state.selectedType]?.color || "#c9f76f" : `rgba(156, 213, 166, ${canPlant ? 0.34 : 0.16})`;
+      ctx.strokeStyle = hovered ? TOWERS[state.selectedType]?.color || "#5ef0ff" : `rgba(140, 120, 220, ${canPlant ? 0.38 : 0.18})`;
       ctx.fillStyle = hovered ? "rgba(201, 247, 111, .08)" : "rgba(11, 27, 21, .55)";
       ctx.lineWidth = hovered ? 2 : 1;
       ctx.beginPath();
@@ -1686,7 +1668,7 @@
       ctx.rotate(Math.PI / 4);
       ctx.strokeStyle = `rgba(168, 218, 173, ${hovered ? 0.5 : 0.16})`;
       ctx.strokeRect(-7, -7, 14, 14);
-      ctx.fillStyle = canPlant ? TOWERS[state.selectedType].color : "#5d796a";
+      ctx.fillStyle = canPlant ? TOWERS[state.selectedType].color : "#4a3d6e";
       ctx.globalAlpha = canPlant ? 0.7 : 0.34;
       ctx.beginPath();
       ctx.arc(0, 0, hovered ? 3.2 : 2.2, 0, TAU);
@@ -1751,8 +1733,8 @@
       ctx.stroke();
     }
 
-    ctx.fillStyle = "rgba(3, 11, 9, .94)";
-    ctx.strokeStyle = selected ? data.color : "rgba(164, 205, 174, .28)";
+    ctx.fillStyle = "rgba(3, 4, 14, .94)";
+    ctx.strokeStyle = selected ? data.color : "rgba(140, 120, 220, .32)";
     ctx.lineWidth = selected ? 1.8 : 1;
     ctx.beginPath();
     for (let i = 0; i < 12; i += 1) {
@@ -1835,9 +1817,9 @@
       const orbitRadius = compactRender ? 34 : 27;
       for (let i = 0; i < tower.synergy; i += 1) {
         const angle = state.elapsed * 0.8 + (i / tower.synergy) * TAU + tower.animOffset;
-        ctx.fillStyle = "#aaf2cc";
+        ctx.fillStyle = "#c8f0ff";
         ctx.globalAlpha = 0.82;
-        ctx.shadowColor = "#aaf2cc";
+        ctx.shadowColor = "#c8f0ff";
         ctx.shadowBlur = 8;
         ctx.beginPath();
         ctx.arc(Math.cos(angle) * orbitRadius, Math.sin(angle) * orbitRadius, compactRender ? 2.8 : 2.1, 0, TAU);
@@ -2395,89 +2377,83 @@
 
   function drawWarden() {
     const warden = state.warden;
-    const flap = Math.sin(state.elapsed * 9) * 5;
+    const tailSway = Math.sin(state.elapsed * 6) * 0.15;
     ctx.save();
     ctx.translate(warden.x, warden.y);
     const wardenScale = compactRender ? 1.32 : 1;
     ctx.scale(wardenScale, wardenScale);
 
     const aura = ctx.createRadialGradient(0, 0, 2, 0, 0, 45);
-    aura.addColorStop(0, `rgba(185, 255, 120, ${0.16 + warden.pulse * 0.14})`);
-    aura.addColorStop(1, "rgba(185, 255, 120, 0)");
+    aura.addColorStop(0, `rgba(94, 240, 255, ${0.18 + warden.pulse * 0.16})`);
+    aura.addColorStop(1, "rgba(255, 94, 200, 0)");
     ctx.fillStyle = aura;
     ctx.beginPath();
     ctx.arc(0, 0, 45, 0, TAU);
     ctx.fill();
 
     ctx.rotate(warden.angle);
-    ctx.strokeStyle = "rgba(124, 226, 187, .68)";
-    ctx.lineWidth = 4;
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    ctx.moveTo(-12, 1);
-    ctx.quadraticCurveTo(-26, 7 + flap * 0.25, -35, -1);
-    ctx.quadraticCurveTo(-42, -7, -47, 2);
-    ctx.stroke();
+    for (let tail = 0; tail < 3; tail += 1) {
+      ctx.save();
+      ctx.rotate(tailSway + tail * 0.35 - 0.35);
+      ctx.strokeStyle = `rgba(200, 240, 255, ${0.55 - tail * 0.12})`;
+      ctx.lineWidth = 3 - tail * 0.4;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(-8, 2 + tail);
+      ctx.quadraticCurveTo(-24 - tail * 4, 8, -34 - tail * 6, -2 - tail * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
 
-    ctx.fillStyle = "rgba(116, 216, 157, .52)";
-    ctx.strokeStyle = "rgba(191, 255, 168, .58)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(-4, -3);
-    ctx.quadraticCurveTo(-13, -25 - flap, 6, -31 - flap);
-    ctx.quadraticCurveTo(18, -20, 8, -3);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(-4, 3);
-    ctx.quadraticCurveTo(-13, 25 + flap, 6, 31 + flap);
-    ctx.quadraticCurveTo(18, 20, 8, 3);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = "#63bb83";
-    ctx.strokeStyle = "#c4ff9a";
+    ctx.fillStyle = "rgba(220, 245, 255, .88)";
+    ctx.strokeStyle = "rgba(94, 240, 255, .75)";
     ctx.lineWidth = 1.4;
-    ctx.shadowColor = "#b9ff78";
-    ctx.shadowBlur = 8 + warden.pulse * 10;
+    ctx.shadowColor = "#5ef0ff";
+    ctx.shadowBlur = 10 + warden.pulse * 8;
     ctx.beginPath();
-    ctx.ellipse(0, 0, 18, 7, 0, 0, TAU);
+    ctx.ellipse(0, 0, 16, 11, 0, 0, TAU);
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle = "#83dfa0";
+    ctx.fillStyle = "#ffffff";
     ctx.beginPath();
-    ctx.moveTo(10, -7);
-    ctx.lineTo(23, -5);
-    ctx.quadraticCurveTo(29, 0, 22, 7);
-    ctx.lineTo(9, 5);
+    ctx.moveTo(12, -2);
+    ctx.lineTo(22, 0);
+    ctx.lineTo(12, 4);
     ctx.closePath();
     ctx.fill();
-    ctx.stroke();
 
-    ctx.fillStyle = "#fff3a0";
-    ctx.shadowBlur = 12;
+    ctx.fillStyle = "#0a1020";
     ctx.beginPath();
-    ctx.arc(21, -2, 2, 0, TAU);
+    ctx.arc(6, -2, 2, 0, TAU);
+    ctx.arc(6, 3, 2, 0, TAU);
+    ctx.fill();
+    ctx.fillStyle = "#5ef0ff";
+    ctx.beginPath();
+    ctx.arc(6.5, -2, 0.9, 0, TAU);
+    ctx.arc(6.5, 3, 0.9, 0, TAU);
     ctx.fill();
 
-    ctx.strokeStyle = "#b9ff78";
-    ctx.lineWidth = 1.2;
+    ctx.fillStyle = "rgba(255, 94, 200, .75)";
     ctx.beginPath();
-    ctx.moveTo(16, -5);
-    ctx.lineTo(18, -13);
-    ctx.moveTo(20, -4);
-    ctx.lineTo(25, -10);
-    ctx.stroke();
+    ctx.moveTo(-2, -10);
+    ctx.lineTo(2, -16);
+    ctx.lineTo(6, -10);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(-2, 10);
+    ctx.lineTo(2, 16);
+    ctx.lineTo(6, 10);
+    ctx.closePath();
+    ctx.fill();
     ctx.restore();
 
     ctx.save();
-    ctx.fillStyle = "rgba(201, 247, 111, .72)";
+    ctx.fillStyle = "rgba(200, 240, 255, .78)";
     ctx.textAlign = "center";
     ctx.font = `500 ${compactRender ? 9 : 7}px 'DM Mono', monospace`;
-    ctx.fillText("SYLVA • WARDEN", warden.x, warden.y - (compactRender ? 50 : 39));
+    ctx.fillText("NOVA • DRONE", warden.x, warden.y - (compactRender ? 50 : 39));
     ctx.restore();
   }
 
@@ -2491,14 +2467,14 @@
     ctx.scale(pulse, pulse);
 
     const glow = ctx.createRadialGradient(0, 0, 5, 0, 0, 67);
-    glow.addColorStop(0, state.hearts > 6 ? "rgba(201,247,111,.28)" : "rgba(255,125,113,.32)");
-    glow.addColorStop(1, "rgba(201,247,111,0)");
+    glow.addColorStop(0, state.hearts > 6 ? "rgba(94,240,255,.32)" : "rgba(255,107,138,.36)");
+    glow.addColorStop(1, "rgba(94,240,255,0)");
     ctx.fillStyle = glow;
     ctx.beginPath();
     ctx.arc(0, 0, 67, 0, TAU);
     ctx.fill();
 
-    ctx.strokeStyle = state.hearts > 6 ? "rgba(201,247,111,.32)" : "rgba(255,125,113,.48)";
+    ctx.strokeStyle = state.hearts > 6 ? "rgba(94,240,255,.38)" : "rgba(255,107,138,.52)";
     ctx.lineWidth = 1.3;
     for (let i = 0; i < 4; i += 1) {
       ctx.save();
@@ -2509,8 +2485,8 @@
       ctx.restore();
     }
 
-    ctx.fillStyle = "#101e15";
-    ctx.strokeStyle = state.hearts > 6 ? "#c9f76f" : "#ff7d71";
+    ctx.fillStyle = "#120a24";
+    ctx.strokeStyle = state.hearts > 6 ? "#5ef0ff" : "#ff6b8a";
     ctx.lineWidth = 2;
     ctx.beginPath();
     for (let i = 0; i < 8; i += 1) {
@@ -2525,7 +2501,7 @@
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle = state.hearts > 6 ? "#dfff91" : "#ffaaa3";
+    ctx.fillStyle = state.hearts > 6 ? "#8af8ff" : "#ff9bb0";
     ctx.shadowColor = ctx.fillStyle;
     ctx.shadowBlur = 18;
     ctx.beginPath();
@@ -2534,14 +2510,14 @@
 
     ctx.restore();
 
-    ctx.fillStyle = "rgba(3,10,7,.8)";
+    ctx.fillStyle = "rgba(8,4,18,.82)";
     ctx.fillRect(x - 30, y + 42, 60, 4);
-    ctx.fillStyle = health > 0.3 ? "#c9f76f" : "#ff7d71";
+    ctx.fillStyle = health > 0.3 ? "#5ef0ff" : "#ff6b8a";
     ctx.fillRect(x - 30, y + 42, 60 * health, 4);
-    ctx.fillStyle = "rgba(220, 240, 222, .58)";
+    ctx.fillStyle = "rgba(220, 230, 255, .62)";
     ctx.font = "500 8px 'DM Mono', monospace";
     ctx.textAlign = "center";
-    ctx.fillText("HEARTSEED", x, y + 58);
+    ctx.fillText("REACTOR", x, y + 58);
   }
 
   function drawProjectiles() {
@@ -2773,13 +2749,13 @@
   function drawPause() {
     if (!state.paused || !state.started || state.ended) return;
     ctx.save();
-    ctx.fillStyle = "rgba(2, 8, 6, .52)";
+    ctx.fillStyle = "rgba(6, 4, 16, .58)";
     ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = "#edf8df";
+    ctx.fillStyle = "#f0ecff";
     ctx.textAlign = "center";
-    ctx.font = "700 28px Manrope, sans-serif";
-    ctx.fillText("THE GARDEN WAITS", W / 2, H / 2 - 5);
-    ctx.fillStyle = "#8ca59a";
+    ctx.font = "700 28px 'M PLUS Rounded 1c', sans-serif";
+    ctx.fillText("STANDBY MODE", W / 2, H / 2 - 5);
+    ctx.fillStyle = "#9b94c4";
     ctx.font = "500 11px 'DM Mono', monospace";
     ctx.fillText("PRESS SPACE TO RESUME", W / 2, H / 2 + 18);
     ctx.restore();
@@ -2826,7 +2802,7 @@
       card.setAttribute("aria-pressed", state.selectedType === type ? "true" : "false");
       card.setAttribute(
         "aria-label",
-        `${data.name}, ${data.role}. Costs ${data.cost} sap. ${data.trait}`,
+        `${data.name}, ${data.role}. Costs ${data.cost} ecto. ${data.trait}`,
       );
       card.title = `${data.role} — ${data.trait}`;
     });
@@ -2837,11 +2813,11 @@
     ui.heart.textContent = state.hearts;
     ui.heart.style.color = state.hearts <= 6 ? "#ff7d71" : "";
 
-    if (!state.started) ui.waveLabel.textContent = "GARDEN QUIET";
+    if (!state.started) ui.waveLabel.textContent = "ALL CLEAR";
     else if (state.waveActive) {
       const remaining = state.spawnQueue.length + state.enemies.length;
       ui.waveLabel.textContent = `WAVE ${state.wave + 1} // ${remaining} REMAIN`;
-    } else if (state.wave >= WAVES.length) ui.waveLabel.textContent = "RIFT SEALED";
+    } else if (state.wave >= WAVES.length) ui.waveLabel.textContent = "CITY SECURED";
     else ui.waveLabel.textContent = `WAVE ${state.wave + 1} READY`;
 
     [...ui.wavePips.children].forEach((pip, index) => {
@@ -2892,7 +2868,7 @@
     ui.upgradeBtn.disabled = tower.level >= 5;
     ui.upgradeBtn.classList.toggle("needs-sap", tower.level < 5 && state.sap < upgrade);
     ui.upgradeBtn.title =
-      tower.level >= 5 ? "Maximum evolution reached" : `Evolve into ${data.evolutions[tower.level]}`;
+      tower.level >= 5 ? "Maximum upgrade reached" : `Upgrade to ${data.evolutions[tower.level]}`;
     ui.sellValue.textContent = `${sell} ◈`;
   }
 
@@ -2974,7 +2950,7 @@
     } else if (node && state.selectedType) {
       const data = TOWERS[state.selectedType];
       if (state.sap >= data.cost) createTower(node, state.selectedType);
-      else toast("THE GARDEN NEEDS MORE SAP");
+      else toast("THE SQUAD NEEDS MORE ECTO");
     } else {
       state.selectedTower = null;
       updateSelectionPanel();
@@ -3045,11 +3021,11 @@
   function endGame(won) {
     if (state.ended) return;
     state.ended = true;
-    ui.endEyebrow.textContent = won ? "THE HEARTSEED ENDURES" : "THE ROOTS FALL SILENT";
-    ui.endTitle.textContent = won ? "The rift blooms." : "The garden fades.";
+    ui.endEyebrow.textContent = won ? "THE REACTOR HOLDS" : "THE WARD FALLS";
+    ui.endTitle.textContent = won ? "The ward is clear." : "The ghosts break through.";
     ui.endCopy.textContent = won
-      ? "Your living network held the dark at bay. A new world takes root."
-      : "The rift reached the Heartseed. Grow a more diverse network and return.";
+      ? "Your synced squad held the line. The neon ward breathes again."
+      : "Specters reached the reactor. Build a more diverse loadout and return.";
     ui.endWaves.textContent = state.wave;
     ui.endKills.textContent = state.kills;
     ui.endHarmony.textContent = state.peakHarmony;
@@ -3093,7 +3069,7 @@
     ui.endModal.classList.remove("visible");
     updateSelectionPanel();
     updateUI();
-    toast("A NEW GARDEN STIRS");
+    toast("A NEW HUNT BEGINS");
   }
 
   towerCards.forEach((card) => {
@@ -3111,7 +3087,7 @@
     ui.introModal.classList.remove("visible");
     startMusic();
     chord([220, 330, 440]);
-    toast("CHOOSE A SEED • PLANT ON A GLOWING NODE");
+    toast("CHOOSE GEAR • DEPLOY ON A GLOWING NODE");
     window.setTimeout(() => toast("♫ ADAPTIVE SCORE ONLINE • USE ⚙ TO MIX"), 900);
     updateUI();
   });

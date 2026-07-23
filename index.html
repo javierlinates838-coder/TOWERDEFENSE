@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta
       name="description"
-      content="Rootbound: a living-network tower defense game. Grow a connected garden and protect the last Heartseed."
+      content="Specter Squad: an anime ghost-hunting tower defense. Deploy proton gear, sync your squad, and protect the reactor core."
     />
-    <meta name="theme-color" content="#07110f" />
-    <title>Rootbound — A Living Tower Defense</title>
+    <meta name="theme-color" content="#0a0618" />
+    <title>Specter Squad — Ghost Hunter Defense</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./style.css" />
@@ -23,14 +23,15 @@
 
     <main class="game-shell">
       <header class="topbar">
-        <a class="brand" href="#" aria-label="Rootbound home">
+        <a class="brand" href="#" aria-label="Specter Squad home">
           <svg viewBox="0 0 42 42" aria-hidden="true">
-            <path d="M21 4c8.9 5.1 13.3 10.3 13.3 15.7A13.3 13.3 0 1 1 7.7 19.7C7.7 14.3 12.1 9.1 21 4Z" />
-            <path d="M21 14v20M21 23l7-6M21 27l-6-5" />
+            <path d="M21 6c7.2 0 13 5.8 13 13 0 4.2-2 7.9-5.1 10.2L21 36l-7.9-6.8C10 27 8 23.2 8 19c0-7.2 5.8-13 13-13Z" />
+            <circle cx="21" cy="18" r="5.5" />
+            <path d="M14 30h14M17 33h8" />
           </svg>
-          <span>ROOTBOUND</span>
+          <span>SPECTER SQUAD</span>
         </a>
-        <div class="tagline"><span class="status-dot"></span> THE GARDEN IS A WEAPON</div>
+        <div class="tagline"><span class="status-dot"></span> THE DEAD DON'T REST</div>
         <div class="header-actions">
           <button class="icon-button" id="soundBtn" type="button" aria-label="Toggle sound" title="Toggle sound">
             <svg class="sound-on" viewBox="0 0 24 24" aria-hidden="true">
@@ -43,7 +44,7 @@
               <path d="m19.4 15 .1.1 1 1.8-2.1 2.1-1.8-1a8 8 0 0 1-2.1.9l-.6 2.1h-3.8l-.6-2.1a8 8 0 0 1-2.1-.9l-1.8 1-2.1-2.1 1-1.8a8 8 0 0 1-.9-2.1l-2.1-.6V9.6L3.6 9a8 8 0 0 1 .9-2.1l-1-1.8L5.6 3l1.8 1a8 8 0 0 1 2.1-.9l.6-2.1h3.8l.6 2.1a8 8 0 0 1 2.1.9l1.8-1 2.1 2.1-1 1.8a8 8 0 0 1 .9 2.1l2.1.6v2.8l-2.1.6a8 8 0 0 1-1 2Z" />
             </svg>
           </button>
-          <button class="icon-button" id="codexBtn" type="button" aria-label="Open tower and enemy codex" title="Codex">
+          <button class="icon-button" id="codexBtn" type="button" aria-label="Open gear and ghost codex" title="Codex">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H11v17H6.5A2.5 2.5 0 0 0 4 21.5v-17Zm16 0A2.5 2.5 0 0 0 17.5 2H13v17h4.5a2.5 2.5 0 0 1 2.5 2.5v-17Z" />
             </svg>
@@ -58,15 +59,15 @@
         <div class="hud-group">
           <div class="resource">
             <span class="resource-icon sap-icon"></span>
-            <span><strong id="sapValue">240</strong><small>SAP</small></span>
+            <span><strong id="sapValue">240</strong><small>ECTO</small></span>
           </div>
           <div class="resource">
-            <span class="resource-icon heart-icon">♥</span>
-            <span><strong id="heartValue">20</strong><small>HEARTSEED</small></span>
+            <span class="resource-icon heart-icon">◈</span>
+            <span><strong id="heartValue">20</strong><small>REACTOR</small></span>
           </div>
         </div>
         <div class="wave-status">
-          <span id="waveLabel">GARDEN QUIET</span>
+          <span id="waveLabel">ALL CLEAR</span>
           <div class="wave-pips" id="wavePips" aria-label="Wave progress"></div>
         </div>
         <div class="hud-group hud-controls">
@@ -84,14 +85,14 @@
           id="gameCanvas"
           width="1100"
           height="620"
-          aria-label="Rootbound tower defense battlefield"
+          aria-label="Specter Squad ghost-hunting battlefield"
           role="img"
         ></canvas>
         <div class="canvas-vignette"></div>
 
         <div class="stage-badge">
-          <span>THE VERDANT RIFT</span>
-          <small>BIOME 01 • WARDEN SYLVA ONLINE</small>
+          <span>NEON WARD 07</span>
+          <small>SECTOR 07 • NOVA DRONE ONLINE</small>
         </div>
 
         <div class="threat-preview" id="threatPreview">
@@ -100,18 +101,18 @@
           </div>
           <div>
             <small>NEXT THREAT</small>
-            <strong id="threatText">8 RIFT MITES</strong>
+            <strong id="threatText">8 POLTERGEISTS</strong>
           </div>
         </div>
 
         <div class="wave-announcement" id="waveAnnouncement" aria-live="assertive">
-          <small id="announcementTop">ROOTS, AWAKEN</small>
+          <small id="announcementTop">SQUAD, DEPLOY</small>
           <strong id="announcementMain">WAVE 1</strong>
           <span id="announcementThreat">8 HOSTILES DETECTED</span>
         </div>
 
         <div class="combo-display" id="comboDisplay">
-          <small>ROOTCHAIN</small>
+          <small>EXORCISM CHAIN</small>
           <strong><span id="comboValue">2</span>×</strong>
           <i id="comboMeter"></i>
         </div>
@@ -119,30 +120,30 @@
         <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
         <aside class="selection-panel" id="selectionPanel" aria-live="polite">
-          <button class="panel-close" id="panelClose" type="button" aria-label="Close tower details">×</button>
+          <button class="panel-close" id="panelClose" type="button" aria-label="Close gear details">×</button>
           <div class="tower-orb" id="selectedOrb"></div>
           <div class="tower-copy">
-            <small id="selectedType">SUN</small>
-            <h2 id="selectedName">Sunspire</h2>
-            <span class="evolution-name" id="selectedEvolution">Helios Seed</span>
-            <p id="selectedStats">Rapid light striker</p>
+            <small id="selectedType">BLASTER</small>
+            <h2 id="selectedName">Photon Cell</h2>
+            <span class="evolution-name" id="selectedEvolution">Mk I Blaster</span>
+            <p id="selectedStats">Rapid photon striker</p>
           </div>
           <div class="tower-stat-grid">
             <div><small>DAMAGE</small><strong id="statDamage">12</strong></div>
             <div><small>RANGE</small><strong id="statRange">145</strong></div>
             <div><small>RATE</small><strong id="statRate">2.4/s</strong></div>
           </div>
-          <p class="tower-trait" id="selectedTrait">Precise solar bolts excel against fast single targets.</p>
+          <p class="tower-trait" id="selectedTrait">Precise photon bolts excel against fast single targets.</p>
           <div class="synergy-meter">
-            <div class="synergy-label"><span>BIODIVERSITY</span><strong id="synergyValue">+0%</strong></div>
+            <div class="synergy-label"><span>SQUAD SYNC</span><strong id="synergyValue">+0%</strong></div>
             <div class="meter-track"><span id="synergyFill"></span></div>
           </div>
           <div class="panel-actions">
             <button id="upgradeBtn" type="button">
-              <span>EVOLVE</span><strong id="upgradeCost">80 ◈</strong>
+              <span>UPGRADE</span><strong id="upgradeCost">80 ◈</strong>
             </button>
             <button class="sell-button" id="sellBtn" type="button">
-              <span>PRUNE</span><strong id="sellValue">32 ◈</strong>
+              <span>SCRAP</span><strong id="sellValue">32 ◈</strong>
             </button>
           </div>
         </aside>
@@ -151,56 +152,56 @@
 
         <div class="modal-backdrop visible" id="introModal">
           <div class="modal intro-card">
-            <div class="eyebrow"><span></span> A LIVING TOWER DEFENSE</div>
-            <h1>Grow together.<br /><em>Survive together.</em></h1>
+            <div class="eyebrow"><span></span> ANIME GHOST HUNTER DEFENSE</div>
+            <h1>Deploy the squad.<br /><em>Banish the dead.</em></h1>
             <p>
-              The last Heartseed drifts above a dying world. Grow defensive flora, connect their roots,
-              and turn biodiversity into power.
+              A reactor core hums above a haunted neon ward. Drop proton gear, link your squad's energy
+              fields, and turn teamwork into firepower.
             </p>
             <div class="rule-grid">
-              <div><kbd>1–6</kbd><span>Choose a seed</span></div>
-              <div><kbd>CLICK</kbd><span>Plant on a node</span></div>
-              <div><span class="rule-link"></span><span>Mix species to amplify</span></div>
+              <div><kbd>1–6</kbd><span>Choose gear</span></div>
+              <div><kbd>CLICK</kbd><span>Deploy on a node</span></div>
+              <div><span class="rule-link"></span><span>Mix gear types to amplify</span></div>
             </div>
             <button class="primary-button" id="startBtn" type="button">
-              <span>ENTER THE RIFT</span>
+              <span>ENTER THE WARD</span>
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
             </button>
-            <small class="modal-footnote">♫ Adaptive soundtrack enabled • Headphones recommended</small>
+            <small class="modal-footnote">♫ Adaptive synthwave score • Headphones recommended</small>
           </div>
         </div>
 
         <div class="modal-backdrop" id="helpModal">
           <div class="modal help-card">
             <button class="modal-close" id="helpClose" type="button" aria-label="Close instructions">×</button>
-            <div class="eyebrow"><span></span> FIELD GUIDE</div>
-            <h2>The roots remember.</h2>
+            <div class="eyebrow"><span></span> FIELD MANUAL</div>
+            <h2>The squad never sleeps.</h2>
             <ol>
-              <li><strong>Plant.</strong> Choose one of six seeds, then click a glowing garden node.</li>
-              <li><strong>Connect.</strong> Nearby plants link roots automatically.</li>
-              <li><strong>Diversify.</strong> Each different linked species grants +12% attack speed.</li>
-              <li><strong>Overgrow.</strong> Charge the Heartseed, then awaken every root link at once.</li>
-              <li><strong>Chain.</strong> Defeat enemies rapidly to earn Rootchain bonus sap.</li>
-              <li><strong>Sylva.</strong> Your dragon warden patrols the Heartseed and attacks automatically.</li>
-              <li><strong>Study.</strong> Open the Codex or press C to compare every tower and enemy.</li>
+              <li><strong>Deploy.</strong> Choose one of six gear types, then click a glowing node.</li>
+              <li><strong>Link.</strong> Nearby gear connects energy tethers automatically.</li>
+              <li><strong>Sync.</strong> Each different linked gear type grants +12% attack speed.</li>
+              <li><strong>Overcharge.</strong> Charge the reactor, then supercharge every tether at once.</li>
+              <li><strong>Chain.</strong> Banish ghosts rapidly to earn Exorcism Chain bonus ecto.</li>
+              <li><strong>Nova.</strong> Your spirit-fox drone patrols the reactor and attacks automatically.</li>
+              <li><strong>Study.</strong> Open the Codex or press C to compare every gear type and ghost.</li>
             </ol>
-            <button class="primary-button" id="helpDone" type="button">BACK TO THE GARDEN</button>
+            <button class="primary-button" id="helpDone" type="button">BACK TO THE WARD</button>
           </div>
         </div>
 
         <div class="modal-backdrop" id="codexModal">
           <div class="modal codex-card">
             <button class="modal-close" id="codexClose" type="button" aria-label="Close codex">×</button>
-            <div class="eyebrow"><span></span> LIVING ARCHIVE</div>
-            <h2>Field Codex</h2>
-            <p>Know every seed. Read every threat. Build the right ecosystem.</p>
+            <div class="eyebrow"><span></span> SQUAD ARCHIVE</div>
+            <h2>Ghost Files</h2>
+            <p>Know every weapon. Read every threat. Build the perfect exorcism loadout.</p>
             <div class="codex-tabs" role="tablist" aria-label="Codex sections">
               <button class="active" data-codex-tab="arsenal" role="tab" aria-selected="true" type="button">ARSENAL</button>
-              <button data-codex-tab="invaders" role="tab" aria-selected="false" type="button">INVADERS</button>
+              <button data-codex-tab="invaders" role="tab" aria-selected="false" type="button">SPECTERS</button>
             </div>
             <div class="codex-panel active" id="codexArsenal" data-codex-panel="arsenal" role="tabpanel"></div>
             <div class="codex-panel" id="codexInvaders" data-codex-panel="invaders" role="tabpanel"></div>
-            <small class="codex-tip">Press C anytime • Towers gain +12% speed per different linked species</small>
+            <small class="codex-tip">Press C anytime • Gear gains +12% speed per different linked type</small>
           </div>
         </div>
 
@@ -212,12 +213,12 @@
             <p>Shape the atmosphere for your device. Your choices are saved automatically.</p>
             <div class="settings-list">
               <label class="setting-row" for="musicVolume">
-                <span><strong>MUSIC</strong><small>Adaptive living soundtrack</small></span>
+                <span><strong>MUSIC</strong><small>Adaptive synthwave soundtrack</small></span>
                 <input id="musicVolume" type="range" min="0" max="100" value="58" />
                 <output id="musicValue">58%</output>
               </label>
               <label class="setting-row" for="sfxVolume">
-                <span><strong>EFFECTS</strong><small>Towers, creatures, and impacts</small></span>
+                <span><strong>EFFECTS</strong><small>Blasters, specters, and impacts</small></span>
                 <input id="sfxVolume" type="range" min="0" max="100" value="78" />
                 <output id="sfxValue">78%</output>
               </label>
@@ -238,67 +239,67 @@
         <div class="modal-backdrop" id="endModal">
           <div class="modal end-card">
             <div class="end-sigil" id="endSigil">✦</div>
-            <div class="eyebrow"><span></span><b id="endEyebrow">THE HEARTSEED ENDURES</b></div>
-            <h2 id="endTitle">The rift blooms.</h2>
-            <p id="endCopy">Your living network held the dark at bay.</p>
+            <div class="eyebrow"><span></span><b id="endEyebrow">THE REACTOR HOLDS</b></div>
+            <h2 id="endTitle">The ward is clear.</h2>
+            <p id="endCopy">Your squad held the line against the dead.</p>
             <div class="end-stats">
               <div><strong id="endWaves">15</strong><small>WAVES</small></div>
-              <div><strong id="endKills">0</strong><small>INVADERS</small></div>
-              <div><strong id="endHarmony">0</strong><small>PEAK HARMONY</small></div>
+              <div><strong id="endKills">0</strong><small>BANISHED</small></div>
+              <div><strong id="endHarmony">0</strong><small>PEAK SYNC</small></div>
               <div><strong id="endCombo">0×</strong><small>BEST CHAIN</small></div>
             </div>
-            <button class="primary-button" id="restartBtn" type="button">GROW AGAIN</button>
+            <button class="primary-button" id="restartBtn" type="button">HUNT AGAIN</button>
           </div>
         </div>
       </section>
 
-      <section class="command-deck" aria-label="Tower selection and wave controls">
+      <section class="command-deck" aria-label="Gear selection and wave controls">
         <div class="seed-bank">
           <div class="deck-title">
-            <span>SEED BANK</span>
-            <small>LINK DIFFERENT SPECIES</small>
+            <span>GEAR RACK</span>
+            <small>LINK DIFFERENT GEAR TYPES</small>
           </div>
           <div class="tower-cards">
             <button class="tower-card sun-card" data-tower="sun" type="button">
               <kbd>1</kbd><span class="seed-preview"><i></i></span>
-              <span class="card-copy"><strong>Sunspire</strong><small>Rapid light</small></span>
+              <span class="card-copy"><strong>Photon Cell</strong><small>Rapid photon</small></span>
               <span class="cost">65 <i>◈</i></span>
             </button>
             <button class="tower-card dew-card" data-tower="dew" type="button">
               <kbd>2</kbd><span class="seed-preview"><i></i></span>
-              <span class="card-copy"><strong>Dewbell</strong><small>Slows swarm</small></span>
+              <span class="card-copy"><strong>Spirit Seal</strong><small>Freezes swarms</small></span>
               <span class="cost">85 <i>◈</i></span>
             </button>
             <button class="tower-card thorn-card" data-tower="thorn" type="button">
               <kbd>3</kbd><span class="seed-preview"><i></i></span>
-              <span class="card-copy"><strong>Thornmaw</strong><small>Heavy burst</small></span>
+              <span class="card-copy"><strong>Proton Lance</strong><small>Heavy burst</small></span>
               <span class="cost">110 <i>◈</i></span>
             </button>
             <button class="tower-card prism-card" data-tower="prism" type="button">
               <kbd>4</kbd><span class="seed-preview"><i></i></span>
-              <span class="card-copy"><strong>Prismbloom</strong><small>Chain spark</small></span>
+              <span class="card-copy"><strong>Arc Conduit</strong><small>Chain spark</small></span>
               <span class="cost">135 <i>◈</i></span>
             </button>
             <button class="tower-card ember-card" data-tower="ember" type="button">
               <kbd>5</kbd><span class="seed-preview"><i></i></span>
-              <span class="card-copy"><strong>Emberpod</strong><small>Burning splash</small></span>
+              <span class="card-copy"><strong>Holy Ember</strong><small>Burning splash</small></span>
               <span class="cost">100 <i>◈</i></span>
             </button>
             <button class="tower-card gale-card" data-tower="gale" type="button">
               <kbd>6</kbd><span class="seed-preview"><i></i></span>
-              <span class="card-copy"><strong>Galefern</strong><small>Pushes swarms</small></span>
+              <span class="card-copy"><strong>Vacuum Pulse</strong><small>Pushes swarms</small></span>
               <span class="cost">145 <i>◈</i></span>
             </button>
           </div>
         </div>
 
         <div class="deck-actions">
-          <button class="ability-button" id="abilityBtn" type="button" aria-label="Activate overgrow ability">
+          <button class="ability-button" id="abilityBtn" type="button" aria-label="Activate overcharge ability">
             <svg viewBox="0 0 50 50" aria-hidden="true">
               <circle cx="25" cy="25" r="21" />
               <path d="M25 36V16m0 10 9-8m-9 13-8-7m8-8c-5-4-9-3-11 1 5 3 8 2 11-1Zm0 0c5-4 9-3 11 1-5 3-8 2-11-1Z" />
             </svg>
-            <span><strong>OVERGROW</strong><small id="abilityStatus">READY • R</small></span>
+            <span><strong>OVERCHARGE</strong><small id="abilityStatus">READY • R</small></span>
             <i class="ability-charge" id="abilityCharge"></i>
           </button>
           <button class="wave-button" id="waveBtn" type="button">
@@ -309,9 +310,9 @@
       </section>
 
       <footer>
-        <span>ROOTBOUND // VERDANT RIFT EDITION</span>
-        <span class="footer-lore">“A single root breaks. A garden holds.”</span>
-        <span>♫ ADAPTIVE SCORE&nbsp;&nbsp; • &nbsp;&nbsp;SPACE: PAUSE&nbsp;&nbsp; • &nbsp;&nbsp;F: SPEED&nbsp;&nbsp; • &nbsp;&nbsp;R: OVERGROW</span>
+        <span>SPECTER SQUAD // NEON WARD EDITION</span>
+        <span class="footer-lore">“One blaster fails. A synced squad never does.”</span>
+        <span>♫ ADAPTIVE SCORE&nbsp;&nbsp; • &nbsp;&nbsp;SPACE: PAUSE&nbsp;&nbsp; • &nbsp;&nbsp;F: SPEED&nbsp;&nbsp; • &nbsp;&nbsp;R: OVERCHARGE</span>
       </footer>
     </main>
     <script src="./game.js"></script>
