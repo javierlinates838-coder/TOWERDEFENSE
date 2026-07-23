@@ -193,90 +193,90 @@
 
   const ENEMIES = {
     mite: {
-      name: "Poltergeist",
-      color: "#ffb86b",
+      name: "Yurei Kid",
+      color: "#ffe08a",
       role: "SCOUT",
-      glyph: "•",
-      trait: "Fragile but fast. Dangerous when ignored in large packs.",
+      glyph: "👻",
+      trait: "A hyperactive chibi ghost swarm. Fast, fragile, and annoying in packs.",
       hp: 42,
       speed: 78,
-      radius: 9,
+      radius: 10,
       bounty: 7,
       damage: 1,
     },
     wisp: {
-      name: "Restless spirit",
-      color: "#8bd4ff",
+      name: "Banshee Idol",
+      color: "#8ec8ff",
       role: "DRIFTER",
-      glyph: "◌",
-      trait: "Balanced spectral infantry with no singular weakness.",
+      glyph: "♪",
+      trait: "A melodic phantom idol drifting through the ward. Balanced stats, no weak point.",
       hp: 82,
       speed: 57,
-      radius: 11,
+      radius: 12,
       bounty: 10,
       damage: 1,
     },
     brute: {
-      name: "Onryo brute",
-      color: "#ff7d9a",
+      name: "Crimson Ronin",
+      color: "#ff5a6e",
       role: "ARMORED",
-      glyph: "◆",
-      trait: "Heavy cursed plating reduces incoming direct damage.",
+      glyph: "刀",
+      trait: "A cursed samurai in lacquered armor. Heavy plating shrugs off direct hits.",
       hp: 225,
       speed: 35,
-      radius: 16,
+      radius: 17,
       bounty: 19,
       damage: 3,
       armor: 0.22,
     },
     spore: {
-      name: "Cursed echo",
-      color: "#d4b8ff",
+      name: "Miko Wraith",
+      color: "#f2a8ff",
       role: "REGENERATOR",
-      glyph: "♧",
-      trait: "Regrows health continuously. Burn damage shuts down its advantage.",
+      glyph: "札",
+      trait: "A shrine maiden spirit weaving healing talismans. Burn shuts her down.",
       hp: 120,
       speed: 49,
-      radius: 13,
+      radius: 14,
       bounty: 15,
       damage: 2,
       regen: 2.2,
     },
     sovereign: {
-      name: "Phantom lord",
-      color: "#f38cff",
+      name: "Void Emperor",
+      color: "#d66bff",
       role: "BOSS",
-      glyph: "✹",
-      trait: "Armored command specter with massive health and devastating reactor damage.",
+      glyph: "皇",
+      trait: "An anime dark lord in a flowing coat. Armored, arrogant, and lethal to the reactor.",
       hp: 1250,
       speed: 26,
-      radius: 25,
+      radius: 26,
       bounty: 120,
       damage: 8,
       armor: 0.16,
     },
     shade: {
-      name: "Void shade",
-      color: "#7fa5ff",
+      name: "Shadow Shinobi",
+      color: "#6f8cff",
       role: "ASSASSIN",
-      glyph: "◈",
-      trait: "Extremely fast and lightly armored. Slow effects are essential.",
+      glyph: "忍",
+      trait: "A scarf-wrapped ninja blur. Extremely fast — slow traps are mandatory.",
       hp: 190,
       speed: 82,
-      radius: 12,
+      radius: 13,
       bounty: 23,
       damage: 2,
       armor: 0.1,
     },
     colossus: {
-      name: "Elder oni",
-      color: "#ff6fb7",
+      name: "Oni Shogun",
+      color: "#ff4f9a",
       role: "FINAL BOSS",
-      glyph: "⬢",
-      trait: "Regenerating fortress specter with armor, knockback resistance, and catastrophic damage.",
+      glyph: "鬼",
+      trait: "A towering oni warlord with regen and armor. The ultimate anime raid boss.",
       hp: 2850,
       speed: 19,
-      radius: 31,
+      radius: 32,
       bounty: 240,
       damage: 12,
       armor: 0.25,
@@ -348,13 +348,13 @@
   }
 
   const ENEMY_PLURALS = {
-    mite: "POLTERGEISTS",
-    wisp: "RESTLESS SPIRITS",
-    brute: "ONRYO BRUTES",
-    spore: "CURSED ECHOES",
-    sovereign: "PHANTOM LORD",
-    shade: "VOID SHADES",
-    colossus: "ELDER ONI",
+    mite: "YUREI KIDS",
+    wisp: "BANSHEE IDOLS",
+    brute: "CRIMSON RONIN",
+    spore: "MIKO WRAITHS",
+    sovereign: "VOID EMPEROR",
+    shade: "SHADOW SHINOBI",
+    colossus: "ONI SHOGUN",
   };
 
   const path = [
@@ -794,7 +794,7 @@
     updateUI();
     announceWave();
     const meta = waveMeta(state.currentComposition);
-    const bossName = meta.colossus ? "ELDER ONI" : meta.sovereign ? "PHANTOM LORD" : null;
+    const bossName = meta.colossus ? "ONI SHOGUN" : meta.sovereign ? "VOID EMPEROR" : null;
     toast(bossName ? `⚠ ${bossName} APPROACHES` : `WAVE ${state.wave + 1} • SQUAD, DEPLOY`);
     tone(196, 0.22, "triangle", 0.035, 96);
   }
@@ -815,7 +815,7 @@
     ui.announcementTop.textContent = meta.colossus
       ? "ONI SIGNAL DETECTED"
       : meta.sovereign
-        ? "PHANTOM LORD INBOUND"
+        ? "VOID EMPEROR INBOUND"
         : "SQUAD, DEPLOY";
     ui.announcementMain.textContent = meta.colossus ? `WAVE ${state.wave + 1} • ONI HUNT` : `WAVE ${state.wave + 1}`;
     ui.announcementThreat.textContent = `${meta.total} HOSTILES DETECTED`;
@@ -1310,9 +1310,9 @@
     } else if (cleared % 5 === 0) {
       toast(`MILESTONE WAVE ${cleared} • +${bonus} ECTO`);
     } else if (meta.colossus) {
-      toast(`ONI BANISHED • WAVE ${cleared} • +${bonus} ECTO`);
+      toast(`ONI SHOGUN BANISHED • WAVE ${cleared} • +${bonus} ECTO`);
     } else if (meta.sovereign) {
-      toast(`LORD BANISHED • WAVE ${cleared} • +${bonus} ECTO`);
+      toast(`VOID EMPEROR BANISHED • WAVE ${cleared} • +${bonus} ECTO`);
     } else {
       toast(`WAVE ${cleared} HELD • +${bonus} ECTO`);
     }
@@ -1827,23 +1827,13 @@
     ctx.arc(0, 0, 36 + tower.pulse * 9, 0, TAU);
     ctx.fill();
 
-    ctx.strokeStyle = `${data.color}3d`;
-    ctx.lineWidth = 1.4;
-    for (let i = 0; i < 6; i += 1) {
-      const angle = (i / 6) * TAU + tower.animOffset;
-      ctx.beginPath();
-      ctx.moveTo(Math.cos(angle) * 12, Math.sin(angle) * 12);
-      ctx.quadraticCurveTo(Math.cos(angle + 0.25) * 23, Math.sin(angle + 0.25) * 23, Math.cos(angle) * 31, Math.sin(angle) * 31);
-      ctx.stroke();
-    }
-
-    ctx.fillStyle = "rgba(3, 4, 14, .94)";
-    ctx.strokeStyle = selected ? data.color : "rgba(140, 120, 220, .32)";
-    ctx.lineWidth = selected ? 1.8 : 1;
+    ctx.fillStyle = "#1a1030";
+    ctx.strokeStyle = selected ? data.color : "rgba(180, 140, 255, .45)";
+    ctx.lineWidth = selected ? 2.4 : 2;
     ctx.beginPath();
-    for (let i = 0; i < 12; i += 1) {
-      const angle = (i / 12) * TAU - Math.PI / 2;
-      const radius = i % 2 ? 20 : 23;
+    for (let i = 0; i < 6; i += 1) {
+      const angle = (i / 6) * TAU - Math.PI / 2;
+      const radius = 21;
       const x = Math.cos(angle) * radius;
       const y = Math.sin(angle) * radius;
       if (i === 0) ctx.moveTo(x, y);
@@ -1853,11 +1843,13 @@
     ctx.fill();
     ctx.stroke();
 
-    ctx.strokeStyle = `${data.color}52`;
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = `${data.color}66`;
+    ctx.lineWidth = 1.2;
+    ctx.setLineDash([4, 5]);
     ctx.beginPath();
-    ctx.arc(0, 0, 16, 0, TAU);
+    ctx.arc(0, 0, 14, 0, TAU);
     ctx.stroke();
+    ctx.setLineDash([]);
 
     const reloadProgress = Math.max(0, Math.min(1, 1 - Math.max(0, tower.cooldown) * stats.rate));
     ctx.strokeStyle = data.color;
@@ -2338,113 +2330,357 @@
     }
   }
 
+  const ANIME_INK = "#12081f";
+
+  function animeOutline(width = 2.2) {
+    ctx.lineWidth = width;
+    ctx.strokeStyle = ANIME_INK;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+  }
+
+  function drawAnimeEye(x, y, size, iris, pupil = "#12081f") {
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.ellipse(x, y, size * 1.15, size, 0, 0, TAU);
+    ctx.fill();
+    animeOutline(1.4);
+    ctx.stroke();
+    ctx.fillStyle = iris;
+    ctx.beginPath();
+    ctx.arc(x, y + size * 0.12, size * 0.62, 0, TAU);
+    ctx.fill();
+    ctx.fillStyle = pupil;
+    ctx.beginPath();
+    ctx.arc(x + size * 0.12, y + size * 0.18, size * 0.34, 0, TAU);
+    ctx.fill();
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(x - size * 0.22, y - size * 0.08, size * 0.16, 0, TAU);
+    ctx.fill();
+  }
+
+  function drawAnimeHairSpikes(baseColor, highlight, count, radius, length) {
+    for (let i = 0; i < count; i += 1) {
+      const angle = -Math.PI * 0.75 + (i / (count - 1)) * Math.PI * 1.5;
+      ctx.fillStyle = i % 2 ? highlight : baseColor;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(angle) * radius * 0.4, Math.sin(angle) * radius * 0.4 - 2);
+      ctx.quadraticCurveTo(
+        Math.cos(angle) * (radius + length * 0.5),
+        Math.sin(angle) * (radius + length * 0.5) - 4,
+        Math.cos(angle) * (radius + length),
+        Math.sin(angle) * (radius + length) - 1,
+      );
+      ctx.lineTo(Math.cos(angle + 0.18) * radius * 0.5, Math.sin(angle + 0.18) * radius * 0.5);
+      ctx.closePath();
+      ctx.fill();
+      animeOutline(1.2);
+      ctx.stroke();
+    }
+  }
+
+  function drawAnimeAura(color, radius, alpha = 0.22) {
+    const pulse = 1 + Math.sin(state.elapsed * 3.2) * 0.06;
+    const glow = ctx.createRadialGradient(0, 0, 2, 0, 0, radius * pulse);
+    glow.addColorStop(0, `${color}${Math.round(alpha * 255).toString(16).padStart(2, "0")}`);
+    glow.addColorStop(1, `${color}00`);
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(0, 0, radius * pulse, 0, TAU);
+    ctx.fill();
+  }
+
+  function drawYureiKid(enemy) {
+    const bob = Math.sin(state.elapsed * 8 + enemy.phase) * 2;
+    ctx.translate(0, bob);
+    drawAnimeAura("#fff6b0", 18, 0.18);
+    ctx.fillStyle = "#f8f4ff";
+    ctx.beginPath();
+    ctx.ellipse(0, 2, 9, 11, 0, 0, TAU);
+    ctx.fill();
+    animeOutline();
+    ctx.stroke();
+    ctx.fillStyle = "#e8e2ff";
+    ctx.beginPath();
+    ctx.moveTo(-9, 4);
+    ctx.quadraticCurveTo(0, 18, 9, 4);
+    ctx.fill();
+    animeOutline(1.6);
+    ctx.stroke();
+    drawAnimeEye(-3.5, -1, 2.8, "#7ec8ff");
+    drawAnimeEye(3.5, -1, 2.8, "#7ec8ff");
+    ctx.fillStyle = ANIME_INK;
+    ctx.beginPath();
+    ctx.arc(0, 3.5, 1.2, 0, TAU);
+    ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,.55)";
+    ctx.beginPath();
+    ctx.ellipse(-7, 0, 2.2, 3.5, -0.4, 0, TAU);
+    ctx.ellipse(7, 0, 2.2, 3.5, 0.4, 0, TAU);
+    ctx.fill();
+  }
+
+  function drawBansheeIdol(enemy) {
+    const sway = Math.sin(state.elapsed * 5 + enemy.phase) * 0.08;
+    ctx.rotate(sway);
+    drawAnimeAura("#8ec8ff", 20, 0.16);
+    drawAnimeHairSpikes("#6ec6ff", "#b8e8ff", 5, 8, 10);
+    ctx.fillStyle = "#ffe3f1";
+    ctx.beginPath();
+    ctx.arc(0, 0, 8, 0, TAU);
+    ctx.fill();
+    animeOutline();
+    ctx.stroke();
+    drawAnimeEye(-3, -1, 2.6, "#ff7eb8");
+    drawAnimeEye(3, -1, 2.6, "#ff7eb8");
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.moveTo(-8, 3);
+    ctx.lineTo(8, 3);
+    ctx.lineTo(6, 12);
+    ctx.lineTo(-6, 12);
+    ctx.closePath();
+    ctx.fill();
+    animeOutline(1.5);
+    ctx.stroke();
+    ctx.fillStyle = "#ff8ec8";
+    ctx.fillRect(-8, 3, 16, 2.5);
+    ctx.fillStyle = "rgba(180,230,255,.45)";
+    ctx.beginPath();
+    ctx.moveTo(0, 12);
+    ctx.quadraticCurveTo(-4, 18, 0, 22);
+    ctx.quadraticCurveTo(4, 18, 0, 12);
+    ctx.fill();
+  }
+
+  function drawCrimsonRonin() {
+    drawAnimeAura("#ff5a6e", 24, 0.14);
+    ctx.fillStyle = "#3a1520";
+    ctx.beginPath();
+    ctx.ellipse(0, 3, 14, 10, 0, 0, TAU);
+    ctx.fill();
+    animeOutline(2.6);
+    ctx.stroke();
+    ctx.fillStyle = "#8c1f2f";
+    ctx.beginPath();
+    ctx.moveTo(-12, -2);
+    ctx.lineTo(0, -14);
+    ctx.lineTo(12, -2);
+    ctx.lineTo(8, 2);
+    ctx.lineTo(-8, 2);
+    ctx.closePath();
+    ctx.fill();
+    animeOutline(2);
+    ctx.stroke();
+    ctx.fillStyle = "#ff334d";
+    ctx.beginPath();
+    ctx.arc(-4, -1, 2.2, 0, TAU);
+    ctx.arc(4, -1, 2.2, 0, TAU);
+    ctx.fill();
+    ctx.fillStyle = "#ffd0d0";
+    ctx.fillRect(-10, 4, 20, 5);
+    animeOutline(1.5);
+    ctx.strokeRect(-10, 4, 20, 5);
+    ctx.strokeStyle = "#ff8a98";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(10, 2);
+    ctx.lineTo(22, 0);
+    ctx.stroke();
+  }
+
+  function drawMikoWraith(enemy) {
+    const float = Math.sin(state.elapsed * 4 + enemy.phase) * 1.5;
+    ctx.translate(0, float);
+    drawAnimeAura("#f2a8ff", 22, 0.15);
+    ctx.fillStyle = "#fff5ff";
+    ctx.beginPath();
+    ctx.arc(0, 0, 8, 0, TAU);
+    ctx.fill();
+    animeOutline();
+    ctx.stroke();
+    ctx.fillStyle = "#ff8ab8";
+    ctx.beginPath();
+    ctx.arc(-7, -2, 3.5, 0, TAU);
+    ctx.arc(7, -2, 3.5, 0, TAU);
+    ctx.fill();
+    animeOutline(1.2);
+    ctx.stroke();
+    drawAnimeEye(-3, -0.5, 2.4, "#c76bff");
+    drawAnimeEye(3, -0.5, 2.4, "#c76bff");
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.moveTo(-9, 4);
+    ctx.lineTo(9, 4);
+    ctx.lineTo(7, 14);
+    ctx.lineTo(-7, 14);
+    ctx.closePath();
+    ctx.fill();
+    animeOutline(1.5);
+    ctx.stroke();
+    ctx.fillStyle = "#ff3d6a";
+    ctx.fillRect(-1.5, 5, 3, 9);
+    ctx.fillStyle = "#fff8b0";
+    ctx.fillRect(-5, 7, 10, 5);
+    animeOutline(1);
+    ctx.strokeRect(-5, 7, 10, 5);
+    ctx.fillStyle = "#ff2244";
+    for (let i = 0; i < 3; i += 1) {
+      ctx.fillRect(-4 + i * 4, 8.5, 1.5, 2);
+    }
+  }
+
+  function drawShadowShinobi(enemy) {
+    const dash = Math.sin(state.elapsed * 14 + enemy.phase) * 2;
+    ctx.translate(dash, 0);
+    drawAnimeAura("#6f8cff", 20, 0.12);
+    ctx.fillStyle = "#23204a";
+    ctx.beginPath();
+    ctx.ellipse(0, 1, 9, 11, 0, 0, TAU);
+    ctx.fill();
+    animeOutline();
+    ctx.stroke();
+    ctx.fillStyle = "#15122e";
+    ctx.beginPath();
+    ctx.moveTo(-8, -4);
+    ctx.lineTo(8, -4);
+    ctx.lineTo(6, 5);
+    ctx.lineTo(-6, 5);
+    ctx.closePath();
+    ctx.fill();
+    drawAnimeEye(-3, -1, 2.2, "#8af0ff");
+    drawAnimeEye(3, -1, 2.2, "#8af0ff");
+    ctx.strokeStyle = "#9eb4ff";
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(-12, 4);
+    ctx.quadraticCurveTo(-24 - Math.sin(state.elapsed * 10) * 3, 0, -30, -6);
+    ctx.stroke();
+    ctx.strokeStyle = ANIME_INK;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(8, 2);
+    ctx.lineTo(16, 4);
+    ctx.stroke();
+  }
+
+  function drawVoidEmperor() {
+    drawAnimeAura("#d66bff", 38, 0.24);
+    ctx.fillStyle = "#2a1248";
+    ctx.beginPath();
+    ctx.moveTo(-18, 8);
+    ctx.lineTo(-22, -6);
+    ctx.lineTo(0, -20);
+    ctx.lineTo(22, -6);
+    ctx.lineTo(18, 8);
+    ctx.closePath();
+    ctx.fill();
+    animeOutline(2.8);
+    ctx.stroke();
+    drawAnimeHairSpikes("#6b2cff", "#c08cff", 7, 10, 16);
+    ctx.fillStyle = "#f0d8ff";
+    ctx.beginPath();
+    ctx.arc(0, -2, 10, 0, TAU);
+    ctx.fill();
+    animeOutline(2);
+    ctx.stroke();
+    drawAnimeEye(-4, -3, 3.2, "#b44fff");
+    drawAnimeEye(4, -3, 3.2, "#b44fff");
+    ctx.fillStyle = "#ffd76a";
+    ctx.beginPath();
+    ctx.moveTo(-6, -14);
+    ctx.lineTo(0, -20);
+    ctx.lineTo(6, -14);
+    ctx.lineTo(0, -10);
+    ctx.closePath();
+    ctx.fill();
+    animeOutline(1.2);
+    ctx.stroke();
+    ctx.fillStyle = "rgba(120,60,200,.35)";
+    ctx.beginPath();
+    ctx.moveTo(-24, 0);
+    ctx.quadraticCurveTo(-30, 14, -10, 18);
+    ctx.lineTo(10, 18);
+    ctx.quadraticCurveTo(30, 14, 24, 0);
+    ctx.closePath();
+    ctx.fill();
+    animeOutline(2);
+    ctx.stroke();
+  }
+
+  function drawOniShogun() {
+    drawAnimeAura("#ff4f9a", 48, 0.28);
+    ctx.fillStyle = "#4a1230";
+    ctx.beginPath();
+    ctx.ellipse(0, 6, 24, 18, 0, 0, TAU);
+    ctx.fill();
+    animeOutline(3.2);
+    ctx.stroke();
+    ctx.fillStyle = "#d63a52";
+    ctx.beginPath();
+    ctx.arc(0, -4, 16, 0, TAU);
+    ctx.fill();
+    animeOutline(2.8);
+    ctx.stroke();
+    ctx.fillStyle = "#ffca62";
+    ctx.beginPath();
+    ctx.moveTo(-14, -16);
+    ctx.lineTo(-10, -28);
+    ctx.lineTo(-4, -16);
+    ctx.closePath();
+    ctx.moveTo(14, -16);
+    ctx.lineTo(10, -28);
+    ctx.lineTo(4, -16);
+    ctx.closePath();
+    ctx.fill();
+    animeOutline(2);
+    ctx.stroke();
+    drawAnimeEye(-6, -5, 4, "#fff06a");
+    drawAnimeEye(6, -5, 4, "#fff06a");
+    ctx.fillStyle = ANIME_INK;
+    ctx.beginPath();
+    ctx.moveTo(-3, 2);
+    ctx.lineTo(0, 5);
+    ctx.lineTo(3, 2);
+    ctx.stroke();
+    ctx.fillStyle = "#f8f0ff";
+    for (let t = 0; t < 4; t += 1) {
+      const angle = (t / 4) * TAU - Math.PI / 2;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(angle) * 10, Math.sin(angle) * 8 - 4);
+      ctx.lineTo(Math.cos(angle) * 18, Math.sin(angle) * 14 - 4);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#f8f0ff";
+      ctx.stroke();
+    }
+    ctx.fillStyle = "#5c2438";
+    ctx.fillRect(-20, 8, 40, 8);
+    animeOutline(2);
+    ctx.strokeRect(-20, 8, 40, 8);
+  }
+
   function drawEnemy(enemy) {
     const data = ENEMIES[enemy.type];
     ctx.save();
     ctx.translate(enemy.x, enemy.y);
-    const enemyScale = compactRender ? 1.48 : 1;
+    const enemyScale = compactRender ? 1.55 : 1.12;
     ctx.scale(enemyScale, enemyScale);
     ctx.rotate(enemy.angle);
-    ctx.globalAlpha = enemy.hitFlash > 0 ? 0.5 : 1;
-    ctx.shadowColor = data.color;
-    ctx.shadowBlur = enemy.type === "sovereign" || enemy.type === "colossus" ? 18 : 5;
+    ctx.globalAlpha = enemy.hitFlash > 0 ? 0.45 : 1;
 
-    if (enemy.type === "mite") {
-      ctx.fillStyle = data.color;
-      ctx.beginPath();
-      ctx.ellipse(0, 0, 10, 6.5, 0, 0, TAU);
-      ctx.fill();
-      ctx.strokeStyle = `${data.color}aa`;
-      ctx.lineWidth = 1.5;
-      for (const y of [-5, 0, 5]) {
-        ctx.beginPath();
-        ctx.moveTo(-2, y * 0.55);
-        ctx.lineTo(-8, y);
-        ctx.stroke();
-      }
-    } else if (enemy.type === "wisp") {
-      ctx.fillStyle = `${data.color}cc`;
-      ctx.beginPath();
-      ctx.moveTo(11, 0);
-      ctx.quadraticCurveTo(-4, -13, -10, 0);
-      ctx.quadraticCurveTo(-4, 13, 11, 0);
-      ctx.fill();
-      ctx.fillStyle = "#d5fff2";
-      ctx.beginPath();
-      ctx.arc(3, 0, 2.5, 0, TAU);
-      ctx.fill();
-    } else if (enemy.type === "brute") {
-      ctx.fillStyle = "#572f2d";
-      ctx.strokeStyle = data.color;
-      ctx.lineWidth = 3.5;
-      ctx.beginPath();
-      for (let i = 0; i < 8; i += 1) {
-        const angle = (i / 8) * TAU;
-        const r = i % 2 ? 13 : 17;
-        const x = Math.cos(angle) * r;
-        const y = Math.sin(angle) * r;
-        if (!i) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = "#ffb0a6";
-      ctx.fillRect(4, -3, 4, 2);
-    } else if (enemy.type === "spore") {
-      ctx.fillStyle = `${data.color}d9`;
-      ctx.beginPath();
-      ctx.arc(0, -3, 10, Math.PI, 0);
-      ctx.lineTo(7, 6);
-      ctx.quadraticCurveTo(0, 10, -7, 6);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = "#61703b";
-      for (let i = 0; i < 4; i += 1) {
-        ctx.beginPath();
-        ctx.arc(-5 + i * 3.5, -5 + (i % 2) * 2, 1.3, 0, TAU);
-        ctx.fill();
-      }
-    } else if (enemy.type === "shade") {
-      ctx.fillStyle = "rgba(58, 77, 141, .78)";
-      ctx.strokeStyle = data.color;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(15, 0);
-      ctx.quadraticCurveTo(2, -15, -11, -7);
-      ctx.lineTo(-6, 0);
-      ctx.lineTo(-11, 7);
-      ctx.quadraticCurveTo(2, 15, 15, 0);
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = "#d9e2ff";
-      ctx.beginPath();
-      ctx.arc(5, 0, 2.6, 0, TAU);
-      ctx.fill();
-    } else {
-      ctx.rotate(state.elapsed * 0.25);
-      const colossus = enemy.type === "colossus";
-      ctx.fillStyle = colossus ? "#5d1e49" : "#4c2855";
-      ctx.strokeStyle = data.color;
-      ctx.lineWidth = colossus ? 4 : 3;
-      ctx.beginPath();
-      const points = colossus ? 14 : 12;
-      for (let i = 0; i < points; i += 1) {
-        const angle = (i / points) * TAU;
-        const r = i % 2 ? (colossus ? 24 : 20) : colossus ? 35 : 29;
-        const x = Math.cos(angle) * r;
-        const y = Math.sin(angle) * r;
-        if (!i) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = "#ffd3ff";
-      ctx.beginPath();
-      ctx.arc(0, 0, colossus ? 10 : 7, 0, TAU);
-      ctx.fill();
-    }
+    const drawers = {
+      mite: drawYureiKid,
+      wisp: drawBansheeIdol,
+      brute: drawCrimsonRonin,
+      spore: drawMikoWraith,
+      shade: drawShadowShinobi,
+      sovereign: drawVoidEmperor,
+      colossus: drawOniShogun,
+    };
+    drawers[enemy.type](enemy);
+
     if (enemy.burnTimer > 0) {
       ctx.fillStyle = "#ff9b52";
       ctx.shadowColor = "#ff6f3d";
@@ -2459,101 +2695,104 @@
     ctx.restore();
 
     const barWidth =
-      (enemy.type === "sovereign" || enemy.type === "colossus" ? 62 : enemy.radius * 2.2) *
+      (enemy.type === "sovereign" || enemy.type === "colossus" ? 68 : enemy.radius * 2.4) *
       (compactRender ? 1.32 : 1);
-    const y = enemy.y - enemy.radius * enemyScale - (compactRender ? 12 : 10);
-    ctx.fillStyle = "rgba(1, 7, 5, .75)";
+    const y = enemy.y - enemy.radius * enemyScale - (compactRender ? 14 : 12);
+    ctx.fillStyle = ANIME_INK;
+    ctx.fillRect(enemy.x - barWidth / 2 - 1, y - 1, barWidth + 2, 5);
+    ctx.fillStyle = "rgba(18,8,31,.85)";
     ctx.fillRect(enemy.x - barWidth / 2, y, barWidth, 3);
-    ctx.fillStyle = enemy.slow < 1 ? "#75d9e6" : data.color;
+    ctx.fillStyle = enemy.slow < 1 ? "#8ec8ff" : data.color;
     ctx.fillRect(enemy.x - barWidth / 2, y, barWidth * Math.max(0, enemy.hp / enemy.maxHp), 3);
 
     if (enemy.armor) {
-      ctx.fillStyle = "rgba(220, 235, 226, .55)";
-      ctx.font = "8px 'DM Mono', monospace";
+      ctx.fillStyle = "#ffd76a";
+      ctx.font = "bold 9px 'M PLUS Rounded 1c', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("◆", enemy.x, y - 3);
+      ctx.fillText("盾", enemy.x, y - 4);
     }
   }
 
   function drawWarden() {
     const warden = state.warden;
-    const tailSway = Math.sin(state.elapsed * 6) * 0.15;
+    const bob = Math.sin(state.elapsed * 7) * 2;
     ctx.save();
-    ctx.translate(warden.x, warden.y);
-    const wardenScale = compactRender ? 1.32 : 1;
+    ctx.translate(warden.x, warden.y + bob);
+    const wardenScale = compactRender ? 1.45 : 1.15;
     ctx.scale(wardenScale, wardenScale);
-
-    const aura = ctx.createRadialGradient(0, 0, 2, 0, 0, 45);
-    aura.addColorStop(0, `rgba(94, 240, 255, ${0.18 + warden.pulse * 0.16})`);
-    aura.addColorStop(1, "rgba(255, 94, 200, 0)");
-    ctx.fillStyle = aura;
-    ctx.beginPath();
-    ctx.arc(0, 0, 45, 0, TAU);
-    ctx.fill();
+    drawAnimeAura("#5ef0ff", 42, 0.2);
 
     ctx.rotate(warden.angle);
-    for (let tail = 0; tail < 3; tail += 1) {
+    for (let tail = 0; tail < 2; tail += 1) {
+      const side = tail ? 1 : -1;
+      const sway = Math.sin(state.elapsed * 8 + tail) * 0.22;
       ctx.save();
-      ctx.rotate(tailSway + tail * 0.35 - 0.35);
-      ctx.strokeStyle = `rgba(200, 240, 255, ${0.55 - tail * 0.12})`;
-      ctx.lineWidth = 3 - tail * 0.4;
+      ctx.rotate(side * 0.35 + sway);
+      ctx.strokeStyle = "#ffb8e8";
+      ctx.lineWidth = 4;
       ctx.lineCap = "round";
       ctx.beginPath();
-      ctx.moveTo(-8, 2 + tail);
-      ctx.quadraticCurveTo(-24 - tail * 4, 8, -34 - tail * 6, -2 - tail * 2);
+      ctx.moveTo(side * 6, 4);
+      ctx.quadraticCurveTo(side * 22, 10, side * 30, -2);
+      ctx.stroke();
+      animeOutline(1.5);
       ctx.stroke();
       ctx.restore();
     }
 
-    ctx.fillStyle = "rgba(220, 245, 255, .88)";
-    ctx.strokeStyle = "rgba(94, 240, 255, .75)";
-    ctx.lineWidth = 1.4;
-    ctx.shadowColor = "#5ef0ff";
-    ctx.shadowBlur = 10 + warden.pulse * 8;
+    ctx.fillStyle = "#2a1a48";
     ctx.beginPath();
-    ctx.ellipse(0, 0, 16, 11, 0, 0, TAU);
+    ctx.ellipse(0, 5, 12, 8, 0, 0, TAU);
     ctx.fill();
+    animeOutline(2);
     ctx.stroke();
+
+    drawAnimeHairSpikes("#ff8fd8", "#ffd0f0", 5, 7, 11);
+    ctx.fillStyle = "#ffe8f5";
+    ctx.beginPath();
+    ctx.arc(0, 0, 9, 0, TAU);
+    ctx.fill();
+    animeOutline(2);
+    ctx.stroke();
+    drawAnimeEye(-3.5, -1, 2.8, "#5ef0ff");
+    drawAnimeEye(3.5, -1, 2.8, "#5ef0ff");
 
     ctx.fillStyle = "#ffffff";
     ctx.beginPath();
-    ctx.moveTo(12, -2);
-    ctx.lineTo(22, 0);
-    ctx.lineTo(12, 4);
+    ctx.moveTo(-10, 4);
+    ctx.lineTo(10, 4);
+    ctx.lineTo(8, 13);
+    ctx.lineTo(-8, 13);
     ctx.closePath();
     ctx.fill();
+    animeOutline(1.6);
+    ctx.stroke();
+    ctx.fillStyle = "#5ef0ff";
+    ctx.fillRect(-10, 4, 20, 2.5);
 
-    ctx.fillStyle = "#0a1020";
+    ctx.fillStyle = "#ffffff";
     ctx.beginPath();
-    ctx.arc(6, -2, 2, 0, TAU);
-    ctx.arc(6, 3, 2, 0, TAU);
+    ctx.moveTo(10, 0);
+    ctx.lineTo(24, -1);
+    ctx.lineTo(10, 5);
+    ctx.closePath();
     ctx.fill();
+    animeOutline(1.2);
+    ctx.stroke();
     ctx.fillStyle = "#5ef0ff";
     ctx.beginPath();
-    ctx.arc(6.5, -2, 0.9, 0, TAU);
-    ctx.arc(6.5, 3, 0.9, 0, TAU);
+    ctx.arc(22, -1, 2.5, 0, TAU);
     ctx.fill();
 
-    ctx.fillStyle = "rgba(255, 94, 200, .75)";
-    ctx.beginPath();
-    ctx.moveTo(-2, -10);
-    ctx.lineTo(2, -16);
-    ctx.lineTo(6, -10);
-    ctx.closePath();
-    ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(-2, 10);
-    ctx.lineTo(2, 16);
-    ctx.lineTo(6, 10);
-    ctx.closePath();
-    ctx.fill();
     ctx.restore();
-
     ctx.save();
-    ctx.fillStyle = "rgba(200, 240, 255, .78)";
+    ctx.fillStyle = "rgba(255, 184, 232, .85)";
+    ctx.font = `bold ${compactRender ? 9 : 8}px 'M PLUS Rounded 1c', sans-serif`;
     ctx.textAlign = "center";
-    ctx.font = `500 ${compactRender ? 9 : 7}px 'DM Mono', monospace`;
-    ctx.fillText("NOVA • DRONE", warden.x, warden.y - (compactRender ? 50 : 39));
+    ctx.strokeStyle = ANIME_INK;
+    ctx.lineWidth = 2;
+    ctx.strokeText("NOVA • PARTNER", warden.x, warden.y - (compactRender ? 54 : 44));
+    ctx.fillText("NOVA • PARTNER", warden.x, warden.y - (compactRender ? 54 : 44));
     ctx.restore();
   }
 

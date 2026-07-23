@@ -1,15 +1,16 @@
 :root {
   color-scheme: dark;
-  --ink: #f0ecff;
-  --muted: #9b94c4;
-  --panel: rgba(12, 8, 28, 0.94);
-  --line: rgba(180, 160, 255, 0.14);
+  --ink: #fff8ff;
+  --muted: #c4b8e8;
+  --panel: #1a1030;
+  --line: rgba(255, 140, 220, 0.22);
   --lime: #5ef0ff;
-  --lime-bright: #8af8ff;
+  --lime-bright: #9af8ff;
   --mint: #ff5ec8;
   --amber: #ffd15e;
   --violet: #b88cff;
-  --danger: #ff6b8a;
+  --danger: #ff4f7b;
+  --anime-ink: #12081f;
   font-family: "M PLUS Rounded 1c", system-ui, sans-serif;
 }
 
@@ -26,9 +27,14 @@ body {
 body {
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 50% -10%, #2a1558 0, transparent 36rem),
-    radial-gradient(circle at 85% 90%, rgba(255, 94, 200, 0.08) 0, transparent 24rem),
-    linear-gradient(145deg, #06040f, #0c0820 55%, #05030c);
+    repeating-linear-gradient(
+      108deg,
+      rgba(255, 255, 255, 0.018) 0 2px,
+      transparent 2px 18px
+    ),
+    radial-gradient(circle at 50% -10%, #3a1a6e 0, transparent 36rem),
+    radial-gradient(circle at 85% 90%, rgba(255, 94, 200, 0.12) 0, transparent 24rem),
+    linear-gradient(145deg, #08040f, #140a28 55%, #06030c);
   color: var(--ink);
 }
 
@@ -598,9 +604,12 @@ footer {
   height: 82px;
   padding: 8px 12px 8px 9px;
   overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: linear-gradient(110deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012));
+  border: 2px solid var(--line);
+  border-radius: 2px;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  background:
+    linear-gradient(135deg, rgba(255, 143, 216, 0.08), transparent 42%),
+    #1a1030;
   text-align: left;
   cursor: pointer;
   transition: 160ms ease;
@@ -1132,11 +1141,10 @@ footer {
   display: grid;
   padding: 18px;
   place-items: center;
-  background: rgba(3, 9, 7, 0.64);
+  background: rgba(8, 4, 18, 0.82);
   opacity: 0;
-  backdrop-filter: blur(8px);
   pointer-events: none;
-  transition: opacity 250ms ease;
+  transition: opacity 200ms ease;
 }
 
 .modal-backdrop.visible {
@@ -1148,14 +1156,28 @@ footer {
   position: relative;
   width: min(560px, 92%);
   padding: 40px 46px 34px;
-  border: 1px solid rgba(94, 240, 255, 0.24);
-  border-radius: 8px;
+  border: 3px solid #ff8fd8;
+  border-radius: 4px;
   background:
-    radial-gradient(circle at 80% 5%, rgba(94, 240, 255, 0.08), transparent 40%),
-    rgba(12, 8, 28, 0.97);
-  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.55);
+    linear-gradient(180deg, rgba(255, 143, 216, 0.08), transparent 28%),
+    repeating-radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 4px),
+    #1a1030;
+  box-shadow:
+    0 0 0 2px var(--anime-ink),
+    0 24px 80px rgba(0, 0, 0, 0.65);
   transform: translateY(10px) scale(0.98);
-  transition: transform 250ms ease;
+  transition: transform 200ms ease;
+}
+
+.intro-card h1 {
+  text-shadow:
+    2px 2px 0 var(--anime-ink),
+    -1px -1px 0 rgba(94, 240, 255, 0.35);
+}
+
+.intro-card h1 em {
+  color: var(--lime);
+  font-style: normal;
 }
 
 .visible .modal {
