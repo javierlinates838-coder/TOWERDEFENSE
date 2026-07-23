@@ -8,11 +8,12 @@ Rootbound replaces random loot and fixed tower upgrades with a deterministic liv
 
 - Nearby towers connect their roots automatically.
 - Every different species linked to a tower grants it +12% attack speed.
-- Four complementary species support rapid fire, slowing, burst damage, and chain attacks.
+- Six complementary species support rapid fire, slowing, burst damage, chain attacks, burning, and knockback.
+- Every tower can evolve through five visual and statistical tiers.
 - Kills charge **Overgrow**, an eight-second network-wide surge.
 - Rapid kills build a **Rootchain** that awards bonus sap.
 - **Sylva**, a living dragon warden, patrols the Heartseed and joins every battle.
-- Ten hand-balanced waves culminate in the Rift Sovereign boss.
+- Fifteen hand-balanced waves introduce Rift Shades, the Rift Sovereign, and the final Elder Colossus.
 
 The complete game runs in the browser with no dependencies, accounts, ads, or microtransactions. It includes an adaptive procedural soundtrack, layered effects, persistent audio controls, fullscreen play, reduced-effects accessibility, and responsive touch controls for phones and tablets.
 
@@ -26,7 +27,7 @@ Then open [http://localhost:4173](http://localhost:4173).
 
 ## Controls
 
-- `1`–`4`: select a seed
+- `1`–`6`: select a seed
 - Click a glowing node: plant
 - Click a tower: inspect, evolve, or prune it
 - `Space`: pause

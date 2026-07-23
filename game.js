@@ -122,6 +122,32 @@
       chain: 3,
       description: "Chain spark",
     },
+    ember: {
+      name: "Emberpod",
+      label: "CINDER FLORA",
+      color: "#ff8b52",
+      cost: 100,
+      range: 142,
+      damage: 15,
+      rate: 1.05,
+      projectile: 285,
+      splash: 28,
+      burn: 6,
+      description: "Burning splash",
+    },
+    gale: {
+      name: "Galefern",
+      label: "TEMPEST FLORA",
+      color: "#86f0cf",
+      cost: 145,
+      range: 158,
+      damage: 18,
+      rate: 0.78,
+      projectile: 350,
+      splash: 48,
+      knockback: 28,
+      description: "Swarm knockback",
+    },
   };
 
   const ENEMIES = {
@@ -173,6 +199,27 @@
       damage: 8,
       armor: 0.16,
     },
+    shade: {
+      name: "Rift shade",
+      color: "#7fa5ff",
+      hp: 190,
+      speed: 82,
+      radius: 12,
+      bounty: 23,
+      damage: 2,
+      armor: 0.1,
+    },
+    colossus: {
+      name: "Elder colossus",
+      color: "#ff6fb7",
+      hp: 2850,
+      speed: 19,
+      radius: 31,
+      bounty: 240,
+      damage: 12,
+      armor: 0.25,
+      regen: 3,
+    },
   };
 
   const WAVES = [
@@ -186,6 +233,11 @@
     { wisp: 14, brute: 7, spore: 4 },
     { mite: 18, spore: 8, brute: 7 },
     { wisp: 10, brute: 6, spore: 6, sovereign: 1 },
+    { shade: 10, mite: 14, brute: 4 },
+    { shade: 12, wisp: 10, spore: 6 },
+    { shade: 14, brute: 9, mite: 12 },
+    { shade: 18, spore: 10, brute: 8, sovereign: 1 },
+    { shade: 16, brute: 10, spore: 8, colossus: 1 },
   ];
 
   const ENEMY_PLURALS = {
@@ -194,6 +246,8 @@
     brute: "BARK BRUTES",
     spore: "SPORELINGS",
     sovereign: "RIFT SOVEREIGN",
+    shade: "RIFT SHADES",
+    colossus: "ELDER COLOSSUS",
   };
 
   const path = [
@@ -509,7 +563,7 @@
     });
     // Deterministic interleaving keeps hard enemies legible and avoids luck-driven spikes.
     queue.sort((a, b) => {
-      const order = { mite: 0, wisp: 1, spore: 2, brute: 3, sovereign: 4 };
+      const order = { mite: 0, wisp: 1, shade: 2, spore: 3, brute: 4, sovereign: 5, colossus: 6 };
       const hashA = (queue.indexOf(a) * 7 + order[a] * 11) % 17;
       const hashB = (queue.indexOf(b) * 7 + order[b] * 11) % 17;
       return hashA - hashB;
@@ -526,7 +580,8 @@
     updateCards();
     updateUI();
     announceWave();
-    toast(state.wave === 9 ? "⚠ RIFT SOVEREIGN APPROACHES" : `WAVE ${state.wave + 1} • ROOTS, AWAKEN`);
+    const bossName = WAVES[state.wave].colossus ? "ELDER COLOSSUS" : WAVES[state.wave].sovereign ? "RIFT SOVEREIGN" : null;
+    toast(bossName ? `⚠ ${bossName} APPROACHES` : `WAVE ${state.wave + 1} • ROOTS, AWAKEN`);
     tone(196, 0.22, "triangle", 0.035, 96);
   }
 
@@ -544,7 +599,7 @@
 
   function announceWave() {
     const isBoss = state.wave === WAVES.length - 1;
-    ui.announcementTop.textContent = isBoss ? "SOVEREIGN SIGNAL DETECTED" : "ROOTS, AWAKEN";
+    ui.announcementTop.textContent = isBoss ? "COLOSSUS SIGNAL DETECTED" : "ROOTS, AWAKEN";
     ui.announcementMain.textContent = isBoss ? "FINAL BLOOM" : `WAVE ${state.wave + 1}`;
     ui.announcementThreat.textContent = `${waveThreatCount(state.wave)} HOSTILES DETECTED`;
     ui.waveAnnouncement.classList.add("visible");
@@ -571,6 +626,9 @@
       regen: base.regen || 0,
       slow: 1,
       slowTimer: 0,
+      burnTimer: 0,
+      burnDamage: 0,
+      burnTick: 0,
       hitFlash: 0,
       alive: true,
       phase: Math.random() * TAU,
@@ -604,7 +662,8 @@
     burst(node.x, node.y, data.color, 18, 95);
     floating(node.x, node.y - 28, data.name.toUpperCase(), data.color);
     vibrate(18);
-    tone(type === "sun" ? 520 : type === "dew" ? 430 : type === "thorn" ? 260 : 610, 0.18, "sine", 0.035, 120);
+    const plantingTone = { sun: 520, dew: 430, thorn: 260, prism: 610, ember: 190, gale: 350 };
+    tone(plantingTone[type], 0.18, "sine", 0.035, 120);
     state.selectedTower = tower;
     state.selectedType = null;
     updateCards();
@@ -625,15 +684,17 @@
 
   function towerStats(tower) {
     const base = TOWERS[tower.type];
-    const levelScale = 1 + (tower.level - 1) * 0.45;
+    const levelScale = 1 + (tower.level - 1) * 0.35;
     return {
-      range: base.range + (tower.level - 1) * 8,
+      range: base.range + (tower.level - 1) * 7,
       damage: base.damage * levelScale,
       rate: base.rate * (1 + tower.synergy * 0.12) * (state.overgrow > 0 ? 1.75 : 1),
       splash: base.splash || 0,
       slow: base.slow || 0,
       projectile: base.projectile,
       chain: base.chain || 0,
+      burn: (base.burn || 0) * levelScale,
+      knockback: (base.knockback || 0) + (tower.level - 1) * 2,
     };
   }
 
@@ -680,7 +741,9 @@
       damage: stats.damage,
       splash: stats.splash,
       slow: stats.slow,
-      radius: tower.type === "thorn" ? 5 : 3.2,
+      burn: stats.burn,
+      knockback: stats.knockback,
+      radius: tower.type === "gale" ? 7 : tower.type === "thorn" || tower.type === "ember" ? 5 : 3.2,
       rotation: tower.angle,
       age: 0,
       trail: [],
@@ -698,6 +761,12 @@
       tone(175, 0.06, "sawtooth", 0.011, -35);
     } else if (tower.type === "dew") {
       tone(390, 0.07, "sine", 0.009, -80);
+    } else if (tower.type === "ember") {
+      tone(145, 0.12, "sawtooth", 0.014, 120);
+      noiseBurst(0.07, 0.01, 1100);
+    } else if (tower.type === "gale") {
+      tone(260, 0.16, "sine", 0.012, -150);
+      noiseBurst(0.1, 0.009, 760);
     } else {
       tone(560, 0.045, "triangle", 0.008, 40);
     }
@@ -764,11 +833,12 @@
       floating(enemy.x, enemy.y - 32, `ROOTCHAIN ${state.combo}×  +${chainBonus}`, "#ffc663");
       tone(440 + state.combo * 8, 0.12, "triangle", 0.025, 120);
     }
-    state.ability = Math.min(100, state.ability + (enemy.type === "sovereign" ? 25 : 4.2));
-    burst(enemy.x, enemy.y, ENEMIES[enemy.type].color, enemy.type === "sovereign" ? 42 : 10, enemy.type === "sovereign" ? 170 : 65);
+    const isBoss = enemy.type === "sovereign" || enemy.type === "colossus";
+    state.ability = Math.min(100, state.ability + (isBoss ? 25 : 4.2));
+    burst(enemy.x, enemy.y, ENEMIES[enemy.type].color, isBoss ? 42 : 10, isBoss ? 170 : 65);
     floating(enemy.x, enemy.y - 15, `+${enemy.bounty}`, "#c9f76f");
-    tone(enemy.type === "sovereign" ? 110 : 290, enemy.type === "sovereign" ? 0.4 : 0.04, "sine", 0.012, -40);
-    if (enemy.type === "sovereign") {
+    tone(isBoss ? 110 : 290, isBoss ? 0.4 : 0.04, "sine", 0.012, -40);
+    if (isBoss) {
       state.screenShake = settings.reducedEffects ? 0 : 0.8;
       vibrate([35, 30, 70]);
       chord([220, 277, 330, 440]);
@@ -815,18 +885,31 @@
   }
 
   function projectileImpact(projectile, enemy) {
+    const applyEffects = (candidate) => {
+      if (projectile.slow) {
+        candidate.slow = projectile.slow;
+        candidate.slowTimer = 1.8;
+      }
+      if (projectile.burn) {
+        candidate.burnDamage = Math.max(candidate.burnDamage, projectile.burn);
+        candidate.burnTimer = Math.max(candidate.burnTimer, 3.2);
+        candidate.burnTick = Math.min(candidate.burnTick, 0.15);
+      }
+      if (projectile.knockback) {
+        const bossResistance = candidate.type === "sovereign" || candidate.type === "colossus" ? 0.25 : 1;
+        candidate.distance = Math.max(0, candidate.distance - projectile.knockback * bossResistance * (1 - candidate.armor));
+      }
+    };
     if (projectile.splash) {
       state.enemies.forEach((candidate) => {
         if (!candidate.alive || distance(projectile, candidate) > projectile.splash) return;
         damageEnemy(candidate, projectile.damage, projectile.color);
-        if (projectile.slow) {
-          candidate.slow = projectile.slow;
-          candidate.slowTimer = 1.8;
-        }
+        applyEffects(candidate);
       });
       ring(projectile.x, projectile.y, projectile.color, projectile.splash);
     } else {
       damageEnemy(enemy, projectile.damage, projectile.color);
+      applyEffects(enemy);
     }
     burst(projectile.x, projectile.y, projectile.color, projectile.type === "thorn" ? 8 : 4, 55);
     if (projectile.type === "sun") ring(projectile.x, projectile.y, "#fff1a8", 20);
@@ -835,6 +918,14 @@
       state.screenShake = settings.reducedEffects ? 0 : Math.max(state.screenShake, 0.12);
     }
     if (projectile.type === "wyrm") ring(projectile.x, projectile.y, "#b9ff78", 36);
+    if (projectile.type === "ember") {
+      ring(projectile.x, projectile.y, "#ff8b52", 42);
+      noiseBurst(0.13, 0.016, 980);
+    }
+    if (projectile.type === "gale") {
+      ring(projectile.x, projectile.y, "#86f0cf", 58);
+      noiseBurst(0.16, 0.012, 520);
+    }
     if (projectile.type === "thorn") noiseBurst(0.07, 0.018, 620);
     if (projectile.type === "wyrm") {
       noiseBurst(0.11, 0.012, 1250);
@@ -857,7 +948,7 @@
       state.spawnTimer -= dt;
       if (state.spawnTimer <= 0) {
         spawnEnemy(state.spawnQueue.shift());
-        state.spawnTimer = state.wave === 9 ? 0.78 : Math.max(0.38, 0.8 - state.wave * 0.035);
+        state.spawnTimer = WAVES[state.wave].colossus ? 0.82 : Math.max(0.32, 0.8 - state.wave * 0.032);
       }
     }
 
@@ -867,6 +958,16 @@
         enemy.slowTimer -= dt;
       } else {
         enemy.slow = 1;
+      }
+      if (enemy.burnTimer > 0) {
+        enemy.burnTimer -= dt;
+        enemy.burnTick -= dt;
+        if (enemy.burnTick <= 0) {
+          damageEnemy(enemy, enemy.burnDamage * 0.5, "#ff8b52", true);
+          enemy.burnTick = 0.5;
+          if (enemy.alive) particle(enemy.x + random(-4, 4), enemy.y - enemy.radius, "#ffb05f", random(-8, 8), -20, 0.35, 2.2);
+        }
+        if (!enemy.alive) return;
       }
       if (enemy.regen) enemy.hp = Math.min(enemy.maxHp, enemy.hp + enemy.regen * dt);
       enemy.hitFlash = Math.max(0, enemy.hitFlash - dt);
@@ -997,7 +1098,7 @@
 
   function upgradeSelected() {
     const tower = state.selectedTower;
-    if (!tower || tower.level >= 3) return;
+    if (!tower || tower.level >= 5) return;
     const cost = getUpgradeCost(tower);
     if (state.sap < cost) {
       toast("THE GARDEN NEEDS MORE SAP");
@@ -1009,7 +1110,7 @@
     tower.level += 1;
     burst(tower.x, tower.y, TOWERS[tower.type].color, 24, 125);
     ring(tower.x, tower.y, TOWERS[tower.type].color, 70);
-    floating(tower.x, tower.y - 35, `EVOLVED • ${["", "I", "II", "III"][tower.level]}`, TOWERS[tower.type].color);
+    floating(tower.x, tower.y - 35, `EVOLVED • ${["", "I", "II", "III", "IV", "V"][tower.level]}`, TOWERS[tower.type].color);
     chord([330, 415, 554]);
     updateSelectionPanel();
     updateUI();
@@ -1032,7 +1133,7 @@
   }
 
   function getUpgradeCost(tower) {
-    return Math.round(TOWERS[tower.type].cost * (0.85 + tower.level * 0.45));
+    return Math.round(TOWERS[tower.type].cost * (0.62 + tower.level * 0.38));
   }
 
   function particle(x, y, color, vx, vy, life, size, gravity = false) {
@@ -1459,8 +1560,8 @@
     ctx.stroke();
     ctx.globalAlpha = 1;
 
-    for (let i = 0; i < 6; i += 1) {
-      const angle = (i / 6) * TAU + state.elapsed * 0.08;
+    for (let i = 0; i < 10; i += 1) {
+      const angle = (i / 10) * TAU + state.elapsed * 0.08;
       ctx.save();
       ctx.translate(Math.cos(angle) * 18.5, Math.sin(angle) * 18.5);
       ctx.rotate(angle + Math.PI / 4);
@@ -1475,6 +1576,8 @@
     if (tower.type === "dew") drawDewTower(data, tower);
     if (tower.type === "thorn") drawThornTower(data, tower);
     if (tower.type === "prism") drawPrismTower(data, tower);
+    if (tower.type === "ember") drawEmberTower(data, tower);
+    if (tower.type === "gale") drawGaleTower(data, tower);
     ctx.restore();
 
     if (tower.synergy > 0) {
@@ -1499,7 +1602,7 @@
     ctx.font = `500 ${compactRender ? 11 : 9}px 'DM Mono', monospace`;
     ctx.textAlign = "center";
     ctx.globalAlpha = 0.78;
-    ctx.fillText(["", "I", "II", "III"][tower.level], tower.x, tower.y + (compactRender ? 43 : 34));
+    ctx.fillText(["", "I", "II", "III", "IV", "V"][tower.level], tower.x, tower.y + (compactRender ? 43 : 34));
     ctx.restore();
   }
 
@@ -1782,6 +1885,128 @@
     }
   }
 
+  function drawEmberTower(data, tower) {
+    const recoil = tower.recoil * 4;
+    const breathe = 1 + Math.sin(state.elapsed * 3.2 + tower.animOffset) * 0.06;
+    ctx.translate(0, recoil);
+
+    ctx.fillStyle = "#54261f";
+    ctx.strokeStyle = "#c64d30";
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 13, 15, 0, 0, TAU);
+    ctx.fill();
+    ctx.stroke();
+
+    const furnace = ctx.createRadialGradient(-3, -5, 1, 0, -3, 12);
+    furnace.addColorStop(0, "#fff5aa");
+    furnace.addColorStop(0.28, "#ffbd58");
+    furnace.addColorStop(0.66, "#f05b36");
+    furnace.addColorStop(1, "#541b24");
+    ctx.fillStyle = furnace;
+    ctx.shadowColor = data.color;
+    ctx.shadowBlur = 13 + tower.pulse * 10;
+    ctx.save();
+    ctx.scale(breathe, breathe);
+    ctx.beginPath();
+    ctx.arc(0, -3, 9, 0, TAU);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.strokeStyle = "#ffb25e";
+    ctx.lineWidth = 5;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(0, -10);
+    ctx.lineTo(0, -23);
+    ctx.stroke();
+
+    for (let i = 0; i < 3 + Math.min(3, tower.level); i += 1) {
+      const angle = (i / (3 + Math.min(3, tower.level))) * TAU + state.elapsed * 0.35;
+      ctx.fillStyle = i % 2 ? "#ff713f" : "#ffb45e";
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(angle) * 11, Math.sin(angle) * 11);
+      ctx.lineTo(Math.cos(angle - 0.18) * 18, Math.sin(angle - 0.18) * 18);
+      ctx.lineTo(Math.cos(angle + 0.18) * 18, Math.sin(angle + 0.18) * 18);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    if (tower.muzzle > 0) {
+      const flame = ctx.createRadialGradient(0, -29, 0, 0, -29, 16);
+      flame.addColorStop(0, "#ffffff");
+      flame.addColorStop(0.2, "#fff19a");
+      flame.addColorStop(0.55, "#ff713f");
+      flame.addColorStop(1, "rgba(255, 77, 42, 0)");
+      ctx.globalAlpha = tower.muzzle;
+      ctx.fillStyle = flame;
+      ctx.beginPath();
+      ctx.arc(0, -29, 16, 0, TAU);
+      ctx.fill();
+    }
+  }
+
+  function drawGaleTower(data, tower) {
+    const recoil = tower.recoil * 2.5;
+    const spin = state.elapsed * (2.2 + tower.level * 0.2) + tower.animOffset;
+    ctx.translate(0, recoil);
+
+    ctx.strokeStyle = "#54aa8e";
+    ctx.lineWidth = 6;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(0, 10);
+    ctx.quadraticCurveTo(-3, -3, 0, -13);
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(0, -12);
+    ctx.rotate(spin);
+    for (let i = 0; i < 5; i += 1) {
+      ctx.save();
+      ctx.rotate((i / 5) * TAU);
+      const leaf = ctx.createLinearGradient(0, -4, 0, -23);
+      leaf.addColorStop(0, "#3b8a73");
+      leaf.addColorStop(1, "#baffdd");
+      ctx.fillStyle = leaf;
+      ctx.strokeStyle = "#d9ffed";
+      ctx.lineWidth = 0.7;
+      ctx.beginPath();
+      ctx.moveTo(-2, -3);
+      ctx.quadraticCurveTo(-10, -14, 0, -23 - tower.level);
+      ctx.quadraticCurveTo(10, -14, 2, -3);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.restore();
+
+    ctx.fillStyle = "#e7fff5";
+    ctx.shadowColor = data.color;
+    ctx.shadowBlur = 15 + tower.pulse * 12;
+    ctx.beginPath();
+    ctx.arc(0, -12, 5.5, 0, TAU);
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(134, 240, 207, .48)";
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 2 + tower.level; i += 1) {
+      ctx.beginPath();
+      ctx.arc(0, -12, 9 + i * 3 + Math.sin(state.elapsed * 4 + i) * 1.2, -Math.PI * 0.8, Math.PI * 0.25);
+      ctx.stroke();
+    }
+
+    if (tower.muzzle > 0) {
+      ctx.globalAlpha = tower.muzzle;
+      ctx.strokeStyle = "#ddfff5";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, -27, 8 + (1 - tower.muzzle) * 14, 0, TAU);
+      ctx.stroke();
+    }
+  }
+
   function drawEnemy(enemy) {
     const data = ENEMIES[enemy.type];
     ctx.save();
@@ -1791,7 +2016,7 @@
     ctx.rotate(enemy.angle);
     ctx.globalAlpha = enemy.hitFlash > 0 ? 0.5 : 1;
     ctx.shadowColor = data.color;
-    ctx.shadowBlur = enemy.type === "sovereign" ? 18 : 5;
+    ctx.shadowBlur = enemy.type === "sovereign" || enemy.type === "colossus" ? 18 : 5;
 
     if (enemy.type === "mite") {
       ctx.fillStyle = data.color;
@@ -1849,15 +2074,33 @@
         ctx.arc(-5 + i * 3.5, -5 + (i % 2) * 2, 1.3, 0, TAU);
         ctx.fill();
       }
+    } else if (enemy.type === "shade") {
+      ctx.fillStyle = "rgba(58, 77, 141, .78)";
+      ctx.strokeStyle = data.color;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(15, 0);
+      ctx.quadraticCurveTo(2, -15, -11, -7);
+      ctx.lineTo(-6, 0);
+      ctx.lineTo(-11, 7);
+      ctx.quadraticCurveTo(2, 15, 15, 0);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#d9e2ff";
+      ctx.beginPath();
+      ctx.arc(5, 0, 2.6, 0, TAU);
+      ctx.fill();
     } else {
       ctx.rotate(state.elapsed * 0.25);
-      ctx.fillStyle = "#4c2855";
+      const colossus = enemy.type === "colossus";
+      ctx.fillStyle = colossus ? "#5d1e49" : "#4c2855";
       ctx.strokeStyle = data.color;
-      ctx.lineWidth = 3;
+      ctx.lineWidth = colossus ? 4 : 3;
       ctx.beginPath();
-      for (let i = 0; i < 12; i += 1) {
-        const angle = (i / 12) * TAU;
-        const r = i % 2 ? 20 : 29;
+      const points = colossus ? 14 : 12;
+      for (let i = 0; i < points; i += 1) {
+        const angle = (i / points) * TAU;
+        const r = i % 2 ? (colossus ? 24 : 20) : colossus ? 35 : 29;
         const x = Math.cos(angle) * r;
         const y = Math.sin(angle) * r;
         if (!i) ctx.moveTo(x, y);
@@ -1868,12 +2111,25 @@
       ctx.stroke();
       ctx.fillStyle = "#ffd3ff";
       ctx.beginPath();
-      ctx.arc(0, 0, 7, 0, TAU);
+      ctx.arc(0, 0, colossus ? 10 : 7, 0, TAU);
       ctx.fill();
+    }
+    if (enemy.burnTimer > 0) {
+      ctx.fillStyle = "#ff9b52";
+      ctx.shadowColor = "#ff6f3d";
+      ctx.shadowBlur = 10;
+      for (let i = 0; i < 3; i += 1) {
+        const phase = state.elapsed * 7 + enemy.phase + i * 2.1;
+        ctx.beginPath();
+        ctx.arc(Math.sin(phase) * enemy.radius * 0.55, -enemy.radius * 0.65 + Math.cos(phase) * 3, 2.2, 0, TAU);
+        ctx.fill();
+      }
     }
     ctx.restore();
 
-    const barWidth = (enemy.type === "sovereign" ? 54 : enemy.radius * 2.2) * (compactRender ? 1.32 : 1);
+    const barWidth =
+      (enemy.type === "sovereign" || enemy.type === "colossus" ? 62 : enemy.radius * 2.2) *
+      (compactRender ? 1.32 : 1);
     const y = enemy.y - enemy.radius * enemyScale - (compactRender ? 12 : 10);
     ctx.fillStyle = "rgba(1, 7, 5, .75)";
     ctx.fillRect(enemy.x - barWidth / 2, y, barWidth, 3);
@@ -2051,7 +2307,13 @@
           ctx.globalAlpha = alpha;
           ctx.strokeStyle = projectile.color;
           ctx.lineWidth =
-            projectile.type === "thorn" ? 1.5 : projectile.type === "wyrm" ? 5 * (1 - i / projectile.trail.length) : 3;
+            projectile.type === "thorn"
+              ? 1.5
+              : projectile.type === "wyrm"
+                ? 5 * (1 - i / projectile.trail.length)
+                : projectile.type === "ember" || projectile.type === "gale"
+                  ? 4
+                  : 3;
           ctx.beginPath();
           ctx.moveTo(point.x, point.y);
           ctx.lineTo(next.x, next.y);
@@ -2115,6 +2377,35 @@
         ctx.lineTo(-7, 0);
         ctx.lineTo(-11, 7);
         ctx.closePath();
+        ctx.fill();
+      } else if (projectile.type === "ember") {
+        const fireball = ctx.createRadialGradient(2, -1, 0, 0, 0, 11);
+        fireball.addColorStop(0, "#ffffff");
+        fireball.addColorStop(0.2, "#fff29a");
+        fireball.addColorStop(0.52, "#ff8b52");
+        fireball.addColorStop(1, "rgba(214, 50, 32, 0)");
+        ctx.fillStyle = fireball;
+        ctx.beginPath();
+        ctx.arc(0, 0, 11, 0, TAU);
+        ctx.fill();
+        ctx.fillStyle = "#ffb354";
+        ctx.beginPath();
+        ctx.moveTo(-4, 0);
+        ctx.lineTo(-17 - Math.sin(projectile.age * 22) * 4, -5);
+        ctx.lineTo(-11, 4);
+        ctx.closePath();
+        ctx.fill();
+      } else if (projectile.type === "gale") {
+        ctx.strokeStyle = "#dffff5";
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 3; i += 1) {
+          ctx.beginPath();
+          ctx.arc(0, 0, 5 + i * 3, projectile.age * 9 + i, projectile.age * 9 + i + Math.PI * 1.25);
+          ctx.stroke();
+        }
+        ctx.fillStyle = "#f0fff9";
+        ctx.beginPath();
+        ctx.arc(0, 0, 3, 0, TAU);
         ctx.fill();
       } else if (projectile.type === "wyrm") {
         const flame = ctx.createLinearGradient(-15, 0, 10, 0);
@@ -2336,9 +2627,9 @@
     ui.selectedName.textContent = data.name;
     ui.selectedStats.textContent = `${data.description} • ${Math.round(stats.damage)} damage • ${stats.rate.toFixed(1)} shots/s`;
     ui.synergyValue.textContent = `+${tower.synergy * 12}%`;
-    ui.synergyFill.style.width = `${(tower.synergy / 3) * 100}%`;
-    ui.upgradeCost.textContent = tower.level >= 3 ? "MAX" : `${upgrade} ◈`;
-    ui.upgradeBtn.disabled = tower.level >= 3 || state.sap < upgrade;
+    ui.synergyFill.style.width = `${(tower.synergy / 5) * 100}%`;
+    ui.upgradeCost.textContent = tower.level >= 5 ? "MAX" : `${upgrade} ◈`;
+    ui.upgradeBtn.disabled = tower.level >= 5 || state.sap < upgrade;
     ui.sellValue.textContent = `${sell} ◈`;
   }
 
@@ -2604,7 +2895,7 @@
   });
 
   window.addEventListener("keydown", (event) => {
-    if (event.key >= "1" && event.key <= "4") {
+    if (event.key >= "1" && event.key <= "6") {
       selectType(Object.keys(TOWERS)[Number(event.key) - 1]);
     } else if (event.key === "Escape" && ui.settingsModal.classList.contains("visible")) {
       closeSettings();

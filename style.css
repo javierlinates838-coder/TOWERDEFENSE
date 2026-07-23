@@ -573,7 +573,7 @@ footer {
 
 .tower-cards {
   display: grid;
-  grid-template-columns: repeat(4, minmax(125px, 1fr));
+  grid-template-columns: repeat(6, minmax(100px, 1fr));
   gap: 10px;
 }
 
@@ -646,6 +646,14 @@ footer {
 
 .prism-card {
   --tower-color: var(--violet);
+}
+
+.ember-card {
+  --tower-color: #ff8b52;
+}
+
+.gale-card {
+  --tower-color: #86f0cf;
 }
 
 .seed-preview {
@@ -1583,7 +1591,11 @@ footer {
   }
 
   .command-deck {
+    position: sticky;
+    z-index: 12;
+    bottom: 0;
     grid-template-columns: 1fr;
+    box-shadow: 0 -18px 45px rgba(2, 9, 7, 0.42);
   }
 
   .seed-bank {
@@ -1591,7 +1603,7 @@ footer {
   }
 
   .tower-cards {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 5px;
   }
 
@@ -1775,7 +1787,7 @@ footer {
 
   .tower-card {
     min-width: 0;
-    height: 72px;
+    height: 64px;
   }
 
   .card-copy strong {
@@ -2036,6 +2048,7 @@ footer {
 
   .command-deck {
     display: flex;
+    position: static;
     min-width: 0;
     min-height: 0;
     flex-direction: column;
@@ -2061,7 +2074,7 @@ footer {
   .tower-cards {
     height: 100%;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
     gap: 6px;
   }
 
