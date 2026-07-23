@@ -1370,9 +1370,15 @@ footer {
     font-size: 9px;
   }
 
-  .card-copy small,
-  .tower-card .cost {
+  .card-copy small {
     display: none;
+  }
+
+  .tower-card .cost {
+    position: static;
+    display: block;
+    align-self: center;
+    font-size: 8px;
   }
 
   .deck-actions {
@@ -1410,6 +1416,12 @@ footer {
 
   .modal {
     padding: 28px 24px 24px;
+  }
+
+  .modal-backdrop {
+    position: fixed;
+    padding: 16px;
+    overflow-y: auto;
   }
 
   .rule-grid {
@@ -1503,7 +1515,7 @@ footer {
 
   .tower-card {
     min-width: 0;
-    height: 64px;
+    height: 72px;
   }
 
   .card-copy strong {
@@ -1541,8 +1553,9 @@ footer {
   }
 
   .intro-card {
-    max-height: calc(100% - 16px);
-    overflow-y: auto;
+    max-height: none;
+    margin-block: auto;
+    overflow: visible;
   }
 
   .threat-preview strong {
