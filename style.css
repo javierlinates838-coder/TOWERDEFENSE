@@ -619,8 +619,8 @@ footer {
 }
 
 .tower-card:disabled {
-  filter: saturate(0.2);
-  opacity: 0.4;
+  filter: saturate(0.45);
+  opacity: 0.58;
   cursor: not-allowed;
 }
 
@@ -1611,6 +1611,10 @@ footer {
   }
 
   .card-copy strong {
+    font-size: 10px;
+  }
+
+  .tower-card .cost {
     font-size: 9px;
   }
 
