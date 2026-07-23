@@ -15,7 +15,8 @@ Specter Squad replaces random loot and fixed tower upgrades with a deterministic
 - Phantom Lords arrive every 10 waves; Elder Oni every 25.
 - Kills charge **Overcharge**, an eight-second squad-wide surge.
 - Rapid kills build an **Exorcism Chain** that awards bonus ecto.
-- **Nova**, a spirit-fox drone, patrols the reactor and joins every battle.
+- **Nova**, your anime partner spirit, patrols the reactor and joins every battle.
+- Face an original anime roster: Yurei Kids, Banshee Idols, Crimson Ronin, Miko Wraiths, Shadow Shinobi, Void Emperor, and Oni Shogun.
 
 The complete game runs in the browser with no dependencies, accounts, ads, or microtransactions. It includes an adaptive synthwave soundtrack, layered effects, persistent audio controls, fullscreen play, reduced-effects accessibility, and responsive touch controls for phones and tablets.
 
