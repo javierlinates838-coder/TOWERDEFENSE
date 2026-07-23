@@ -2634,6 +2634,15 @@
     if (document.hidden && state.started && !state.ended) state.paused = true;
   });
 
+  const refreshViewport = () => {
+    state.hoverNode = null;
+    lastTime = performance.now();
+    draw();
+  };
+  window.addEventListener("resize", refreshViewport, { passive: true });
+  window.visualViewport?.addEventListener("resize", refreshViewport, { passive: true });
+  screen.orientation?.addEventListener("change", () => window.setTimeout(refreshViewport, 120));
+
   createPips();
   syncSettingsUI();
   updateUI();
