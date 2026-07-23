@@ -2342,14 +2342,18 @@
     ui.sellValue.textContent = `${sell} ◈`;
   }
 
-  function togglePause() {
-    if (!state.started || state.ended) return;
-    state.paused = !state.paused;
+  function setPaused(paused, playFeedback = true) {
+    state.paused = paused;
     ui.pauseBtn.innerHTML = state.paused
       ? '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 4 10 6-10 6V4z"/></svg>'
       : '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 4h3v12H5zm7 0h3v12h-3z"/></svg>';
     ui.pauseBtn.setAttribute("aria-label", state.paused ? "Resume game" : "Pause game");
-    tone(state.paused ? 180 : 280, 0.06, "sine", 0.015, state.paused ? -30 : 60);
+    if (playFeedback) tone(state.paused ? 180 : 280, 0.06, "sine", 0.015, state.paused ? -30 : 60);
+  }
+
+  function togglePause() {
+    if (!state.started || state.ended) return;
+    setPaused(!state.paused);
   }
 
   function cycleSpeed() {
@@ -2426,15 +2430,15 @@
   function openHelp() {
     ui.helpModal.classList.add("visible");
     if (state.started && !state.paused) {
-      state.paused = true;
       ui.helpModal.dataset.pausedGame = "true";
+      setPaused(true, false);
     }
   }
 
   function closeHelp() {
     ui.helpModal.classList.remove("visible");
     if (ui.helpModal.dataset.pausedGame === "true") {
-      state.paused = false;
+      setPaused(false, false);
       delete ui.helpModal.dataset.pausedGame;
     }
   }
@@ -2455,15 +2459,15 @@
     syncSettingsUI();
     ui.settingsModal.classList.add("visible");
     if (state.started && !state.paused) {
-      state.paused = true;
       ui.settingsModal.dataset.pausedGame = "true";
+      setPaused(true, false);
     }
   }
 
   function closeSettings() {
     ui.settingsModal.classList.remove("visible");
     if (ui.settingsModal.dataset.pausedGame === "true") {
-      state.paused = false;
+      setPaused(false, false);
       delete ui.settingsModal.dataset.pausedGame;
     }
   }
@@ -2510,7 +2514,7 @@
     state.bestCombo = 0;
     state.warden = { x: 1005, y: 230, angle: 0, cooldown: 0.8, pulse: 0 };
     state.ended = false;
-    state.paused = false;
+    setPaused(false, false);
     state.elapsed = 0;
     nodes.forEach((node) => {
       node.tower = null;
@@ -2529,15 +2533,6 @@
     state.hoverNode = null;
   });
   canvas.addEventListener("click", onCanvasClick);
-  canvas.addEventListener(
-    "touchstart",
-    (event) => {
-      event.preventDefault();
-      onCanvasMove(event);
-      onCanvasClick(event);
-    },
-    { passive: false },
-  );
 
   ui.startBtn.addEventListener("click", () => {
     createAudio();
@@ -2631,7 +2626,7 @@
   });
 
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden && state.started && !state.ended) state.paused = true;
+    if (document.hidden && state.started && !state.ended) setPaused(true, false);
   });
 
   const refreshViewport = () => {
