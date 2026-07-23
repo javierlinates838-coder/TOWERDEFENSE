@@ -360,6 +360,21 @@
     hue: i % 3,
   }));
 
+  const worldBlooms = Array.from({ length: 26 }, (_, i) => ({
+    x: 28 + ((i * 193.7 + 71) % (W - 56)),
+    y: 34 + ((i * 127.3 + 43) % (H - 68)),
+    size: 0.75 + ((i * 11) % 9) / 10,
+    phase: i * 1.37,
+    color: ["#80edb0", "#c9f76f", "#7ddce6", "#bd91ff"][i % 4],
+  }));
+
+  const livingPools = [
+    { x: 310, y: 82, rx: 76, ry: 28, color: "#4fc998" },
+    { x: 486, y: 540, rx: 92, ry: 31, color: "#6dc7d4" },
+    { x: 830, y: 78, rx: 68, ry: 24, color: "#9b72dd" },
+    { x: 1000, y: 540, rx: 74, ry: 26, color: "#72d49c" },
+  ];
+
   const segments = [];
   let pathLength = 0;
   for (let i = 1; i < path.length; i += 1) {
@@ -1221,8 +1236,9 @@
     if (!tower || tower.level >= 5) return;
     const cost = getUpgradeCost(tower);
     if (state.sap < cost) {
-      toast("THE GARDEN NEEDS MORE SAP");
+      toast(`NEED ${Math.ceil(cost - state.sap)} MORE SAP • CLEAR ENEMIES OR PRUNE`);
       tone(120, 0.08, "square", 0.015, -20);
+      vibrate([18, 35, 18]);
       return;
     }
     state.sap -= cost;
@@ -1293,9 +1309,9 @@
 
   function drawBackdrop() {
     const gradient = ctx.createLinearGradient(0, 0, W, H);
-    gradient.addColorStop(0, "#0a1914");
-    gradient.addColorStop(0.48, "#10231b");
-    gradient.addColorStop(1, "#091610");
+    gradient.addColorStop(0, "#0b2119");
+    gradient.addColorStop(0.48, "#153326");
+    gradient.addColorStop(1, "#0a2119");
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, W, H);
 
@@ -1303,8 +1319,8 @@
     ctx.globalCompositeOperation = "screen";
     const aurora = ctx.createLinearGradient(130, 0, 900, H);
     aurora.addColorStop(0, "rgba(86, 205, 148, 0)");
-    aurora.addColorStop(0.38, `rgba(86, 205, 148, ${state.overgrow > 0 ? 0.1 : 0.035})`);
-    aurora.addColorStop(0.7, "rgba(158, 111, 226, 0.035)");
+    aurora.addColorStop(0.38, `rgba(86, 205, 148, ${state.overgrow > 0 ? 0.16 : 0.07})`);
+    aurora.addColorStop(0.7, "rgba(158, 111, 226, 0.065)");
     aurora.addColorStop(1, "rgba(158, 111, 226, 0)");
     ctx.fillStyle = aurora;
     ctx.beginPath();
@@ -1323,7 +1339,7 @@
     ctx.fillRect(0, 0, W, H);
 
     ctx.save();
-    ctx.globalAlpha = 0.5;
+    ctx.globalAlpha = 0.72;
     mossPatches.forEach((patch) => {
       const colors = ["#18372a", "#244331", "#152d27"];
       const radial = ctx.createRadialGradient(patch.x, patch.y, 0, patch.x, patch.y, patch.r);
@@ -1349,6 +1365,7 @@
     ctx.restore();
 
     drawContourLines();
+    drawLivingScenery();
     drawEdgeFoliage();
   }
 
@@ -1413,6 +1430,86 @@
       ctx.stroke();
     }
     ctx.restore();
+  }
+
+  function drawLivingScenery() {
+    ctx.save();
+    ctx.globalCompositeOperation = "screen";
+    livingPools.forEach((pool, index) => {
+      const pulse = 1 + Math.sin(state.elapsed * 0.7 + index) * 0.035;
+      ctx.save();
+      ctx.translate(pool.x, pool.y);
+      ctx.scale(pulse, pulse);
+      const glow = ctx.createRadialGradient(0, 0, 2, 0, 0, pool.rx);
+      glow.addColorStop(0, `${pool.color}22`);
+      glow.addColorStop(0.6, `${pool.color}0c`);
+      glow.addColorStop(1, `${pool.color}00`);
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, pool.rx, pool.ry, 0, 0, TAU);
+      ctx.fill();
+      ctx.strokeStyle = `${pool.color}24`;
+      ctx.lineWidth = 1;
+      for (let ringIndex = 0; ringIndex < 3; ringIndex += 1) {
+        const ringPulse = ((state.elapsed * 10 + ringIndex * 17) % 34) / 34;
+        ctx.globalAlpha = 1 - ringPulse;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, pool.rx * ringPulse, pool.ry * ringPulse, 0, 0, TAU);
+        ctx.stroke();
+      }
+      ctx.restore();
+    });
+    ctx.restore();
+
+    worldBlooms.forEach((bloom, index) => {
+      if (settings.reducedEffects && index % 2) return;
+      const sway = Math.sin(state.elapsed * 1.4 + bloom.phase) * 3.5;
+      const stemHeight = 8 + bloom.size * 8;
+      ctx.save();
+      ctx.translate(bloom.x, bloom.y);
+      ctx.strokeStyle = "rgba(93, 172, 118, .42)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(0, 5);
+      ctx.quadraticCurveTo(sway * 0.35, -stemHeight * 0.5, sway, -stemHeight);
+      ctx.stroke();
+      ctx.translate(sway, -stemHeight);
+      ctx.rotate(state.elapsed * 0.08 + bloom.phase);
+      ctx.fillStyle = bloom.color;
+      ctx.shadowColor = bloom.color;
+      ctx.shadowBlur = 8 + Math.sin(state.elapsed * 2 + bloom.phase) * 3;
+      ctx.globalAlpha = 0.58;
+      for (let petal = 0; petal < 4; petal += 1) {
+        ctx.rotate(Math.PI / 2);
+        ctx.beginPath();
+        ctx.ellipse(0, -3.5 * bloom.size, 1.6 * bloom.size, 4.2 * bloom.size, 0, 0, TAU);
+        ctx.fill();
+      }
+      ctx.fillStyle = "#efffc6";
+      ctx.globalAlpha = 0.9;
+      ctx.beginPath();
+      ctx.arc(0, 0, 1.5 * bloom.size, 0, TAU);
+      ctx.fill();
+      ctx.restore();
+    });
+
+    if (!settings.reducedEffects) {
+      ctx.save();
+      for (let i = 0; i < 14; i += 1) {
+        const drift = (state.elapsed * (9 + (i % 3) * 3) + i * 83) % (W + 80);
+        const x = W + 40 - drift;
+        const y = 35 + ((i * 71 + Math.sin(state.elapsed + i) * 35) % (H - 70));
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(state.elapsed * 1.3 + i);
+        ctx.fillStyle = i % 3 ? "rgba(129, 220, 154, .24)" : "rgba(201, 247, 111, .28)";
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 3, 7, 0.5, 0, TAU);
+        ctx.fill();
+        ctx.restore();
+      }
+      ctx.restore();
+    }
   }
 
   function drawEdgeFoliage() {
@@ -1622,7 +1719,7 @@
       ctx.globalAlpha = 1;
     }
 
-    const modelScale = compactRender ? 1.38 : 1;
+    const modelScale = (compactRender ? 1.38 : 1) * (1 + (tower.level - 1) * 0.035);
     ctx.scale(modelScale, modelScale);
 
     ctx.save();
@@ -1693,6 +1790,33 @@
       ctx.fillStyle = i < tower.level * 2 ? data.color : "rgba(129, 157, 139, .18)";
       ctx.globalAlpha = i < tower.level * 2 ? 0.7 : 1;
       ctx.fillRect(-1.5, -1.5, 3, 3);
+      ctx.restore();
+    }
+
+    if (tower.level >= 4) {
+      ctx.save();
+      ctx.rotate(-state.elapsed * (tower.level === 5 ? 0.42 : 0.2) + tower.animOffset);
+      ctx.strokeStyle = data.color;
+      ctx.shadowColor = data.color;
+      ctx.shadowBlur = tower.level === 5 ? 13 : 7;
+      ctx.lineWidth = tower.level === 5 ? 1.7 : 1;
+      ctx.globalAlpha = 0.55;
+      for (let arc = 0; arc < 4; arc += 1) {
+        ctx.beginPath();
+        ctx.arc(0, 0, 27 + tower.level, arc * (TAU / 4), arc * (TAU / 4) + 0.62);
+        ctx.stroke();
+      }
+      if (tower.level === 5) {
+        for (let mote = 0; mote < 4; mote += 1) {
+          const angle = mote * (TAU / 4);
+          ctx.save();
+          ctx.translate(Math.cos(angle) * 32, Math.sin(angle) * 32);
+          ctx.rotate(Math.PI / 4);
+          ctx.fillStyle = mote % 2 ? "#ffffff" : data.color;
+          ctx.fillRect(-2.5, -2.5, 5, 5);
+          ctx.restore();
+        }
+      }
       ctx.restore();
     }
 
@@ -2765,7 +2889,8 @@
     ui.synergyValue.textContent = `+${tower.synergy * 12}%`;
     ui.synergyFill.style.width = `${(tower.synergy / 5) * 100}%`;
     ui.upgradeCost.textContent = tower.level >= 5 ? "MAX" : `${upgrade} ◈`;
-    ui.upgradeBtn.disabled = tower.level >= 5 || state.sap < upgrade;
+    ui.upgradeBtn.disabled = tower.level >= 5;
+    ui.upgradeBtn.classList.toggle("needs-sap", tower.level < 5 && state.sap < upgrade);
     ui.upgradeBtn.title =
       tower.level >= 5 ? "Maximum evolution reached" : `Evolve into ${data.evolutions[tower.level]}`;
     ui.sellValue.textContent = `${sell} ◈`;

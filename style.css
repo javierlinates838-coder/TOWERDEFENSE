@@ -1054,6 +1054,12 @@ footer {
   cursor: not-allowed;
 }
 
+.panel-actions button.needs-sap {
+  border-color: rgba(255, 198, 99, 0.42);
+  background: rgba(255, 198, 99, 0.07);
+  color: var(--amber);
+}
+
 .panel-actions .sell-button {
   border-color: var(--line);
   background: rgba(255, 255, 255, 0.025);
@@ -1776,6 +1782,11 @@ footer {
     z-index: 100;
   }
 
+  .game-stage:has(.selection-panel.visible) {
+    z-index: 120;
+    overflow: visible;
+  }
+
   #gameCanvas {
     position: absolute;
     top: 50%;
@@ -1867,11 +1878,32 @@ footer {
   }
 
   .selection-panel {
+    position: fixed;
     top: auto;
-    right: 7px;
-    bottom: 9px;
-    left: 9px;
+    right: 10px;
+    bottom: max(10px, env(safe-area-inset-bottom, 0));
+    left: 10px;
     width: auto;
+    max-height: min(72dvh, 570px);
+    padding: 18px;
+    overflow-y: auto;
+    border-radius: 15px;
+    box-shadow: 0 24px 90px rgba(0, 0, 0, 0.68);
+    transform: translateY(24px);
+    overscroll-behavior: contain;
+  }
+
+  .selection-panel.visible {
+    transform: translateY(0);
+  }
+
+  .selection-panel .panel-actions {
+    position: sticky;
+    z-index: 2;
+    bottom: -18px;
+    margin: 12px -18px -18px;
+    padding: 12px 18px 18px;
+    background: linear-gradient(180deg, rgba(6, 17, 14, 0), #06110e 24%);
   }
 
   footer {
@@ -2037,8 +2069,6 @@ footer {
 
   .selection-panel {
     padding: 16px;
-    max-height: calc(100% - 18px);
-    overflow-y: auto;
   }
 
   .tower-copy {
@@ -2200,6 +2230,11 @@ footer {
     z-index: 500;
   }
 
+  .game-stage:has(.selection-panel.visible) {
+    z-index: 480;
+    overflow: visible;
+  }
+
   #gameCanvas {
     position: absolute;
     top: 50%;
@@ -2262,12 +2297,30 @@ footer {
   }
 
   .selection-panel {
-    top: 8px;
-    right: 8px;
-    bottom: auto;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    bottom: 10px;
     left: auto;
-    width: min(280px, calc(100% - 16px));
-    padding: 12px;
+    width: min(350px, calc(100vw - 20px));
+    max-height: none;
+    padding: 16px;
+    overflow-y: auto;
+    border-radius: 14px;
+    transform: translateX(24px);
+  }
+
+  .selection-panel.visible {
+    transform: translateX(0);
+  }
+
+  .selection-panel .panel-actions {
+    position: sticky;
+    z-index: 2;
+    bottom: -16px;
+    margin: 10px -16px -16px;
+    padding: 10px 16px 16px;
+    background: linear-gradient(180deg, rgba(6, 17, 14, 0), #06110e 24%);
   }
 
   .tower-copy {
