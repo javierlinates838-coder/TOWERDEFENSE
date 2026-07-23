@@ -16,6 +16,12 @@
     waveBtn: $("waveBtn"),
     waveButtonTop: $("waveButtonTop"),
     waveButtonMain: $("waveButtonMain"),
+    threatPreview: $("threatPreview"),
+    threatText: $("threatText"),
+    waveAnnouncement: $("waveAnnouncement"),
+    announcementTop: $("announcementTop"),
+    announcementMain: $("announcementMain"),
+    announcementThreat: $("announcementThreat"),
     pauseBtn: $("pauseBtn"),
     speedBtn: $("speedBtn"),
     speedLabel: $("speedLabel"),
@@ -168,6 +174,14 @@
     { mite: 18, spore: 8, brute: 7 },
     { wisp: 10, brute: 6, spore: 6, sovereign: 1 },
   ];
+
+  const ENEMY_PLURALS = {
+    mite: "RIFT MITES",
+    wisp: "HOLLOW WISPS",
+    brute: "BARK BRUTES",
+    spore: "SPORELINGS",
+    sovereign: "RIFT SOVEREIGN",
+  };
 
   const path = [
     { x: -45, y: 334 },
@@ -369,8 +383,30 @@
     state.selectedType = null;
     updateCards();
     updateUI();
+    announceWave();
     toast(state.wave === 9 ? "⚠ RIFT SOVEREIGN APPROACHES" : `WAVE ${state.wave + 1} • ROOTS, AWAKEN`);
     tone(196, 0.22, "triangle", 0.035, 96);
+  }
+
+  function waveThreatCount(index) {
+    if (index >= WAVES.length) return 0;
+    return Object.values(WAVES[index]).reduce((total, count) => total + count, 0);
+  }
+
+  function threatSummary(index) {
+    if (index >= WAVES.length) return "RIFT SEALED";
+    return Object.entries(WAVES[index])
+      .map(([type, count]) => `${count} ${ENEMY_PLURALS[type]}`)
+      .join("  •  ");
+  }
+
+  function announceWave() {
+    const isBoss = state.wave === WAVES.length - 1;
+    ui.announcementTop.textContent = isBoss ? "SOVEREIGN SIGNAL DETECTED" : "ROOTS, AWAKEN";
+    ui.announcementMain.textContent = isBoss ? "FINAL BLOOM" : `WAVE ${state.wave + 1}`;
+    ui.announcementThreat.textContent = `${waveThreatCount(state.wave)} HOSTILES DETECTED`;
+    ui.waveAnnouncement.classList.add("visible");
+    window.setTimeout(() => ui.waveAnnouncement.classList.remove("visible"), isBoss ? 2400 : 1700);
   }
 
   function spawnEnemy(type) {
@@ -787,6 +823,23 @@
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, W, H);
 
+    ctx.save();
+    ctx.globalCompositeOperation = "screen";
+    const aurora = ctx.createLinearGradient(130, 0, 900, H);
+    aurora.addColorStop(0, "rgba(86, 205, 148, 0)");
+    aurora.addColorStop(0.38, `rgba(86, 205, 148, ${state.overgrow > 0 ? 0.1 : 0.035})`);
+    aurora.addColorStop(0.7, "rgba(158, 111, 226, 0.035)");
+    aurora.addColorStop(1, "rgba(158, 111, 226, 0)");
+    ctx.fillStyle = aurora;
+    ctx.beginPath();
+    ctx.moveTo(80, 0);
+    ctx.bezierCurveTo(280, 150, 460, 40, 620, 170);
+    ctx.bezierCurveTo(790, 305, 930, 150, 1120, 280);
+    ctx.lineTo(1120, 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
     const glow = ctx.createRadialGradient(1020, 290, 15, 1020, 290, 330);
     glow.addColorStop(0, "rgba(186, 240, 128, .11)");
     glow.addColorStop(1, "rgba(186, 240, 128, 0)");
@@ -812,13 +865,62 @@
     backdropSeeds.forEach((seed) => {
       ctx.globalAlpha = seed.alpha + Math.sin(state.elapsed * 0.35 + seed.x) * 0.025;
       ctx.beginPath();
-      ctx.arc(seed.x, seed.y, seed.size, 0, TAU);
+      const driftX = seed.x + Math.sin(state.elapsed * 0.18 + seed.y) * 7;
+      const driftY = (seed.y - state.elapsed * (1.1 + seed.size * 0.2) + H) % H;
+      ctx.arc(driftX, driftY, seed.size, 0, TAU);
       ctx.fill();
     });
     ctx.restore();
 
     drawContourLines();
     drawEdgeFoliage();
+  }
+
+  function drawEntrancePortal() {
+    const x = 8;
+    const y = 334;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.globalCompositeOperation = "screen";
+    const portalGlow = ctx.createRadialGradient(0, 0, 3, 0, 0, 78);
+    portalGlow.addColorStop(0, "rgba(244, 112, 255, .2)");
+    portalGlow.addColorStop(0.45, "rgba(118, 102, 220, .08)");
+    portalGlow.addColorStop(1, "rgba(118, 102, 220, 0)");
+    ctx.fillStyle = portalGlow;
+    ctx.beginPath();
+    ctx.arc(0, 0, 78, 0, TAU);
+    ctx.fill();
+
+    for (let i = 0; i < 3; i += 1) {
+      ctx.save();
+      ctx.rotate(state.elapsed * (i % 2 ? -0.16 : 0.12) + i);
+      ctx.strokeStyle = `rgba(211, 130, 255, ${state.waveActive ? 0.32 - i * 0.06 : 0.14 - i * 0.025})`;
+      ctx.lineWidth = 1.3;
+      ctx.setLineDash([4 + i * 2, 7 + i * 3]);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 28 + i * 10, 45 + i * 5, 0, 0, TAU);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    ctx.fillStyle = "rgba(14, 5, 23, .72)";
+    ctx.strokeStyle = "rgba(226, 151, 255, .5)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 20, 37, 0, 0, TAU);
+    ctx.fill();
+    ctx.stroke();
+
+    if (state.waveActive) {
+      for (let i = 0; i < 5; i += 1) {
+        const angle = state.elapsed * 1.4 + i * (TAU / 5);
+        ctx.fillStyle = "rgba(238, 172, 255, .72)";
+        ctx.beginPath();
+        ctx.arc(Math.cos(angle) * 28, Math.sin(angle) * 42, 1.5, 0, TAU);
+        ctx.fill();
+      }
+    }
+    ctx.restore();
   }
 
   function drawContourLines() {
@@ -931,6 +1033,25 @@
       ctx.stroke();
       ctx.restore();
     }
+
+    ctx.save();
+    ctx.strokeStyle = state.waveActive ? "rgba(201, 247, 111, .24)" : "rgba(201, 247, 111, .11)";
+    ctx.lineWidth = 1.5;
+    ctx.lineCap = "round";
+    for (let i = 0; i < 11; i += 1) {
+      const d = ((state.elapsed * (state.waveActive ? 24 : 9) + i * (pathLength / 11)) % (pathLength - 95)) + 25;
+      const p = pointAtDistance(d);
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+      ctx.beginPath();
+      ctx.moveTo(-5, -5);
+      ctx.lineTo(1, 0);
+      ctx.lineTo(-5, 5);
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.restore();
   }
 
   function drawLinks() {
@@ -1064,7 +1185,7 @@
 
     ctx.save();
     ctx.fillStyle = data.color;
-    ctx.font = "500 7px 'DM Mono', monospace";
+    ctx.font = "500 9px 'DM Mono', monospace";
     ctx.textAlign = "center";
     ctx.globalAlpha = 0.65;
     ctx.fillText(["", "I", "II", "III"][tower.level], tower.x, tower.y + 29);
@@ -1249,7 +1370,7 @@
 
     if (enemy.armor) {
       ctx.fillStyle = "rgba(220, 235, 226, .55)";
-      ctx.font = "6px 'DM Mono', monospace";
+      ctx.font = "8px 'DM Mono', monospace";
       ctx.textAlign = "center";
       ctx.fillText("◆", enemy.x, y - 3);
     }
@@ -1312,6 +1433,10 @@
     ctx.fillRect(x - 30, y + 42, 60, 4);
     ctx.fillStyle = health > 0.3 ? "#c9f76f" : "#ff7d71";
     ctx.fillRect(x - 30, y + 42, 60 * health, 4);
+    ctx.fillStyle = "rgba(220, 240, 222, .58)";
+    ctx.font = "500 8px 'DM Mono', monospace";
+    ctx.textAlign = "center";
+    ctx.fillText("HEARTSEED", x, y + 58);
   }
 
   function drawProjectiles() {
@@ -1373,7 +1498,7 @@
       ctx.save();
       ctx.globalAlpha = Math.min(1, text.life * 2);
       ctx.fillStyle = text.color;
-      ctx.font = "500 8px 'DM Mono', monospace";
+      ctx.font = "500 10px 'DM Mono', monospace";
       ctx.textAlign = "center";
       ctx.shadowColor = "#05100c";
       ctx.shadowBlur = 4;
@@ -1408,10 +1533,10 @@
     ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = "#edf8df";
     ctx.textAlign = "center";
-    ctx.font = "700 22px Manrope, sans-serif";
+    ctx.font = "700 28px Manrope, sans-serif";
     ctx.fillText("THE GARDEN WAITS", W / 2, H / 2 - 5);
     ctx.fillStyle = "#8ca59a";
-    ctx.font = "500 8px 'DM Mono', monospace";
+    ctx.font = "500 11px 'DM Mono', monospace";
     ctx.fillText("PRESS SPACE TO RESUME", W / 2, H / 2 + 18);
     ctx.restore();
   }
@@ -1423,6 +1548,7 @@
       ctx.translate(random(-5, 5) * state.screenShake, random(-5, 5) * state.screenShake);
     }
     drawBackdrop();
+    drawEntrancePortal();
     drawTrack();
     drawLinks();
     drawNodes();
@@ -1475,10 +1601,12 @@
     ui.waveButtonTop.textContent = state.wave === 0 ? "BEGIN" : state.waveActive ? "INCOMING" : "SUMMON";
     ui.waveButtonMain.textContent = state.wave >= WAVES.length ? "COMPLETE" : `WAVE ${state.wave + 1}`;
     ui.speedLabel.textContent = `${state.speed}×`;
+    ui.threatPreview.classList.toggle("hidden", state.waveActive || state.wave >= WAVES.length || state.ended);
+    ui.threatText.textContent = threatSummary(state.wave);
 
     const abilityReady = state.ability >= 100;
     ui.abilityBtn.disabled = !state.started || !abilityReady || state.ended;
-    ui.abilityStatus.textContent = state.overgrow > 0 ? `${state.overgrow.toFixed(1)}s` : abilityReady ? "READY" : `${Math.floor(state.ability)}%`;
+    ui.abilityStatus.textContent = state.overgrow > 0 ? `${state.overgrow.toFixed(1)}s` : abilityReady ? "READY • R" : `${Math.floor(state.ability)}%`;
     ui.abilityCharge.style.transform = `scaleX(${state.ability / 100})`;
     ui.abilityBtn.style.borderColor = abilityReady ? "rgba(124, 226, 187, .65)" : "";
 
