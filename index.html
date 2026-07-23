@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta
+      name="description"
+      content="Rootbound: a living-network tower defense game. Grow a connected garden and protect the last Heartseed."
+    />
+    <meta name="theme-color" content="#07110f" />
+    <title>Rootbound — A Living Tower Defense</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <main class="game-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Rootbound home">
+          <svg viewBox="0 0 42 42" aria-hidden="true">
+            <path d="M21 4c8.9 5.1 13.3 10.3 13.3 15.7A13.3 13.3 0 1 1 7.7 19.7C7.7 14.3 12.1 9.1 21 4Z" />
+            <path d="M21 14v20M21 23l7-6M21 27l-6-5" />
+          </svg>
+          <span>ROOTBOUND</span>
+        </a>
+        <div class="tagline"><span class="status-dot"></span> THE GARDEN IS A WEAPON</div>
+        <div class="header-actions">
+          <button class="icon-button" id="soundBtn" type="button" aria-label="Toggle sound" title="Toggle sound">
+            <svg class="sound-on" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M11 5 6 9H3v6h3l5 4V5Zm4.5 3.5a5 5 0 0 1 0 7M18 6a8 8 0 0 1 0 12" />
+            </svg>
+          </button>
+          <button class="icon-button" id="helpBtn" type="button" aria-label="How to play" title="How to play">
+            <span>?</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="hud" aria-label="Game status">
+        <div class="hud-group">
+          <div class="resource">
+            <span class="resource-icon sap-icon"></span>
+            <span><strong id="sapValue">240</strong><small>SAP</small></span>
+          </div>
+          <div class="resource">
+            <span class="resource-icon heart-icon">♥</span>
+            <span><strong id="heartValue">20</strong><small>HEARTSEED</small></span>
+          </div>
+        </div>
+        <div class="wave-status">
+          <span id="waveLabel">GARDEN QUIET</span>
+          <div class="wave-pips" id="wavePips" aria-label="Wave progress"></div>
+        </div>
+        <div class="hud-group hud-controls">
+          <button class="control-button" id="pauseBtn" type="button" aria-label="Pause game">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 4h3v12H5zm7 0h3v12h-3z" /></svg>
+          </button>
+          <button class="control-button speed-button" id="speedBtn" type="button" aria-label="Change game speed">
+            <span id="speedLabel">1×</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="game-stage">
+        <canvas
+          id="gameCanvas"
+          width="1100"
+          height="620"
+          aria-label="Rootbound tower defense battlefield"
+          role="img"
+        ></canvas>
+        <div class="canvas-vignette"></div>
+
+        <div class="stage-badge">
+          <span>THE VERDANT RIFT</span>
+          <small>BIOME 01</small>
+        </div>
+
+        <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+        <aside class="selection-panel" id="selectionPanel" aria-live="polite">
+          <button class="panel-close" id="panelClose" type="button" aria-label="Close tower details">×</button>
+          <div class="tower-orb" id="selectedOrb"></div>
+          <div class="tower-copy">
+            <small id="selectedType">SUN</small>
+            <h2 id="selectedName">Sunspire</h2>
+            <p id="selectedStats">Fast • 12 damage • 2.4 shots/s</p>
+          </div>
+          <div class="synergy-meter">
+            <div class="synergy-label"><span>BIODIVERSITY</span><strong id="synergyValue">+0%</strong></div>
+            <div class="meter-track"><span id="synergyFill"></span></div>
+          </div>
+          <div class="panel-actions">
+            <button id="upgradeBtn" type="button">
+              <span>EVOLVE</span><strong id="upgradeCost">80 ◈</strong>
+            </button>
+            <button class="sell-button" id="sellBtn" type="button">
+              <span>PRUNE</span><strong id="sellValue">32 ◈</strong>
+            </button>
+          </div>
+        </aside>
+
+        <div class="ability-hint" id="abilityHint">Choose a point on the path</div>
+
+        <div class="modal-backdrop visible" id="introModal">
+          <div class="modal intro-card">
+            <div class="eyebrow"><span></span> A LIVING TOWER DEFENSE</div>
+            <h1>Grow together.<br /><em>Survive together.</em></h1>
+            <p>
+              The last Heartseed drifts above a dying world. Grow defensive flora, connect their roots,
+              and turn biodiversity into power.
+            </p>
+            <div class="rule-grid">
+              <div><kbd>1–4</kbd><span>Choose a seed</span></div>
+              <div><kbd>CLICK</kbd><span>Plant on a node</span></div>
+              <div><span class="rule-link"></span><span>Mix species to amplify</span></div>
+            </div>
+            <button class="primary-button" id="startBtn" type="button">
+              <span>ENTER THE RIFT</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
+            </button>
+            <small class="modal-footnote">No grind. No loot boxes. Just your garden.</small>
+          </div>
+        </div>
+
+        <div class="modal-backdrop" id="helpModal">
+          <div class="modal help-card">
+            <button class="modal-close" id="helpClose" type="button" aria-label="Close instructions">×</button>
+            <div class="eyebrow"><span></span> FIELD GUIDE</div>
+            <h2>The roots remember.</h2>
+            <ol>
+              <li><strong>Plant.</strong> Choose a seed, then click a glowing garden node.</li>
+              <li><strong>Connect.</strong> Nearby plants link roots automatically.</li>
+              <li><strong>Diversify.</strong> Each different linked species grants +12% attack speed.</li>
+              <li><strong>Overgrow.</strong> Charge the Heartseed, then awaken every root link at once.</li>
+            </ol>
+            <button class="primary-button" id="helpDone" type="button">BACK TO THE GARDEN</button>
+          </div>
+        </div>
+
+        <div class="modal-backdrop" id="endModal">
+          <div class="modal end-card">
+            <div class="end-sigil" id="endSigil">✦</div>
+            <div class="eyebrow"><span></span><b id="endEyebrow">THE HEARTSEED ENDURES</b></div>
+            <h2 id="endTitle">The rift blooms.</h2>
+            <p id="endCopy">Your living network held the dark at bay.</p>
+            <div class="end-stats">
+              <div><strong id="endWaves">10</strong><small>WAVES</small></div>
+              <div><strong id="endKills">0</strong><small>INVADERS</small></div>
+              <div><strong id="endHarmony">0</strong><small>PEAK HARMONY</small></div>
+            </div>
+            <button class="primary-button" id="restartBtn" type="button">GROW AGAIN</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="command-deck" aria-label="Tower selection and wave controls">
+        <div class="seed-bank">
+          <div class="deck-title">
+            <span>SEED BANK</span>
+            <small>LINK DIFFERENT SPECIES</small>
+          </div>
+          <div class="tower-cards">
+            <button class="tower-card sun-card" data-tower="sun" type="button">
+              <kbd>1</kbd><span class="seed-preview"><i></i></span>
+              <span class="card-copy"><strong>Sunspire</strong><small>Rapid light</small></span>
+              <span class="cost">65 <i>◈</i></span>
+            </button>
+            <button class="tower-card dew-card" data-tower="dew" type="button">
+              <kbd>2</kbd><span class="seed-preview"><i></i></span>
+              <span class="card-copy"><strong>Dewbell</strong><small>Slows swarm</small></span>
+              <span class="cost">85 <i>◈</i></span>
+            </button>
+            <button class="tower-card thorn-card" data-tower="thorn" type="button">
+              <kbd>3</kbd><span class="seed-preview"><i></i></span>
+              <span class="card-copy"><strong>Thornmaw</strong><small>Heavy burst</small></span>
+              <span class="cost">110 <i>◈</i></span>
+            </button>
+            <button class="tower-card prism-card" data-tower="prism" type="button">
+              <kbd>4</kbd><span class="seed-preview"><i></i></span>
+              <span class="card-copy"><strong>Prismbloom</strong><small>Chain spark</small></span>
+              <span class="cost">135 <i>◈</i></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="deck-actions">
+          <button class="ability-button" id="abilityBtn" type="button" aria-label="Activate overgrow ability">
+            <svg viewBox="0 0 50 50" aria-hidden="true">
+              <circle cx="25" cy="25" r="21" />
+              <path d="M25 36V16m0 10 9-8m-9 13-8-7m8-8c-5-4-9-3-11 1 5 3 8 2 11-1Zm0 0c5-4 9-3 11 1-5 3-8 2-11-1Z" />
+            </svg>
+            <span><strong>OVERGROW</strong><small id="abilityStatus">READY</small></span>
+            <i class="ability-charge" id="abilityCharge"></i>
+          </button>
+          <button class="wave-button" id="waveBtn" type="button">
+            <span><small id="waveButtonTop">BEGIN</small><strong id="waveButtonMain">WAVE 1</strong></span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
+          </button>
+        </div>
+      </section>
+
+      <footer>
+        <span>ROOTBOUND // PROTOTYPE BUILD 01</span>
+        <span class="footer-lore">“A single root breaks. A garden holds.”</span>
+        <span>DESIGNED FOR WEB</span>
+      </footer>
+    </main>
+    <script src="./game.js"></script>
+  </body>
+</html>
