@@ -1881,7 +1881,7 @@ footer {
     position: fixed;
     top: auto;
     right: 10px;
-    bottom: max(10px, env(safe-area-inset-bottom, 0));
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px) + 100vh - 100dvh);
     left: 10px;
     width: auto;
     max-height: min(72dvh, 570px);
