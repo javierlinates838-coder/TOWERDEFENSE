@@ -1929,10 +1929,21 @@ footer {
 
   .codex-card {
     width: 100%;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .codex-panel {
     grid-template-columns: 1fr;
+  }
+
+  .codex-tabs {
+    position: sticky;
+    z-index: 3;
+    top: -1px;
+    background: rgba(6, 17, 14, 0.97);
+    backdrop-filter: blur(12px);
   }
 
   .codex-entry {
