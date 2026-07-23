@@ -462,6 +462,7 @@
       return {};
     }
   })();
+  const savedAudioIsCurrent = savedSettings.audioVersion === AUDIO_SETTINGS_VERSION;
   const settings = {
     audioVersion: AUDIO_SETTINGS_VERSION,
     music: savedAudioIsCurrent && Number.isFinite(savedSettings.music) ? savedSettings.music : 58,
@@ -1052,7 +1053,7 @@
     const isBoss = enemy.type === "sovereign" || enemy.type === "colossus";
     state.ability = Math.min(100, state.ability + (isBoss ? 25 : 4.2));
     burst(enemy.x, enemy.y, ENEMIES[enemy.type].color, isBoss ? 42 : 10, isBoss ? 170 : 65);
-    floating(enemy.x, enemy.y - 15, `+${enemy.bounty}`, "#c9f76f");
+    floating(enemy.x, enemy.y - 15, `+${enemy.bounty}`, "#5ef0ff");
     tone(isBoss ? 110 : 290, isBoss ? 0.4 : 0.04, "sine", 0.012, -40);
     if (isBoss) {
       state.screenShake = settings.reducedEffects ? 0 : 0.8;
@@ -1276,8 +1277,8 @@
     state.hearts = Math.max(0, state.hearts - enemy.damage);
     state.screenShake = settings.reducedEffects ? 0 : 0.65;
     vibrate([25, 35, 25]);
-    ring(1061, 300, "#ff7d71", 65);
-    burst(1061, 300, "#ff7d71", 16, 110);
+    ring(1061, 300, "#ff6b8a", 65);
+    burst(1061, 300, "#ff6b8a", 16, 110);
     floating(1035, 253, `−${enemy.damage} REACTOR`, "#ff6b8a");
     tone(85, 0.28, "sawtooth", 0.035, -35);
     noiseBurst(0.22, 0.035, 180);
@@ -1324,9 +1325,9 @@
     state.overgrow = 8;
     state.towers.forEach((tower) => {
       tower.cooldown = Math.min(tower.cooldown, 0.08);
-      burst(tower.x, tower.y, "#7ce2bb", 9, 75);
+      burst(tower.x, tower.y, "#5ef0ff", 9, 75);
     });
-    ring(1061, 300, "#7ce2bb", 450);
+    ring(1061, 300, "#5ef0ff", 450);
     chord([220, 330, 440, 659]);
     vibrate([20, 25, 45]);
     toast("OVERCHARGE • SQUAD SPEED +75%");
@@ -2910,7 +2911,7 @@
   function updateUI() {
     ui.sap.textContent = Math.floor(state.sap);
     ui.heart.textContent = state.hearts;
-    ui.heart.style.color = state.hearts <= 6 ? "#ff7d71" : "";
+    ui.heart.style.color = state.hearts <= 6 ? "#ff6b8a" : "";
 
     if (!state.started) ui.waveLabel.textContent = state.bestWave ? `ALL CLEAR • BEST ${state.bestWave}` : "ALL CLEAR";
     else if (state.waveActive) {
@@ -2938,7 +2939,7 @@
     ui.abilityBtn.disabled = !state.started || !abilityReady || state.ended;
     ui.abilityStatus.textContent = state.overgrow > 0 ? `${state.overgrow.toFixed(1)}s` : abilityReady ? "READY • R" : `${Math.floor(state.ability)}%`;
     ui.abilityCharge.style.transform = `scaleX(${state.ability / 100})`;
-    ui.abilityBtn.style.borderColor = abilityReady ? "rgba(124, 226, 187, .65)" : "";
+    ui.abilityBtn.style.borderColor = abilityReady ? "rgba(94, 240, 255, .65)" : "";
     ui.comboDisplay.classList.toggle("visible", state.combo > 1);
     ui.comboValue.textContent = state.combo;
     ui.comboMeter.style.transform = `scaleX(${Math.max(0, state.comboTimer / 1.45)})`;
@@ -3005,11 +3006,10 @@
 
   function getCanvasPoint(event) {
     const rect = canvas.getBoundingClientRect();
-    const clientX = event.touches ? event.touches[0].clientX : event.clientX;
-    const clientY = event.touches ? event.touches[0].clientY : event.clientY;
+    const source = event.touches?.[0] || event.changedTouches?.[0] || event;
     return {
-      x: ((clientX - rect.left) / rect.width) * W,
-      y: ((clientY - rect.top) / rect.height) * H,
+      x: ((source.clientX - rect.left) / rect.width) * W,
+      y: ((source.clientY - rect.top) / rect.height) * H,
     };
   }
 
@@ -3182,8 +3182,24 @@
     state.hoverNode = null;
   });
   canvas.addEventListener("click", onCanvasClick);
+  canvas.addEventListener(
+    "touchstart",
+    (event) => {
+      if (event.touches.length === 1) onCanvasMove(event);
+    },
+    { passive: true },
+  );
+  canvas.addEventListener(
+    "touchend",
+    (event) => {
+      if (event.touches.length > 0) return;
+      event.preventDefault();
+      onCanvasClick(event);
+    },
+    { passive: false },
+  );
 
-  ui.startBtn.addEventListener("click", () => {
+  function startGame() {
     createAudio();
     state.started = true;
     ui.introModal.classList.remove("visible");
@@ -3192,7 +3208,9 @@
     toast("CHOOSE GEAR • DEPLOY ON A GLOWING NODE");
     window.setTimeout(() => toast("♫ ADAPTIVE SCORE ONLINE • USE ⚙ TO MIX"), 900);
     updateUI();
-  });
+  }
+
+  ui.startBtn.addEventListener("click", startGame);
   ui.waveBtn.addEventListener("click", startWave);
   ui.pauseBtn.addEventListener("click", togglePause);
   ui.speedBtn.addEventListener("click", cycleSpeed);
@@ -3321,10 +3339,19 @@
   window.visualViewport?.addEventListener("resize", refreshViewport, { passive: true });
   screen.orientation?.addEventListener("change", () => window.setTimeout(refreshViewport, 120));
 
-  createPips();
-  renderCodex();
-  syncSettingsUI();
-  saveSettings();
-  updateUI();
-  requestAnimationFrame(loop);
+  try {
+    createPips();
+    renderCodex();
+    syncSettingsUI();
+    saveSettings();
+    updateUI();
+    requestAnimationFrame(loop);
+  } catch (error) {
+    console.error("Specter Squad failed to start:", error);
+    const banner = document.createElement("div");
+    banner.textContent = "Game failed to load. Refresh the page.";
+    banner.style.cssText =
+      "position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:24px;background:#0a0618;color:#ff6b8a;font:600 16px sans-serif;text-align:center;";
+    document.body.append(banner);
+  }
 })();
