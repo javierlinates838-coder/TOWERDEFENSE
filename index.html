@@ -37,6 +37,12 @@
               <path d="M11 5 6 9H3v6h3l5 4V5Zm4.5 3.5a5 5 0 0 1 0 7M18 6a8 8 0 0 1 0 12" />
             </svg>
           </button>
+          <button class="icon-button" id="settingsBtn" type="button" aria-label="Audio and display settings" title="Settings">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z" />
+              <path d="m19.4 15 .1.1 1 1.8-2.1 2.1-1.8-1a8 8 0 0 1-2.1.9l-.6 2.1h-3.8l-.6-2.1a8 8 0 0 1-2.1-.9l-1.8 1-2.1-2.1 1-1.8a8 8 0 0 1-.9-2.1l-2.1-.6V9.6L3.6 9a8 8 0 0 1 .9-2.1l-1-1.8L5.6 3l1.8 1a8 8 0 0 1 2.1-.9l.6-2.1h3.8l.6 2.1a8 8 0 0 1 2.1.9l1.8-1 2.1 2.1-1 1.8a8 8 0 0 1 .9 2.1l2.1.6v2.8l-2.1.6a8 8 0 0 1-1 2Z" />
+            </svg>
+          </button>
           <button class="icon-button" id="helpBtn" type="button" aria-label="How to play" title="How to play">
             <span>?</span>
           </button>
@@ -99,6 +105,12 @@
           <span id="announcementThreat">8 HOSTILES DETECTED</span>
         </div>
 
+        <div class="combo-display" id="comboDisplay">
+          <small>ROOTCHAIN</small>
+          <strong><span id="comboValue">2</span>×</strong>
+          <i id="comboMeter"></i>
+        </div>
+
         <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
         <aside class="selection-panel" id="selectionPanel" aria-live="polite">
@@ -142,7 +154,7 @@
               <span>ENTER THE RIFT</span>
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
             </button>
-            <small class="modal-footnote">No grind. No loot boxes. Just your garden.</small>
+            <small class="modal-footnote">♫ Adaptive soundtrack enabled • Headphones recommended</small>
           </div>
         </div>
 
@@ -156,8 +168,41 @@
               <li><strong>Connect.</strong> Nearby plants link roots automatically.</li>
               <li><strong>Diversify.</strong> Each different linked species grants +12% attack speed.</li>
               <li><strong>Overgrow.</strong> Charge the Heartseed, then awaken every root link at once.</li>
+              <li><strong>Chain.</strong> Defeat enemies rapidly to earn Rootchain bonus sap.</li>
+              <li><strong>Sylva.</strong> Your dragon warden patrols the Heartseed and attacks automatically.</li>
             </ol>
             <button class="primary-button" id="helpDone" type="button">BACK TO THE GARDEN</button>
+          </div>
+        </div>
+
+        <div class="modal-backdrop" id="settingsModal">
+          <div class="modal settings-card">
+            <button class="modal-close" id="settingsClose" type="button" aria-label="Close settings">×</button>
+            <div class="eyebrow"><span></span> SYSTEMS</div>
+            <h2>Sound &amp; display</h2>
+            <p>Shape the atmosphere for your device. Your choices are saved automatically.</p>
+            <div class="settings-list">
+              <label class="setting-row" for="musicVolume">
+                <span><strong>MUSIC</strong><small>Adaptive living soundtrack</small></span>
+                <input id="musicVolume" type="range" min="0" max="100" value="38" />
+                <output id="musicValue">38%</output>
+              </label>
+              <label class="setting-row" for="sfxVolume">
+                <span><strong>EFFECTS</strong><small>Towers, creatures, and impacts</small></span>
+                <input id="sfxVolume" type="range" min="0" max="100" value="62" />
+                <output id="sfxValue">62%</output>
+              </label>
+              <label class="setting-toggle" for="reducedEffects">
+                <span><strong>REDUCED EFFECTS</strong><small>Calmer particles and screen motion</small></span>
+                <input id="reducedEffects" type="checkbox" />
+                <i aria-hidden="true"></i>
+              </label>
+            </div>
+            <div class="settings-actions">
+              <button class="secondary-button" id="audioTestBtn" type="button">TEST AUDIO</button>
+              <button class="primary-button" id="fullscreenBtn" type="button">ENTER FULLSCREEN</button>
+            </div>
+            <small class="settings-note">Headphones recommended • music reacts to each wave</small>
           </div>
         </div>
 

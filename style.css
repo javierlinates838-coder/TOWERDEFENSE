@@ -150,6 +150,19 @@ a:focus-visible {
   background: rgba(201, 247, 111, 0.07);
 }
 
+.icon-button.muted::after {
+  position: absolute;
+  width: 22px;
+  height: 1px;
+  transform: rotate(-45deg);
+  background: var(--danger);
+  content: "";
+}
+
+.icon-button {
+  position: relative;
+}
+
 .icon-button svg {
   width: 18px;
   fill: none;
@@ -209,6 +222,15 @@ footer {
   font-family: "DM Mono", monospace;
   font-size: 10px;
   letter-spacing: 0.15em;
+}
+
+:fullscreen body {
+  background: #050c0a;
+}
+
+:fullscreen .game-shell {
+  width: min(1600px, calc(100% - 24px));
+  min-height: 100dvh;
 }
 
 .resource-icon {
@@ -306,6 +328,7 @@ footer {
   width: 100%;
   height: 100%;
   cursor: crosshair;
+  touch-action: none;
 }
 
 .canvas-vignette {
@@ -464,6 +487,56 @@ footer {
   color: var(--muted);
   font-size: 8px;
   letter-spacing: 0.16em;
+}
+
+.combo-display {
+  position: absolute;
+  z-index: 6;
+  top: 22px;
+  right: 24px;
+  display: flex;
+  width: 104px;
+  padding: 10px 12px 12px;
+  overflow: hidden;
+  align-items: flex-end;
+  flex-direction: column;
+  border: 1px solid rgba(255, 198, 99, 0.28);
+  border-radius: 6px;
+  background: rgba(7, 16, 13, 0.86);
+  opacity: 0;
+  backdrop-filter: blur(12px);
+  transform: translateY(-8px);
+  transition: 180ms ease;
+  pointer-events: none;
+}
+
+.combo-display.visible {
+  opacity: 1;
+  transform: none;
+}
+
+.combo-display small {
+  color: var(--amber);
+  font: 500 8px "DM Mono", monospace;
+  letter-spacing: 0.12em;
+}
+
+.combo-display strong {
+  color: #fff0bd;
+  font: 500 25px "DM Mono", monospace;
+  line-height: 1.05;
+  text-shadow: 0 0 14px rgba(255, 198, 99, 0.36);
+}
+
+.combo-display i {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  transform-origin: left;
+  background: var(--amber);
+  box-shadow: 0 0 8px var(--amber);
 }
 
 .command-deck {
@@ -1142,10 +1215,152 @@ footer {
 }
 
 .help-card h2,
-.end-card h2 {
+.end-card h2,
+.settings-card h2 {
   margin: 12px 0 15px;
   font-size: 32px;
   letter-spacing: -0.035em;
+}
+
+.settings-card > p {
+  margin-bottom: 22px;
+}
+
+.settings-list {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.setting-row,
+.setting-toggle {
+  display: grid;
+  grid-template-columns: 1fr 150px 40px;
+  min-height: 66px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.setting-toggle {
+  grid-template-columns: 1fr auto;
+  border-bottom: 0;
+  cursor: pointer;
+}
+
+.setting-row > span,
+.setting-toggle > span {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.setting-row strong,
+.setting-toggle strong {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.setting-row small,
+.setting-toggle small,
+.settings-note {
+  color: var(--muted);
+  font: 400 9px "DM Mono", monospace;
+}
+
+.setting-row output {
+  color: var(--lime);
+  font: 500 10px "DM Mono", monospace;
+  text-align: right;
+}
+
+.setting-row input[type="range"] {
+  width: 100%;
+  height: 4px;
+  border-radius: 4px;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.1);
+  accent-color: var(--lime);
+  cursor: pointer;
+}
+
+.setting-row input[type="range"]::-webkit-slider-thumb {
+  width: 17px;
+  height: 17px;
+  border: 2px solid #112219;
+  border-radius: 50%;
+  appearance: none;
+  background: var(--lime);
+  box-shadow: 0 0 10px rgba(201, 247, 111, 0.42);
+}
+
+.setting-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.setting-toggle i {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.07);
+  transition: 180ms ease;
+}
+
+.setting-toggle i::after {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--muted);
+  content: "";
+  transition: 180ms ease;
+}
+
+.setting-toggle input:checked + i {
+  border-color: rgba(201, 247, 111, 0.45);
+  background: rgba(201, 247, 111, 0.16);
+}
+
+.setting-toggle input:checked + i::after {
+  transform: translateX(20px);
+  background: var(--lime);
+  box-shadow: 0 0 9px rgba(201, 247, 111, 0.5);
+}
+
+.settings-actions {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.secondary-button {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+
+.secondary-button:hover {
+  border-color: rgba(201, 247, 111, 0.35);
+  background: rgba(201, 247, 111, 0.07);
+}
+
+.settings-note {
+  display: block;
+  margin-top: 12px;
+  text-align: center;
 }
 
 .help-card ol {
@@ -1290,12 +1505,13 @@ footer {
 @media (max-width: 760px) {
   .game-shell {
     width: 100%;
-    padding: 0;
+    padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
   }
 
   .topbar {
     height: 56px;
-    padding-inline: 14px;
+    padding-right: max(14px, env(safe-area-inset-right));
+    padding-left: max(14px, env(safe-area-inset-left));
   }
 
   .brand {
@@ -1455,6 +1671,17 @@ footer {
   .wave-announcement strong {
     font-size: 30px;
   }
+
+  .combo-display {
+    top: 13px;
+    right: 12px;
+    width: 92px;
+    padding: 8px 10px 10px;
+  }
+
+  .settings-card {
+    width: min(100%, 560px);
+  }
 }
 
 @media (max-height: 720px) and (min-width: 761px) {
@@ -1488,7 +1715,7 @@ footer {
 
 @media (max-width: 480px) {
   .header-actions .icon-button:first-child {
-    display: none;
+    display: grid;
   }
 
   .resource strong {
@@ -1564,6 +1791,40 @@ footer {
 
   .threat-preview strong {
     font-size: 10px;
+  }
+
+  .setting-row {
+    grid-template-columns: 1fr 96px 34px;
+    gap: 8px;
+    padding-inline: 10px;
+  }
+
+  .setting-row small,
+  .setting-toggle small {
+    display: none;
+  }
+
+  .settings-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .secondary-button {
+    height: 46px;
+  }
+}
+
+@media (pointer: coarse) {
+  .icon-button,
+  .control-button {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .tower-card,
+  .ability-button,
+  .wave-button,
+  .panel-actions button {
+    touch-action: manipulation;
   }
 }
 
