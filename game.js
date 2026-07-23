@@ -1410,6 +1410,67 @@
     state.floatingText.push({ x, y, text, color, life: 1.25, maxLife: 1.25 });
   }
 
+  const ANIME_INK = "#12081f";
+
+  function animeOutline(width = 2.2) {
+    ctx.lineWidth = width;
+    ctx.strokeStyle = ANIME_INK;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+  }
+
+  function drawAnimeEye(x, y, size, iris, pupil = "#12081f") {
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.ellipse(x, y, size * 1.15, size, 0, 0, TAU);
+    ctx.fill();
+    animeOutline(1.4);
+    ctx.stroke();
+    ctx.fillStyle = iris;
+    ctx.beginPath();
+    ctx.arc(x, y + size * 0.12, size * 0.62, 0, TAU);
+    ctx.fill();
+    ctx.fillStyle = pupil;
+    ctx.beginPath();
+    ctx.arc(x + size * 0.12, y + size * 0.18, size * 0.34, 0, TAU);
+    ctx.fill();
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(x - size * 0.22, y - size * 0.08, size * 0.16, 0, TAU);
+    ctx.fill();
+  }
+
+  function drawAnimeHairSpikes(baseColor, highlight, count, radius, length) {
+    for (let i = 0; i < count; i += 1) {
+      const angle = -Math.PI * 0.75 + (i / (count - 1)) * Math.PI * 1.5;
+      ctx.fillStyle = i % 2 ? highlight : baseColor;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(angle) * radius * 0.4, Math.sin(angle) * radius * 0.4 - 2);
+      ctx.quadraticCurveTo(
+        Math.cos(angle) * (radius + length * 0.5),
+        Math.sin(angle) * (radius + length * 0.5) - 4,
+        Math.cos(angle) * (radius + length),
+        Math.sin(angle) * (radius + length) - 1,
+      );
+      ctx.lineTo(Math.cos(angle + 0.18) * radius * 0.5, Math.sin(angle + 0.18) * radius * 0.5);
+      ctx.closePath();
+      ctx.fill();
+      animeOutline(1.2);
+      ctx.stroke();
+    }
+  }
+
+  function drawAnimeAura(color, radius, alpha = 0.22) {
+    const pulse = 1 + Math.sin(state.elapsed * 3.2) * 0.06;
+    const glow = ctx.createRadialGradient(0, 0, 2, 0, 0, radius * pulse);
+    glow.addColorStop(0, `${color}${Math.round(alpha * 255).toString(16).padStart(2, "0")}`);
+    glow.addColorStop(1, `${color}00`);
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(0, 0, radius * pulse, 0, TAU);
+    ctx.fill();
+  }
+
   function drawBackdrop() {
     const gradient = ctx.createLinearGradient(0, 0, W, H);
     gradient.addColorStop(0, "#0a0618");
@@ -1417,6 +1478,29 @@
     gradient.addColorStop(1, "#08051a");
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, W, H);
+
+    ctx.save();
+    ctx.globalAlpha = 0.055;
+    for (let row = 0; row < H; row += 5) {
+      for (let col = 0; col < W; col += 5) {
+        if ((row + col) % 10 === 0) {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(col, row, 1.2, 1.2);
+        }
+      }
+    }
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalAlpha = 0.04;
+    ctx.strokeStyle = "#ff8fd8";
+    for (let i = -H; i < W + H; i += 28) {
+      ctx.beginPath();
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i + H, H);
+      ctx.stroke();
+    }
+    ctx.restore();
 
     ctx.save();
     ctx.globalCompositeOperation = "screen";
@@ -1537,6 +1621,32 @@
 
   function drawLivingScenery() {
     ctx.save();
+    const lanterns = [
+      [180, 52], [420, 38], [680, 44], [920, 36], [1040, 88],
+      [90, 520], [350, 590], [620, 600], [880, 585], [1020, 540],
+    ];
+    lanterns.forEach(([lx, ly], index) => {
+      const sway = Math.sin(state.elapsed * 1.8 + index) * 3;
+      ctx.save();
+      ctx.translate(lx + sway, ly);
+      ctx.strokeStyle = ANIME_INK;
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(0, -18);
+      ctx.lineTo(0, 0);
+      ctx.stroke();
+      ctx.fillStyle = index % 2 ? "#ff5ec8" : "#ffd15e";
+      ctx.beginPath();
+      ctx.ellipse(0, 4, 7, 9, 0, 0, TAU);
+      ctx.fill();
+      animeOutline(1.2);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(255,255,255,.35)";
+      ctx.fillRect(-4, 0, 8, 3);
+      ctx.restore();
+    });
+
+    ctx.save();
     ctx.globalCompositeOperation = "screen";
     livingPools.forEach((pool, index) => {
       const pulse = 1 + Math.sin(state.elapsed * 0.7 + index) * 0.035;
@@ -1566,29 +1676,24 @@
 
     worldBlooms.forEach((bloom, index) => {
       if (settings.reducedEffects && index % 2) return;
-      const sway = Math.sin(state.elapsed * 1.4 + bloom.phase) * 3.5;
-      const stemHeight = 8 + bloom.size * 8;
+      const sway = Math.sin(state.elapsed * 1.4 + bloom.phase) * 4;
       ctx.save();
-      ctx.translate(bloom.x, bloom.y);
-      ctx.strokeStyle = "rgba(94, 240, 255, .38)";
-      ctx.lineWidth = 1.2;
+      ctx.translate(bloom.x + sway, bloom.y);
+      ctx.rotate(state.elapsed * 0.5 + bloom.phase);
+      for (let petal = 0; petal < 5; petal += 1) {
+        ctx.save();
+        ctx.rotate((petal / 5) * TAU);
+        ctx.fillStyle = petal % 2 ? "#ffb8e8" : "#ff8fd8";
+        ctx.beginPath();
+        ctx.ellipse(0, -5 * bloom.size, 3 * bloom.size, 5 * bloom.size, 0, 0, TAU);
+        ctx.fill();
+        animeOutline(0.9);
+        ctx.stroke();
+        ctx.restore();
+      }
+      ctx.fillStyle = "#ffd15e";
       ctx.beginPath();
-      ctx.moveTo(0, 5);
-      ctx.quadraticCurveTo(sway * 0.35, -stemHeight * 0.5, sway, -stemHeight);
-      ctx.stroke();
-      ctx.translate(sway, -stemHeight);
-      ctx.rotate(state.elapsed * 0.08 + bloom.phase);
-      ctx.fillStyle = bloom.color;
-      ctx.shadowColor = bloom.color;
-      ctx.shadowBlur = 10 + Math.sin(state.elapsed * 2 + bloom.phase) * 4;
-      ctx.globalAlpha = 0.62;
-      ctx.beginPath();
-      ctx.arc(0, 0, 3.5 * bloom.size, 0, TAU);
-      ctx.fill();
-      ctx.fillStyle = "#ffffff";
-      ctx.globalAlpha = 0.85;
-      ctx.beginPath();
-      ctx.arc(0, 0, 1.2 * bloom.size, 0, TAU);
+      ctx.arc(0, 0, 2 * bloom.size, 0, TAU);
       ctx.fill();
       ctx.restore();
     });
@@ -1614,35 +1719,42 @@
 
   function drawEdgeFoliage() {
     ctx.save();
-    const positions = [
-      [12, 80, 0.4],
-      [105, 15, 1.1],
-      [320, 5, 1.8],
-      [520, 12, 0.8],
-      [745, 4, 1.4],
-      [940, 8, 0.2],
-      [1080, 105, 2.2],
-      [1082, 515, 3],
-      [920, 610, 4],
-      [710, 612, 3.4],
-      [500, 605, 5],
-      [280, 612, 4.3],
-      [35, 580, 5.4],
+    const toriiSpots = [
+      [12, 80, 0.4], [320, 5, 1.8], [745, 4, 1.4], [1080, 105, 2.2],
+      [35, 580, 5.4], [920, 610, 4], [500, 605, 5],
     ];
-    ctx.strokeStyle = "rgba(120, 100, 200, .2)";
-    ctx.fillStyle = "rgba(30, 18, 58, .35)";
-    positions.forEach(([x, y, phase]) => {
-      for (let j = 0; j < 3; j += 1) {
-        const width = 18 + j * 14;
-        const height = 42 + j * 22 + Math.sin(state.elapsed * 0.5 + phase) * 4;
-        ctx.fillRect(x - width / 2, y - height, width, height);
-        ctx.strokeRect(x - width / 2, y - height, width, height);
-        if (j === 0) {
-          ctx.fillStyle = j % 2 ? "rgba(94, 240, 255, .55)" : "rgba(255, 94, 200, .55)";
-          ctx.fillRect(x - 3, y - height - 8, 6, 3);
-          ctx.fillStyle = "rgba(30, 18, 58, .35)";
-        }
-      }
+    toriiSpots.forEach(([x, y, phase]) => {
+      const bob = Math.sin(state.elapsed * 0.5 + phase) * 2;
+      ctx.save();
+      ctx.translate(x, y + bob);
+      const scale = 0.55 + (phase % 3) * 0.12;
+      ctx.scale(scale, scale);
+      ctx.fillStyle = "#c62828";
+      ctx.fillRect(-22, -38, 6, 38);
+      ctx.fillRect(16, -38, 6, 38);
+      ctx.fillRect(-28, -42, 52, 6);
+      ctx.fillRect(-24, -30, 44, 5);
+      animeOutline(1.4);
+      ctx.strokeRect(-22, -38, 6, 38);
+      ctx.strokeRect(16, -38, 6, 38);
+      ctx.strokeRect(-28, -42, 52, 6);
+      ctx.strokeRect(-24, -30, 44, 5);
+      ctx.restore();
+    });
+
+    const signSpots = [[105, 15], [520, 12], [940, 8], [1082, 515], [710, 612], [280, 612]];
+    signSpots.forEach(([x, y], index) => {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.fillStyle = index % 2 ? "#1a1030" : "#241a4a";
+      ctx.fillRect(-14, -8, 28, 16);
+      animeOutline(1.2);
+      ctx.strokeRect(-14, -8, 28, 16);
+      ctx.fillStyle = index % 2 ? "#5ef0ff" : "#ff5ec8";
+      ctx.font = "bold 8px 'M PLUS Rounded 1c', sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(index % 2 ? "魂" : "除", 0, 3);
+      ctx.restore();
     });
     ctx.restore();
   }
@@ -1759,21 +1871,34 @@
       const hovered = state.hoverNode === node;
       const canPlant = state.selectedType && state.sap >= TOWERS[state.selectedType].cost;
       const pulse = 0.5 + Math.sin(state.elapsed * 2.2 + index * 0.9) * 0.18;
+      const accent = hovered ? TOWERS[state.selectedType]?.color || "#5ef0ff" : canPlant ? "#ff8fd8" : "#6a5a9a";
       ctx.save();
       ctx.translate(node.x, node.y);
       ctx.scale(nodeScale, nodeScale);
-      ctx.strokeStyle = hovered ? TOWERS[state.selectedType]?.color || "#5ef0ff" : `rgba(140, 120, 220, ${canPlant ? 0.38 : 0.18})`;
-      ctx.fillStyle = hovered ? "rgba(201, 247, 111, .08)" : "rgba(11, 27, 21, .55)";
-      ctx.lineWidth = hovered ? 2 : 1;
+      ctx.rotate(state.elapsed * 0.15 + index * 0.4);
+      ctx.strokeStyle = accent;
+      ctx.globalAlpha = hovered ? 0.85 : canPlant ? 0.55 : 0.28;
+      ctx.lineWidth = hovered ? 2.2 : 1.4;
+      ctx.setLineDash([5, 4]);
       ctx.beginPath();
       ctx.arc(0, 0, hovered ? 19 : 15 + pulse, 0, TAU);
-      ctx.fill();
       ctx.stroke();
-      ctx.rotate(Math.PI / 4);
-      ctx.strokeStyle = `rgba(168, 218, 173, ${hovered ? 0.5 : 0.16})`;
-      ctx.strokeRect(-7, -7, 14, 14);
-      ctx.fillStyle = canPlant ? TOWERS[state.selectedType].color : "#4a3d6e";
-      ctx.globalAlpha = canPlant ? 0.7 : 0.34;
+      ctx.setLineDash([]);
+      ctx.rotate(-state.elapsed * 0.15 - index * 0.4);
+      ctx.fillStyle = ANIME_INK;
+      ctx.fillRect(-5, -14, 10, 18);
+      ctx.fillStyle = canPlant ? accent : "#f8f4ff";
+      ctx.fillRect(-4, -13, 8, 16);
+      animeOutline(1);
+      ctx.strokeRect(-4, -13, 8, 16);
+      ctx.fillStyle = "#c62828";
+      ctx.fillRect(-4, -11, 8, 3);
+      ctx.fillStyle = ANIME_INK;
+      ctx.font = "bold 7px 'M PLUS Rounded 1c', sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("封", 0, -2);
+      ctx.globalAlpha = canPlant ? 0.9 : 0.45;
+      ctx.fillStyle = accent;
       ctx.beginPath();
       ctx.arc(0, 0, hovered ? 3.2 : 2.2, 0, TAU);
       ctx.fill();
@@ -1937,137 +2062,129 @@
     const recoil = tower.recoil * 4.5;
     const spin = state.elapsed * (1.2 + tower.level * 0.12) + tower.animOffset;
     ctx.translate(0, recoil);
+    drawAnimeAura(data.color, 28, 0.16);
 
-    const barrel = ctx.createLinearGradient(-7, 8, 7, -18);
-    barrel.addColorStop(0, "#3a2f5c");
-    barrel.addColorStop(0.5, "#6a5a9a");
-    barrel.addColorStop(1, "#ffd15e");
-    ctx.strokeStyle = barrel;
-    ctx.lineWidth = 6;
+    ctx.fillStyle = "#3a2f5c";
+    ctx.beginPath();
+    ctx.roundRect(-11, 2, 22, 14, 4);
+    ctx.fill();
+    animeOutline(1.8);
+    ctx.stroke();
+
+    ctx.fillStyle = "#ffd15e";
+    ctx.beginPath();
+    ctx.roundRect(-9, 4, 18, 4, 2);
+    ctx.fill();
+
+    ctx.save();
+    ctx.translate(0, -6);
+    ctx.fillStyle = "#ffe8f5";
+    ctx.beginPath();
+    ctx.arc(0, 0, 8, 0, TAU);
+    ctx.fill();
+    animeOutline(1.6);
+    ctx.stroke();
+    drawAnimeEye(-3, -1, 2.2, "#ffd15e");
+    drawAnimeEye(3, -1, 2.2, "#ffd15e");
+    ctx.restore();
+
+    ctx.strokeStyle = "#ffd15e";
+    ctx.lineWidth = 5;
     ctx.lineCap = "round";
     ctx.beginPath();
-    ctx.moveTo(0, 9);
-    ctx.lineTo(0, -13);
+    ctx.moveTo(0, -10);
+    ctx.lineTo(0, -22 - tower.level);
+    ctx.stroke();
+    animeOutline(1.2);
     ctx.stroke();
 
     ctx.save();
-    ctx.translate(0, -14);
+    ctx.translate(0, -24 - tower.level);
     ctx.rotate(spin);
-    ctx.strokeStyle = "#ffd15e";
-    ctx.lineWidth = 1.2;
-    for (let i = 0; i < 6; i += 1) {
+    for (let i = 0; i < 4; i += 1) {
       ctx.save();
-      ctx.rotate((i / 6) * TAU);
-      ctx.beginPath();
-      ctx.moveTo(0, -6);
-      ctx.lineTo(0, -18 - tower.level);
-      ctx.stroke();
+      ctx.rotate((i / 4) * TAU);
+      ctx.fillStyle = i % 2 ? "#fff3ae" : data.color;
+      ctx.fillRect(-2, -10, 4, 8);
+      animeOutline(0.9);
+      ctx.strokeRect(-2, -10, 4, 8);
       ctx.restore();
     }
     ctx.restore();
 
-    const lens = ctx.createRadialGradient(-2, -16, 1, 0, -14, 9);
-    lens.addColorStop(0, "#ffffff");
-    lens.addColorStop(0.28, "#fff3ae");
-    lens.addColorStop(0.65, data.color);
-    lens.addColorStop(1, "#8d4c1c");
-    ctx.fillStyle = lens;
-    ctx.shadowColor = data.color;
-    ctx.shadowBlur = 13 + tower.pulse * 12;
-    ctx.beginPath();
-    ctx.arc(0, -14, 7 + tower.pulse * 1.5, 0, TAU);
-    ctx.fill();
-
-    ctx.strokeStyle = "rgba(255, 245, 179, .72)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(0, -14, 10 + Math.sin(state.elapsed * 4 + tower.animOffset), 0, TAU);
-    ctx.stroke();
-
     if (tower.muzzle > 0) {
-      ctx.translate(0, -27);
+      ctx.translate(0, -30 - tower.level);
       ctx.globalAlpha = tower.muzzle;
       ctx.fillStyle = "#fff9d2";
-      ctx.shadowBlur = 22;
       ctx.beginPath();
-      ctx.arc(0, 0, 5 + tower.muzzle * 4, 0, TAU);
+      ctx.moveTo(0, -12);
+      ctx.lineTo(5, 0);
+      ctx.lineTo(-5, 0);
+      ctx.closePath();
       ctx.fill();
-      ctx.strokeStyle = data.color;
-      ctx.lineWidth = 1.5;
-      ctx.save();
-      for (let i = 0; i < 6; i += 1) {
-        ctx.rotate(TAU / 6);
-        ctx.beginPath();
-        ctx.moveTo(0, -5);
-        ctx.lineTo(0, -14 - tower.muzzle * 8);
-        ctx.stroke();
-      }
-      ctx.restore();
+      animeOutline(1);
+      ctx.stroke();
     }
   }
 
   function drawDewTower(data, tower) {
     const recoil = tower.recoil * 3.5;
     ctx.translate(0, recoil);
+    drawAnimeAura(data.color, 26, 0.14);
 
-    ctx.fillStyle = "#1d5b62";
-    ctx.strokeStyle = "#75d9e6";
-    ctx.lineWidth = 1.2;
+    ctx.fillStyle = "#f8f4ff";
     ctx.beginPath();
-    ctx.moveTo(-11, 8);
-    ctx.quadraticCurveTo(-14, -1, -8, -11);
-    ctx.lineTo(8, -11);
-    ctx.quadraticCurveTo(14, -1, 11, 8);
+    ctx.moveTo(0, -18);
+    ctx.lineTo(12, 8);
+    ctx.lineTo(-12, 8);
     ctx.closePath();
     ctx.fill();
+    animeOutline(1.8);
     ctx.stroke();
 
-    const reservoir = ctx.createRadialGradient(-4, -6, 1, 0, -3, 13);
-    reservoir.addColorStop(0, "#e9ffff");
-    reservoir.addColorStop(0.25, "#80e9f2");
-    reservoir.addColorStop(0.72, "#287e8a");
-    reservoir.addColorStop(1, "#123f48");
-    ctx.fillStyle = reservoir;
-    ctx.shadowColor = data.color;
-    ctx.shadowBlur = 10 + tower.pulse * 8;
-    ctx.beginPath();
-    ctx.arc(0, -3, 10, 0, TAU);
-    ctx.fill();
-    ctx.strokeStyle = "rgba(213, 255, 255, .65)";
-    ctx.stroke();
+    ctx.fillStyle = "#c62828";
+    ctx.fillRect(-10, -2, 20, 5);
+    ctx.fillStyle = ANIME_INK;
+    ctx.font = "bold 9px 'M PLUS Rounded 1c', sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("氷", 0, 2);
 
-    ctx.strokeStyle = "#9af5fb";
-    ctx.lineWidth = 5;
+    ctx.strokeStyle = "#5ef0ff";
+    ctx.lineWidth = 4;
     ctx.lineCap = "round";
     ctx.beginPath();
-    ctx.moveTo(0, -10);
-    ctx.lineTo(0, -23);
-    ctx.stroke();
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(0, -24, 5.5, 0, TAU);
+    ctx.moveTo(0, -16);
+    ctx.lineTo(0, -26 - tower.level * 0.5);
     ctx.stroke();
 
     for (let i = 0; i < 3 + tower.level; i += 1) {
       const phase = state.elapsed * (0.8 + i * 0.08) + tower.animOffset + i * 1.7;
-      const bx = Math.sin(phase) * 5;
-      const by = 4 - ((phase * 7) % 16);
-      ctx.fillStyle = "rgba(220, 255, 255, .72)";
+      const bx = Math.sin(phase) * 8;
+      const by = -8 - ((phase * 6) % 14);
+      ctx.save();
+      ctx.translate(bx, by);
+      ctx.rotate(0.4);
+      ctx.fillStyle = "#b8f8ff";
       ctx.beginPath();
-      ctx.arc(bx, by, 1 + (i % 2) * 0.5, 0, TAU);
+      ctx.moveTo(0, -4);
+      ctx.lineTo(3, 0);
+      ctx.lineTo(0, 4);
+      ctx.lineTo(-3, 0);
+      ctx.closePath();
       ctx.fill();
+      animeOutline(0.8);
+      ctx.stroke();
+      ctx.restore();
     }
 
     if (tower.muzzle > 0) {
-      const flash = ctx.createRadialGradient(0, -29, 0, 0, -29, 13);
-      flash.addColorStop(0, "rgba(240, 255, 255, 1)");
-      flash.addColorStop(0.35, "rgba(117, 217, 230, .9)");
-      flash.addColorStop(1, "rgba(117, 217, 230, 0)");
-      ctx.fillStyle = flash;
       ctx.globalAlpha = tower.muzzle;
+      ctx.fillStyle = "#e8ffff";
       ctx.beginPath();
-      ctx.arc(0, -29, 13, 0, TAU);
+      ctx.arc(0, -28, 10 + tower.muzzle * 4, 0, TAU);
       ctx.fill();
+      animeOutline(1);
+      ctx.stroke();
     }
   }
 
@@ -2075,57 +2192,59 @@
     const recoil = tower.recoil * 6;
     const jaw = 4 + tower.muzzle * 6;
     ctx.translate(0, recoil);
+    drawAnimeAura(data.color, 30, 0.12);
 
-    ctx.fillStyle = "#54243a";
-    ctx.strokeStyle = "#ef738f";
-    ctx.lineWidth = 1.2;
+    ctx.fillStyle = "#3a1520";
     ctx.beginPath();
-    ctx.ellipse(0, 0, 14, 16, 0, 0, TAU);
+    ctx.roundRect(-13, -2, 26, 16, 3);
     ctx.fill();
+    animeOutline(2);
     ctx.stroke();
 
-    ctx.fillStyle = "#9e3858";
+    ctx.fillStyle = "#8c1f2f";
+    ctx.beginPath();
+    ctx.moveTo(-14, 4);
+    ctx.lineTo(0, -8);
+    ctx.lineTo(14, 4);
+    ctx.closePath();
+    ctx.fill();
+    animeOutline(1.5);
+    ctx.stroke();
+
+    ctx.strokeStyle = "#ef738f";
+    ctx.lineWidth = 6 + jaw * 0.3;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(0, -6);
+    ctx.lineTo(0, -28 - tower.level);
+    ctx.stroke();
+    animeOutline(1.4);
+    ctx.stroke();
+
+    ctx.fillStyle = "#ffd0d9";
     for (const side of [-1, 1]) {
       ctx.save();
       ctx.scale(side, 1);
       ctx.beginPath();
-      ctx.moveTo(1, 5);
-      ctx.quadraticCurveTo(13 + jaw, -7, 7, -24);
-      ctx.lineTo(1, -16);
-      ctx.quadraticCurveTo(5, -5, 1, 5);
+      ctx.moveTo(2, -10);
+      ctx.lineTo(10 + jaw, -18);
+      ctx.lineTo(4, -14);
       ctx.closePath();
       ctx.fill();
+      animeOutline(1);
       ctx.stroke();
-      for (let i = 0; i < 3; i += 1) {
-        ctx.fillStyle = "#ffd0d9";
-        ctx.beginPath();
-        ctx.moveTo(5 + i * 2, -7 - i * 5);
-        ctx.lineTo(11 + jaw * 0.3, -10 - i * 5);
-        ctx.lineTo(6, -13 - i * 5);
-        ctx.closePath();
-        ctx.fill();
-      }
       ctx.restore();
     }
 
-    const core = ctx.createRadialGradient(-2, -8, 1, 0, -8, 8);
-    core.addColorStop(0, "#ffe0e6");
-    core.addColorStop(0.35, data.color);
-    core.addColorStop(1, "#601a38");
-    ctx.fillStyle = core;
-    ctx.shadowColor = data.color;
-    ctx.shadowBlur = 10 + tower.pulse * 9;
-    ctx.beginPath();
-    ctx.arc(0, -8, 6, 0, TAU);
-    ctx.fill();
-
     if (tower.muzzle > 0) {
       ctx.globalAlpha = tower.muzzle;
-      ctx.translate(0, -29);
-      ctx.rotate(Math.PI / 4);
+      ctx.translate(0, -30 - tower.level);
       ctx.fillStyle = "#fff0f3";
-      ctx.shadowBlur = 20;
-      ctx.fillRect(-4, -4, 8, 8);
+      ctx.beginPath();
+      ctx.arc(0, 0, 8, 0, TAU);
+      ctx.fill();
+      animeOutline(1.2);
+      ctx.stroke();
     }
   }
 
@@ -2133,14 +2252,13 @@
     const recoil = tower.recoil * 2.5;
     const spin = state.elapsed * (0.8 + tower.level * 0.1) + tower.animOffset;
     ctx.translate(0, recoil);
+    drawAnimeAura(data.color, 28, 0.18);
 
-    ctx.strokeStyle = "rgba(182, 151, 255, .48)";
-    ctx.lineWidth = 1;
+    ctx.fillStyle = "#2a1a48";
     ctx.beginPath();
-    ctx.moveTo(-10, 8);
-    ctx.lineTo(-5, -10);
-    ctx.moveTo(10, 8);
-    ctx.lineTo(5, -10);
+    ctx.ellipse(0, 4, 12, 8, 0, 0, TAU);
+    ctx.fill();
+    animeOutline(1.6);
     ctx.stroke();
 
     ctx.save();
@@ -2149,61 +2267,46 @@
     for (let i = 0; i < 3 + tower.level; i += 1) {
       const angle = (i / (3 + tower.level)) * TAU;
       ctx.save();
-      ctx.translate(Math.cos(angle) * 15, Math.sin(angle) * 8);
+      ctx.translate(Math.cos(angle) * 14, Math.sin(angle) * 7);
       ctx.rotate(-spin + angle);
-      ctx.fillStyle = i % 2 ? "#7759cb" : "#b697ff";
-      ctx.strokeStyle = "#eee6ff";
-      ctx.lineWidth = 0.8;
+      ctx.fillStyle = i % 2 ? "#b697ff" : "#7759cb";
       ctx.beginPath();
-      ctx.moveTo(0, -7);
-      ctx.lineTo(4, 0);
-      ctx.lineTo(0, 7);
-      ctx.lineTo(-4, 0);
+      ctx.moveTo(0, -6);
+      ctx.lineTo(3, 0);
+      ctx.lineTo(0, 6);
+      ctx.lineTo(-3, 0);
       ctx.closePath();
       ctx.fill();
+      animeOutline(0.9);
       ctx.stroke();
       ctx.restore();
     }
     ctx.restore();
 
-    ctx.translate(0, -10);
-    const crystal = ctx.createLinearGradient(-8, -13, 8, 12);
+    const crystal = ctx.createLinearGradient(-6, -16, 6, 8);
     crystal.addColorStop(0, "#f4edff");
-    crystal.addColorStop(0.32, "#cdb9ff");
-    crystal.addColorStop(0.68, "#8565dc");
+    crystal.addColorStop(0.5, "#b697ff");
     crystal.addColorStop(1, "#3d286e");
     ctx.fillStyle = crystal;
-    ctx.strokeStyle = "#e8ddff";
-    ctx.lineWidth = 1.2;
-    ctx.shadowColor = data.color;
-    ctx.shadowBlur = 14 + tower.pulse * 14;
     ctx.beginPath();
-    ctx.moveTo(0, -17);
-    ctx.lineTo(9, -2);
-    ctx.lineTo(4, 12);
-    ctx.lineTo(-5, 12);
-    ctx.lineTo(-9, -2);
+    ctx.moveTo(0, -16);
+    ctx.lineTo(7, -2);
+    ctx.lineTo(3, 10);
+    ctx.lineTo(-3, 10);
+    ctx.lineTo(-7, -2);
     ctx.closePath();
     ctx.fill();
+    animeOutline(1.4);
     ctx.stroke();
-
-    ctx.strokeStyle = "rgba(255, 255, 255, .72)";
-    ctx.beginPath();
-    ctx.moveTo(0, -14);
-    ctx.lineTo(-3, 7);
-    ctx.stroke();
+    drawAnimeEye(-2, -4, 1.6, "#b88cff");
+    drawAnimeEye(2, -4, 1.6, "#b88cff");
 
     if (tower.muzzle > 0) {
       ctx.globalAlpha = tower.muzzle;
-      ctx.fillStyle = "#ffffff";
-      ctx.shadowBlur = 30;
-      ctx.beginPath();
-      ctx.arc(0, -22, 7 + tower.muzzle * 5, 0, TAU);
-      ctx.fill();
-      ctx.strokeStyle = data.color;
+      ctx.strokeStyle = "#ffffff";
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.arc(0, -22, 12 + (1 - tower.muzzle) * 16, 0, TAU);
+      ctx.arc(0, -20, 10 + tower.muzzle * 6, 0, TAU);
       ctx.stroke();
     }
   }
@@ -2212,60 +2315,57 @@
     const recoil = tower.recoil * 4;
     const breathe = 1 + Math.sin(state.elapsed * 3.2 + tower.animOffset) * 0.06;
     ctx.translate(0, recoil);
+    drawAnimeAura(data.color, 28, 0.16);
 
     ctx.fillStyle = "#54261f";
-    ctx.strokeStyle = "#c64d30";
-    ctx.lineWidth = 1.2;
     ctx.beginPath();
-    ctx.ellipse(0, 0, 13, 15, 0, 0, TAU);
+    ctx.moveTo(-12, 8);
+    ctx.lineTo(-8, -6);
+    ctx.lineTo(8, -6);
+    ctx.lineTo(12, 8);
+    ctx.closePath();
     ctx.fill();
+    animeOutline(1.8);
     ctx.stroke();
 
-    const furnace = ctx.createRadialGradient(-3, -5, 1, 0, -3, 12);
-    furnace.addColorStop(0, "#fff5aa");
-    furnace.addColorStop(0.28, "#ffbd58");
-    furnace.addColorStop(0.66, "#f05b36");
-    furnace.addColorStop(1, "#541b24");
-    ctx.fillStyle = furnace;
-    ctx.shadowColor = data.color;
-    ctx.shadowBlur = 13 + tower.pulse * 10;
+    ctx.fillStyle = "#c62828";
+    ctx.fillRect(-10, -4, 20, 3);
+
     ctx.save();
     ctx.scale(breathe, breathe);
+    const furnace = ctx.createRadialGradient(0, -2, 1, 0, -2, 10);
+    furnace.addColorStop(0, "#fff5aa");
+    furnace.addColorStop(0.4, "#ff8b52");
+    furnace.addColorStop(1, "#541b24");
+    ctx.fillStyle = furnace;
     ctx.beginPath();
-    ctx.arc(0, -3, 9, 0, TAU);
+    ctx.arc(0, -2, 9, 0, TAU);
     ctx.fill();
-    ctx.restore();
-
-    ctx.strokeStyle = "#ffb25e";
-    ctx.lineWidth = 5;
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    ctx.moveTo(0, -10);
-    ctx.lineTo(0, -23);
+    animeOutline(1.2);
     ctx.stroke();
+    ctx.restore();
 
     for (let i = 0; i < 3 + Math.min(3, tower.level); i += 1) {
       const angle = (i / (3 + Math.min(3, tower.level))) * TAU + state.elapsed * 0.35;
       ctx.fillStyle = i % 2 ? "#ff713f" : "#ffb45e";
       ctx.beginPath();
-      ctx.moveTo(Math.cos(angle) * 11, Math.sin(angle) * 11);
-      ctx.lineTo(Math.cos(angle - 0.18) * 18, Math.sin(angle - 0.18) * 18);
-      ctx.lineTo(Math.cos(angle + 0.18) * 18, Math.sin(angle + 0.18) * 18);
-      ctx.closePath();
+      ctx.moveTo(Math.cos(angle) * 10, Math.sin(angle) * 8 - 2);
+      ctx.quadraticCurveTo(Math.cos(angle) * 14, Math.sin(angle) * 14 - 8, Math.cos(angle) * 8, Math.sin(angle) * 4 - 12);
       ctx.fill();
+      animeOutline(0.8);
+      ctx.stroke();
     }
 
     if (tower.muzzle > 0) {
-      const flame = ctx.createRadialGradient(0, -29, 0, 0, -29, 16);
-      flame.addColorStop(0, "#ffffff");
-      flame.addColorStop(0.2, "#fff19a");
-      flame.addColorStop(0.55, "#ff713f");
-      flame.addColorStop(1, "rgba(255, 77, 42, 0)");
       ctx.globalAlpha = tower.muzzle;
-      ctx.fillStyle = flame;
+      ctx.fillStyle = "#fff19a";
       ctx.beginPath();
-      ctx.arc(0, -29, 16, 0, TAU);
+      ctx.moveTo(0, -22);
+      ctx.quadraticCurveTo(6, -10, 0, 0);
+      ctx.quadraticCurveTo(-6, -10, 0, -22);
       ctx.fill();
+      animeOutline(1);
+      ctx.stroke();
     }
   }
 
@@ -2273,122 +2373,53 @@
     const recoil = tower.recoil * 2.5;
     const spin = state.elapsed * (2.2 + tower.level * 0.2) + tower.animOffset;
     ctx.translate(0, recoil);
+    drawAnimeAura(data.color, 30, 0.14);
 
-    ctx.strokeStyle = "#54aa8e";
-    ctx.lineWidth = 6;
-    ctx.lineCap = "round";
+    ctx.fillStyle = "#1d5b62";
     ctx.beginPath();
-    ctx.moveTo(0, 10);
-    ctx.quadraticCurveTo(-3, -3, 0, -13);
+    ctx.roundRect(-10, 4, 20, 10, 3);
+    ctx.fill();
+    animeOutline(1.6);
     ctx.stroke();
 
     ctx.save();
-    ctx.translate(0, -12);
+    ctx.translate(0, -6);
     ctx.rotate(spin);
     for (let i = 0; i < 5; i += 1) {
       ctx.save();
       ctx.rotate((i / 5) * TAU);
-      const leaf = ctx.createLinearGradient(0, -4, 0, -23);
-      leaf.addColorStop(0, "#3b8a73");
-      leaf.addColorStop(1, "#baffdd");
-      ctx.fillStyle = leaf;
-      ctx.strokeStyle = "#d9ffed";
-      ctx.lineWidth = 0.7;
+      ctx.fillStyle = i % 2 ? "#86f0cf" : "#3b8a73";
       ctx.beginPath();
-      ctx.moveTo(-2, -3);
-      ctx.quadraticCurveTo(-10, -14, 0, -23 - tower.level);
-      ctx.quadraticCurveTo(10, -14, 2, -3);
+      ctx.moveTo(-2, -2);
+      ctx.quadraticCurveTo(-12, -16, 0, -24 - tower.level * 0.6);
+      ctx.quadraticCurveTo(12, -16, 2, -2);
       ctx.closePath();
       ctx.fill();
+      animeOutline(1);
       ctx.stroke();
       ctx.restore();
     }
     ctx.restore();
 
     ctx.fillStyle = "#e7fff5";
-    ctx.shadowColor = data.color;
-    ctx.shadowBlur = 15 + tower.pulse * 12;
     ctx.beginPath();
-    ctx.arc(0, -12, 5.5, 0, TAU);
+    ctx.arc(0, -6, 5, 0, TAU);
     ctx.fill();
-
-    ctx.strokeStyle = "rgba(134, 240, 207, .48)";
-    ctx.lineWidth = 1;
-    for (let i = 0; i < 2 + tower.level; i += 1) {
-      ctx.beginPath();
-      ctx.arc(0, -12, 9 + i * 3 + Math.sin(state.elapsed * 4 + i) * 1.2, -Math.PI * 0.8, Math.PI * 0.25);
-      ctx.stroke();
-    }
+    animeOutline(1.2);
+    ctx.stroke();
+    drawAnimeEye(-2, -7, 1.4, "#54aa8e");
+    drawAnimeEye(2, -7, 1.4, "#54aa8e");
 
     if (tower.muzzle > 0) {
       ctx.globalAlpha = tower.muzzle;
-      ctx.strokeStyle = "#ddfff5";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(0, -27, 8 + (1 - tower.muzzle) * 14, 0, TAU);
-      ctx.stroke();
+      for (let wave = 0; wave < 3; wave += 1) {
+        ctx.strokeStyle = "#ddfff5";
+        ctx.lineWidth = 2 - wave * 0.4;
+        ctx.beginPath();
+        ctx.arc(0, -20, 8 + wave * 5 + (1 - tower.muzzle) * 10, -0.5, 0.8);
+        ctx.stroke();
+      }
     }
-  }
-
-  const ANIME_INK = "#12081f";
-
-  function animeOutline(width = 2.2) {
-    ctx.lineWidth = width;
-    ctx.strokeStyle = ANIME_INK;
-    ctx.lineJoin = "round";
-    ctx.lineCap = "round";
-  }
-
-  function drawAnimeEye(x, y, size, iris, pupil = "#12081f") {
-    ctx.fillStyle = "#ffffff";
-    ctx.beginPath();
-    ctx.ellipse(x, y, size * 1.15, size, 0, 0, TAU);
-    ctx.fill();
-    animeOutline(1.4);
-    ctx.stroke();
-    ctx.fillStyle = iris;
-    ctx.beginPath();
-    ctx.arc(x, y + size * 0.12, size * 0.62, 0, TAU);
-    ctx.fill();
-    ctx.fillStyle = pupil;
-    ctx.beginPath();
-    ctx.arc(x + size * 0.12, y + size * 0.18, size * 0.34, 0, TAU);
-    ctx.fill();
-    ctx.fillStyle = "#ffffff";
-    ctx.beginPath();
-    ctx.arc(x - size * 0.22, y - size * 0.08, size * 0.16, 0, TAU);
-    ctx.fill();
-  }
-
-  function drawAnimeHairSpikes(baseColor, highlight, count, radius, length) {
-    for (let i = 0; i < count; i += 1) {
-      const angle = -Math.PI * 0.75 + (i / (count - 1)) * Math.PI * 1.5;
-      ctx.fillStyle = i % 2 ? highlight : baseColor;
-      ctx.beginPath();
-      ctx.moveTo(Math.cos(angle) * radius * 0.4, Math.sin(angle) * radius * 0.4 - 2);
-      ctx.quadraticCurveTo(
-        Math.cos(angle) * (radius + length * 0.5),
-        Math.sin(angle) * (radius + length * 0.5) - 4,
-        Math.cos(angle) * (radius + length),
-        Math.sin(angle) * (radius + length) - 1,
-      );
-      ctx.lineTo(Math.cos(angle + 0.18) * radius * 0.5, Math.sin(angle + 0.18) * radius * 0.5);
-      ctx.closePath();
-      ctx.fill();
-      animeOutline(1.2);
-      ctx.stroke();
-    }
-  }
-
-  function drawAnimeAura(color, radius, alpha = 0.22) {
-    const pulse = 1 + Math.sin(state.elapsed * 3.2) * 0.06;
-    const glow = ctx.createRadialGradient(0, 0, 2, 0, 0, radius * pulse);
-    glow.addColorStop(0, `${color}${Math.round(alpha * 255).toString(16).padStart(2, "0")}`);
-    glow.addColorStop(1, `${color}00`);
-    ctx.fillStyle = glow;
-    ctx.beginPath();
-    ctx.arc(0, 0, radius * pulse, 0, TAU);
-    ctx.fill();
   }
 
   function drawYureiKid(enemy) {
@@ -2804,33 +2835,13 @@
     ctx.translate(x, y);
     const pulse = (compactRender ? 1.16 : 1) + Math.sin(state.elapsed * 2.4) * 0.05;
     ctx.scale(pulse, pulse);
-
-    const glow = ctx.createRadialGradient(0, 0, 5, 0, 0, 67);
-    glow.addColorStop(0, state.hearts > 6 ? "rgba(94,240,255,.32)" : "rgba(255,107,138,.36)");
-    glow.addColorStop(1, "rgba(94,240,255,0)");
-    ctx.fillStyle = glow;
-    ctx.beginPath();
-    ctx.arc(0, 0, 67, 0, TAU);
-    ctx.fill();
-
-    ctx.strokeStyle = state.hearts > 6 ? "rgba(94,240,255,.38)" : "rgba(255,107,138,.52)";
-    ctx.lineWidth = 1.3;
-    for (let i = 0; i < 4; i += 1) {
-      ctx.save();
-      ctx.rotate((i / 4) * TAU + state.elapsed * 0.04);
-      ctx.beginPath();
-      ctx.ellipse(0, 0, 35 + i * 2, 21 + i * 4, 0, 0, TAU);
-      ctx.stroke();
-      ctx.restore();
-    }
+    drawAnimeAura(state.hearts > 6 ? "#5ef0ff" : "#ff6b8a", 70, 0.2);
 
     ctx.fillStyle = "#120a24";
-    ctx.strokeStyle = state.hearts > 6 ? "#5ef0ff" : "#ff6b8a";
-    ctx.lineWidth = 2;
     ctx.beginPath();
     for (let i = 0; i < 8; i += 1) {
       const angle = (i / 8) * TAU - Math.PI / 2;
-      const radius = i % 2 ? 19 : 29;
+      const radius = i % 2 ? 22 : 32;
       const px = Math.cos(angle) * radius;
       const py = Math.sin(angle) * radius;
       if (!i) ctx.moveTo(px, py);
@@ -2838,24 +2849,35 @@
     }
     ctx.closePath();
     ctx.fill();
+    animeOutline(2.2);
     ctx.stroke();
 
     ctx.fillStyle = state.hearts > 6 ? "#8af8ff" : "#ff9bb0";
-    ctx.shadowColor = ctx.fillStyle;
-    ctx.shadowBlur = 18;
     ctx.beginPath();
-    ctx.arc(0, 0, 8 + Math.sin(state.elapsed * 3) * 1.2, 0, TAU);
+    ctx.arc(0, 0, 10 + Math.sin(state.elapsed * 3) * 1.5, 0, TAU);
     ctx.fill();
+    animeOutline(1.4);
+    ctx.stroke();
+
+    ctx.fillStyle = ANIME_INK;
+    ctx.font = "bold 11px 'M PLUS Rounded 1c', sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("霊", 0, 4);
 
     ctx.restore();
 
-    ctx.fillStyle = "rgba(8,4,18,.82)";
-    ctx.fillRect(x - 30, y + 42, 60, 4);
+    ctx.fillStyle = ANIME_INK;
+    ctx.fillRect(x - 32, y + 42, 64, 6);
+    ctx.fillStyle = "rgba(18,8,31,.85)";
+    ctx.fillRect(x - 30, y + 43, 60, 4);
     ctx.fillStyle = health > 0.3 ? "#5ef0ff" : "#ff6b8a";
-    ctx.fillRect(x - 30, y + 42, 60 * health, 4);
-    ctx.fillStyle = "rgba(220, 230, 255, .62)";
-    ctx.font = "500 8px 'DM Mono', monospace";
+    ctx.fillRect(x - 30, y + 43, 60 * health, 4);
+    ctx.fillStyle = "#ff8fd8";
+    ctx.font = "bold 8px 'M PLUS Rounded 1c', sans-serif";
     ctx.textAlign = "center";
+    ctx.strokeStyle = ANIME_INK;
+    ctx.lineWidth = 2;
+    ctx.strokeText("REACTOR", x, y + 58);
     ctx.fillText("REACTOR", x, y + 58);
   }
 
@@ -2893,83 +2915,74 @@
       ctx.shadowBlur = projectile.type === "wyrm" ? 18 : 12;
 
       if (projectile.type === "sun") {
-        const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, 10);
-        glow.addColorStop(0, "#ffffff");
-        glow.addColorStop(0.25, "#fff4b0");
-        glow.addColorStop(0.7, projectile.color);
-        glow.addColorStop(1, "rgba(255, 198, 99, 0)");
-        ctx.fillStyle = glow;
+        ctx.fillStyle = "#fff4b0";
         ctx.beginPath();
-        ctx.arc(0, 0, 10, 0, TAU);
+        ctx.moveTo(10, 0);
+        ctx.lineTo(-4, -5);
+        ctx.lineTo(-2, 0);
+        ctx.lineTo(-4, 5);
+        ctx.closePath();
         ctx.fill();
+        animeOutline(1.2);
+        ctx.stroke();
         ctx.fillStyle = "#ffffff";
         ctx.beginPath();
-        ctx.ellipse(1, 0, 6, 2.4, 0, 0, TAU);
+        ctx.arc(4, 0, 3, 0, TAU);
         ctx.fill();
       } else if (projectile.type === "dew") {
-        const droplet = ctx.createRadialGradient(-2, -2, 0, 0, 0, 8);
-        droplet.addColorStop(0, "#ffffff");
-        droplet.addColorStop(0.3, "#c8fbff");
-        droplet.addColorStop(0.72, "#4bc3d2");
-        droplet.addColorStop(1, "#176a79");
-        ctx.fillStyle = droplet;
+        ctx.fillStyle = "#b8f8ff";
         ctx.rotate(projectile.age * 8);
         ctx.beginPath();
         ctx.moveTo(7, 0);
         ctx.quadraticCurveTo(0, -7, -6, 0);
         ctx.quadraticCurveTo(0, 7, 7, 0);
         ctx.fill();
-        ctx.strokeStyle = "rgba(230, 255, 255, .8)";
-        ctx.lineWidth = 1;
+        animeOutline(1);
         ctx.stroke();
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(2, -2, 2, 0, TAU);
+        ctx.fill();
       } else if (projectile.type === "thorn") {
         ctx.fillStyle = "#ef738f";
-        ctx.strokeStyle = "#ffd0da";
-        ctx.lineWidth = 0.9;
         ctx.beginPath();
-        ctx.moveTo(13, 0);
-        ctx.lineTo(-6, -5);
-        ctx.lineTo(-3, 0);
-        ctx.lineTo(-6, 5);
+        ctx.moveTo(14, 0);
+        ctx.lineTo(-5, -6);
+        ctx.lineTo(-2, 0);
+        ctx.lineTo(-5, 6);
         ctx.closePath();
         ctx.fill();
+        animeOutline(1.1);
         ctx.stroke();
-        ctx.fillStyle = "#8e2949";
-        ctx.beginPath();
-        ctx.moveTo(2, 0);
-        ctx.lineTo(-11, -7);
-        ctx.lineTo(-7, 0);
-        ctx.lineTo(-11, 7);
-        ctx.closePath();
-        ctx.fill();
+        ctx.fillStyle = "#ffd0da";
+        ctx.fillRect(-3, -1.5, 8, 3);
       } else if (projectile.type === "ember") {
-        const fireball = ctx.createRadialGradient(2, -1, 0, 0, 0, 11);
-        fireball.addColorStop(0, "#ffffff");
-        fireball.addColorStop(0.2, "#fff29a");
-        fireball.addColorStop(0.52, "#ff8b52");
-        fireball.addColorStop(1, "rgba(214, 50, 32, 0)");
-        ctx.fillStyle = fireball;
+        ctx.fillStyle = "#ff8b52";
         ctx.beginPath();
-        ctx.arc(0, 0, 11, 0, TAU);
+        ctx.moveTo(8, 0);
+        ctx.quadraticCurveTo(0, -9, -8, 0);
+        ctx.quadraticCurveTo(0, 9, 8, 0);
         ctx.fill();
-        ctx.fillStyle = "#ffb354";
+        animeOutline(1);
+        ctx.stroke();
+        ctx.fillStyle = "#fff29a";
         ctx.beginPath();
-        ctx.moveTo(-4, 0);
-        ctx.lineTo(-17 - Math.sin(projectile.age * 22) * 4, -5);
-        ctx.lineTo(-11, 4);
-        ctx.closePath();
+        ctx.arc(2, -1, 3, 0, TAU);
         ctx.fill();
       } else if (projectile.type === "gale") {
-        ctx.strokeStyle = "#dffff5";
+        ctx.strokeStyle = "#86f0cf";
         ctx.lineWidth = 2;
         for (let i = 0; i < 3; i += 1) {
           ctx.beginPath();
-          ctx.arc(0, 0, 5 + i * 3, projectile.age * 9 + i, projectile.age * 9 + i + Math.PI * 1.25);
+          ctx.moveTo(-10 - i * 3, -3 + i);
+          ctx.quadraticCurveTo(0, -8 - i * 2, 10 + i * 3, -3 + i);
           ctx.stroke();
         }
+        animeOutline(0.9);
+        ctx.stroke();
         ctx.fillStyle = "#f0fff9";
         ctx.beginPath();
-        ctx.arc(0, 0, 3, 0, TAU);
+        ctx.arc(0, 0, 2.5, 0, TAU);
         ctx.fill();
       } else if (projectile.type === "wyrm") {
         const flame = ctx.createLinearGradient(-15, 0, 10, 0);
@@ -3020,6 +3033,13 @@
       strokeBeam(9, beam.color, 0.14, 20);
       strokeBeam(4, beam.color, 0.75, 14);
       strokeBeam(1.2, "#ffffff", 1, 7);
+      ctx.globalAlpha = alpha * 0.9;
+      ctx.strokeStyle = ANIME_INK;
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      points.slice(1).forEach((point) => ctx.lineTo(point.x, point.y));
+      ctx.stroke();
 
       ctx.globalAlpha = alpha;
       ctx.fillStyle = "#ffffff";

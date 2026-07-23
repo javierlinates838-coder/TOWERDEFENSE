@@ -683,39 +683,176 @@ footer {
   width: 38px;
   height: 38px;
   place-items: center;
-  border: 1px solid color-mix(in srgb, var(--tower-color) 33%, transparent);
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--tower-color) 8%, transparent);
+  border: 2px solid var(--anime-ink);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--tower-color) 12%, #1a1030);
+  box-shadow: 3px 3px 0 color-mix(in srgb, var(--tower-color) 35%, var(--anime-ink));
 }
 
 .seed-preview::before,
 .seed-preview::after,
 .seed-preview i {
   position: absolute;
-  width: 8px;
-  height: 15px;
-  transform-origin: 50% 100%;
-  border-radius: 100% 0 100% 0;
-  background: var(--tower-color);
-  opacity: 0.75;
   content: "";
 }
 
-.seed-preview::before {
-  transform: translateY(-4px) rotate(-35deg);
+.sun-card .seed-preview::before {
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--tower-color);
+  transform: translateY(-4px);
+  box-shadow: 0 0 6px var(--tower-color);
 }
 
-.seed-preview::after {
-  transform: translateY(-4px) rotate(45deg);
+.sun-card .seed-preview::after {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--anime-ink);
+  border-radius: 50%;
+  background: #ffe8f5;
+  transform: translateY(6px);
 }
 
-.seed-preview i {
-  width: 7px;
-  height: 7px;
-  transform: translateY(3px) rotate(45deg);
-  border-radius: 2px 70%;
-  opacity: 1;
-  box-shadow: 0 0 9px var(--tower-color);
+.sun-card .seed-preview i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--tower-color);
+  transform: translate(-4px, 7px);
+  box-shadow: 4px 0 var(--tower-color);
+}
+
+.dew-card .seed-preview::before {
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-bottom: 16px solid #f8f4ff;
+  transform: translateY(-2px);
+  filter: drop-shadow(0 0 4px var(--tower-color));
+}
+
+.dew-card .seed-preview::after {
+  width: 14px;
+  height: 4px;
+  background: #c62828;
+  transform: translateY(4px);
+}
+
+.dew-card .seed-preview i {
+  width: auto;
+  height: auto;
+  color: var(--anime-ink);
+  font: bold 9px "M PLUS Rounded 1c", sans-serif;
+  transform: translateY(5px);
+  box-shadow: none;
+  background: none;
+}
+
+.dew-card .seed-preview i::before {
+  content: "氷";
+}
+
+.thorn-card .seed-preview::before {
+  width: 4px;
+  height: 18px;
+  border-radius: 2px;
+  background: #ef738f;
+  transform: translateY(-3px) rotate(-8deg);
+}
+
+.thorn-card .seed-preview::after {
+  width: 4px;
+  height: 12px;
+  border-radius: 2px;
+  background: #8c1f2f;
+  transform: translate(5px, 2px) rotate(18deg);
+}
+
+.thorn-card .seed-preview i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffd0d9;
+  transform: translate(-6px, -6px);
+  box-shadow: 0 0 6px var(--tower-color);
+}
+
+.prism-card .seed-preview::before {
+  width: 10px;
+  height: 14px;
+  background: linear-gradient(180deg, #f4edff, #b697ff);
+  clip-path: polygon(50% 0, 100% 38%, 72% 100%, 28% 100%, 0 38%);
+  transform: translateY(-2px);
+}
+
+.prism-card .seed-preview::after {
+  width: 16px;
+  height: 2px;
+  background: var(--tower-color);
+  transform: translateY(8px) rotate(45deg);
+  opacity: 0.6;
+}
+
+.prism-card .seed-preview i {
+  width: 16px;
+  height: 2px;
+  background: var(--tower-color);
+  transform: translateY(8px) rotate(-45deg);
+  opacity: 0.6;
+  box-shadow: none;
+}
+
+.ember-card .seed-preview::before {
+  width: 14px;
+  height: 10px;
+  border-radius: 2px 2px 8px 8px;
+  background: #54261f;
+  transform: translateY(4px);
+}
+
+.ember-card .seed-preview::after {
+  width: 8px;
+  height: 10px;
+  background: linear-gradient(180deg, #fff5aa, #ff8b52);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  transform: translateY(-4px);
+}
+
+.ember-card .seed-preview i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ff713f;
+  transform: translate(-5px, -8px);
+  box-shadow: 3px 2px #ffb45e, -2px 4px #ff713f;
+}
+
+.gale-card .seed-preview::before {
+  width: 4px;
+  height: 12px;
+  border-radius: 2px;
+  background: #3b8a73;
+  transform: translateY(5px);
+}
+
+.gale-card .seed-preview::after,
+.gale-card .seed-preview i {
+  width: 12px;
+  height: 8px;
+  border-radius: 50% 50% 0 0;
+  background: var(--tower-color);
+  opacity: 0.85;
+}
+
+.gale-card .seed-preview::after {
+  transform: translate(-6px, -4px) rotate(-28deg);
+}
+
+.gale-card .seed-preview i {
+  transform: translate(4px, -6px) rotate(22deg);
+  box-shadow: none;
 }
 
 .card-copy {
