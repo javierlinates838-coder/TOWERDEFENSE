@@ -1592,6 +1592,32 @@ footer {
   font: 400 7px/1.5 "DM Mono", monospace;
 }
 
+.codex-hero-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.codex-hero-tier {
+  display: block;
+  padding: 4px 6px;
+  border-left: 2px solid color-mix(in srgb, var(--entry-color) 55%, transparent);
+  background: color-mix(in srgb, var(--entry-color) 6%, transparent);
+  color: #c4b8e8;
+  font: 400 10px/1.4 "M PLUS Rounded 1c", sans-serif;
+}
+
+.codex-hero-tier strong {
+  color: var(--entry-color);
+  margin-right: 4px;
+}
+
+.codex-hero-tier em {
+  color: #ff8fd8;
+  font-style: normal;
+}
+
 .codex-tip {
   display: block;
   margin-top: 11px;

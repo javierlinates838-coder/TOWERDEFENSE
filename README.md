@@ -16,6 +16,7 @@ Specter Squad replaces random loot and fixed tower upgrades with a deterministic
 - Kills charge **Overcharge**, an eight-second squad-wide surge.
 - Rapid kills build an **Exorcism Chain** that awards bonus ecto.
 - **Nova**, your anime partner spirit, patrols the reactor and joins every battle.
+- **30 anime legends** across six gear lines — each upgrade summons a new operator with a unique signature skill.
 - Full cel-shaded anime art: ink-outlined yokai roster, exorcist gear, manga ward backdrop.
 - Face an original anime roster: Yurei Kids, Banshee Idols, Crimson Ronin, Miko Wraiths, Shadow Shinobi, Void Emperor, and Oni Shogun.
 

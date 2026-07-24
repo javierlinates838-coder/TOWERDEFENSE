@@ -191,6 +191,484 @@
     },
   };
 
+  const HERO_ROSTER = {
+    sun: [
+      {
+        name: "Cadet Bolt",
+        epithet: "Rookie Striker",
+        skill: "STANDARD FIRE",
+        skillDesc: "Reliable photon bolts. The squad starts here.",
+        hair: "#4a3728",
+        hairStyle: "short",
+        skin: "#ffe8f5",
+        outfit: "#3a2f5c",
+        accent: "#ffd15e",
+        accessory: "visor",
+        eyeColor: "#ffd15e",
+      },
+      {
+        name: "Straw Rush",
+        epithet: "Rubber Pirate Captain",
+        skill: "GUM-GUM RICOCHET",
+        skillDesc: "Bolts stretch and bounce to a second target for 55% damage.",
+        hair: "#1a1a1a",
+        hairStyle: "spiky",
+        skin: "#ffe8f5",
+        outfit: "#c62828",
+        accent: "#f4d03f",
+        accessory: "straw-hat",
+        eyeColor: "#5ef0ff",
+        bounce: 1,
+        bounceRatio: 0.55,
+      },
+      {
+        name: "Blitz Gunslinger",
+        epithet: "Dual-Pistol Ace",
+        skill: "TWIN BARREL BURST",
+        skillDesc: "Fires two bolts per attack with a slight spread.",
+        hair: "#2a1810",
+        hairStyle: "slick",
+        skin: "#f5dcc8",
+        outfit: "#1a3050",
+        accent: "#75d9e6",
+        accessory: "bandana",
+        eyeColor: "#8ec8ff",
+        multiShot: 2,
+        spread: 0.14,
+      },
+      {
+        name: "Golden Super",
+        epithet: "Saiyan Blaster",
+        skill: "ARMOR BREAKER",
+        skillDesc: "Shots pierce 40% armor and hit 15% harder.",
+        hair: "#ffd15e",
+        hairStyle: "spiky",
+        skin: "#ffe8f5",
+        outfit: "#1a4a8c",
+        accent: "#ff8b52",
+        accessory: "aura",
+        eyeColor: "#5ef0ff",
+        pierceArmor: 0.4,
+        damageMult: 1.15,
+      },
+      {
+        name: "Ultra Nova",
+        epithet: "Limit Break Cannon",
+        skill: "FINAL FLASH",
+        skillDesc: "Every 5 shots unleashes a piercing beam for 320% damage.",
+        hair: "#fff3ae",
+        hairStyle: "up",
+        skin: "#ffe8f5",
+        outfit: "#2a1a48",
+        accent: "#ffd15e",
+        accessory: "crown",
+        eyeColor: "#ffffff",
+        ultimateEvery: 5,
+        ultimateType: "beam",
+        ultimateMult: 3.2,
+        damageMult: 1.08,
+      },
+    ],
+    dew: [
+      {
+        name: "Shrine Maiden",
+        epithet: "Novice Exorcist",
+        skill: "SPIRIT SEAL",
+        skillDesc: "Baseline freeze splash on impact.",
+        hair: "#1a1a1a",
+        hairStyle: "long",
+        skin: "#ffe8f5",
+        outfit: "#ffffff",
+        accent: "#c62828",
+        accessory: "ribbon",
+        eyeColor: "#8ec8ff",
+      },
+      {
+        name: "Ice Empress",
+        epithet: "Frozen Queen",
+        skill: "PERMAFROST",
+        skillDesc: "Stronger slow and longer freeze duration.",
+        hair: "#b8e8ff",
+        hairStyle: "long",
+        skin: "#f0ffff",
+        outfit: "#4a7a9a",
+        accent: "#5ef0ff",
+        accessory: "crown",
+        eyeColor: "#5ef0ff",
+        slowOverride: 0.42,
+        slowTimerBonus: 0.65,
+      },
+      {
+        name: "Demon Frost",
+        epithet: "Breath of Winter",
+        skill: "TALISMAN FIELD",
+        skillDesc: "Wider freeze splash radius.",
+        hair: "#2a4a5a",
+        hairStyle: "spiky",
+        skin: "#e8f4ff",
+        outfit: "#1a3a4a",
+        accent: "#5ef0ff",
+        accessory: "scar",
+        eyeColor: "#8ec8ff",
+        splashBonus: 22,
+        slowOverride: 0.48,
+      },
+      {
+        name: "Time Witch",
+        epithet: "Chrono Mage",
+        skill: "TIME STOP",
+        skillDesc: "Devastating slow — enemies crawl at 32% speed.",
+        hair: "#6a4a8a",
+        hairStyle: "twin",
+        skin: "#ffe8f5",
+        outfit: "#2a1a48",
+        accent: "#b88cff",
+        accessory: "clock",
+        eyeColor: "#b88cff",
+        slowOverride: 0.32,
+        slowTimerBonus: 0.9,
+      },
+      {
+        name: "Absolute Zero",
+        epithet: "Void Ice Sovereign",
+        skill: "SHATTER LOCK",
+        skillDesc: "Frozen enemies take 30% bonus damage from all sources.",
+        hair: "#e8ffff",
+        hairStyle: "up",
+        skin: "#f0ffff",
+        outfit: "#0a2848",
+        accent: "#5ef0ff",
+        accessory: "aura",
+        eyeColor: "#ffffff",
+        slowOverride: 0.28,
+        frozenBonus: 0.3,
+        splashBonus: 10,
+      },
+    ],
+    thorn: [
+      {
+        name: "Cannon Recruit",
+        epithet: "Artillery Trainee",
+        skill: "HEAVY SHOT",
+        skillDesc: "Slow, crushing proton lance rounds.",
+        hair: "#3a2818",
+        hairStyle: "short",
+        skin: "#f5dcc8",
+        outfit: "#54243a",
+        accent: "#ef738f",
+        accessory: "helmet",
+        eyeColor: "#ef738f",
+      },
+      {
+        name: "Mecha Pilot",
+        epithet: "Gundam Gunner",
+        skill: "SIEGE STRIKE",
+        skillDesc: "+70% damage against armored specters.",
+        hair: "#2a2a2a",
+        hairStyle: "short",
+        skin: "#ffe8f5",
+        outfit: "#3a4a5a",
+        accent: "#ef738f",
+        accessory: "visor",
+        eyeColor: "#ff6b8a",
+        armorBonus: 0.7,
+      },
+      {
+        name: "Triple Swordsman",
+        epithet: "Three-Style Ronin",
+        skill: "TRIPLE SLASH",
+        skillDesc: "Volley of 3 rapid lance shots per attack.",
+        hair: "#1a4020",
+        hairStyle: "spiky",
+        skin: "#ffe8f5",
+        outfit: "#ffffff",
+        accent: "#2a8a4a",
+        accessory: "bandana",
+        eyeColor: "#5ef0ff",
+        volley: 3,
+        volleyDelay: 0.065,
+        volleyMult: 0.78,
+      },
+      {
+        name: "Titan Fury",
+        epithet: "Rage Berserker",
+        skill: "RAGE BREAK",
+        skillDesc: "Massive single-target damage, slightly slower rate.",
+        hair: "#4a2818",
+        hairStyle: "wild",
+        skin: "#f5dcc8",
+        outfit: "#8c1f2f",
+        accent: "#ef738f",
+        accessory: "scar",
+        eyeColor: "#ff4f7b",
+        damageMult: 1.85,
+        rateMult: 0.82,
+      },
+      {
+        name: "God Breaker",
+        epithet: "Planet Splitter",
+        skill: "OMEGA CANNON",
+        skillDesc: "Every 4 shots: 380% damage nuke with huge splash.",
+        hair: "#1a1a1a",
+        hairStyle: "up",
+        skin: "#ffe8f5",
+        outfit: "#3a1520",
+        accent: "#ffd15e",
+        accessory: "horns",
+        eyeColor: "#ff6b8a",
+        ultimateEvery: 4,
+        ultimateType: "nuke",
+        ultimateMult: 3.8,
+        ultimateSplash: 58,
+        damageMult: 1.1,
+      },
+    ],
+    prism: [
+      {
+        name: "Spark Boy",
+        epithet: "Chain Initiate",
+        skill: "ARC SPARK",
+        skillDesc: "Lightning chains through 3 targets.",
+        hair: "#ffd15e",
+        hairStyle: "spiky",
+        skin: "#ffe8f5",
+        outfit: "#2a1a48",
+        accent: "#b88cff",
+        accessory: "none",
+        eyeColor: "#b88cff",
+      },
+      {
+        name: "Thunder God",
+        epithet: "Storm Ronin",
+        skill: "THUNDER STEP",
+        skillDesc: "Chains to 4 targets.",
+        hair: "#1a1a1a",
+        hairStyle: "long",
+        skin: "#ffe8f5",
+        outfit: "#1a3050",
+        accent: "#5ef0ff",
+        accessory: "headband",
+        eyeColor: "#5ef0ff",
+        chainBonus: 1,
+      },
+      {
+        name: "Yellow Flash",
+        epithet: "Lightning Ninja",
+        skill: "FLASH CHAIN",
+        skillDesc: "5-target chains with reduced damage falloff.",
+        hair: "#ffd15e",
+        hairStyle: "spiky",
+        skin: "#ffe8f5",
+        outfit: "#1a4a6a",
+        accent: "#ffd15e",
+        accessory: "headband",
+        eyeColor: "#5ef0ff",
+        chainBonus: 2,
+        chainFalloff: 0.8,
+        rateMult: 1.08,
+      },
+      {
+        name: "Lightning Dragon",
+        epithet: "Storm Beast",
+        skill: "DRAGON ARC",
+        skillDesc: "7-target chains that barely weaken.",
+        hair: "#6a4a8a",
+        hairStyle: "wild",
+        skin: "#e8e2ff",
+        outfit: "#2a1a48",
+        accent: "#b88cff",
+        accessory: "horns",
+        eyeColor: "#b88cff",
+        chainBonus: 4,
+        chainFalloff: 0.85,
+        damageMult: 1.12,
+      },
+      {
+        name: "Storm Emperor",
+        epithet: "Raijin Sovereign",
+        skill: "THUNDER DOMAIN",
+        skillDesc: "Every 3 attacks: pulse all enemies in range for 50% damage.",
+        hair: "#e8ddff",
+        hairStyle: "up",
+        skin: "#f4edff",
+        outfit: "#1a1030",
+        accent: "#b88cff",
+        accessory: "crown",
+        eyeColor: "#ffffff",
+        ultimateEvery: 3,
+        ultimateType: "stormPulse",
+        ultimateMult: 0.5,
+        chainBonus: 2,
+        chainFalloff: 0.82,
+      },
+    ],
+    ember: [
+      {
+        name: "Flame Kid",
+        epithet: "Burn Acolyte",
+        skill: "HOLY IGNITE",
+        skillDesc: "Baseline burn on splash impact.",
+        hair: "#ff8b52",
+        hairStyle: "spiky",
+        skin: "#ffe8f5",
+        outfit: "#54261f",
+        accent: "#ff8b52",
+        accessory: "none",
+        eyeColor: "#ff8b52",
+      },
+      {
+        name: "Fire Fist",
+        epithet: "Flame Pirate",
+        skill: "FLAME SPREAD",
+        skillDesc: "Burn spreads to nearby ghosts on impact.",
+        hair: "#1a1a1a",
+        hairStyle: "slick",
+        skin: "#f5dcc8",
+        outfit: "#c62828",
+        accent: "#ff8b52",
+        accessory: "hat",
+        eyeColor: "#ff8b52",
+        burnSpread: 40,
+        burnMult: 1.25,
+      },
+      {
+        name: "Phoenix Rider",
+        epithet: "Rebirth Knight",
+        skill: "PHOENIX BURN",
+        skillDesc: "Stronger burn and wider splash.",
+        hair: "#ff713f",
+        hairStyle: "long",
+        skin: "#ffe8f5",
+        outfit: "#8c1f2f",
+        accent: "#ffd15e",
+        accessory: "wings",
+        eyeColor: "#ffd15e",
+        burnMult: 1.4,
+        splashBonus: 12,
+      },
+      {
+        name: "Hellfire Monk",
+        epithet: "Stacking Inferno",
+        skill: "HELL STACK",
+        skillDesc: "Burn damage stacks on repeated hits.",
+        hair: "#2a1810",
+        hairStyle: "bald",
+        skin: "#f5dcc8",
+        outfit: "#3a2018",
+        accent: "#ff713f",
+        accessory: "scar",
+        eyeColor: "#ff4f7b",
+        burnStack: true,
+        burnMult: 1.2,
+      },
+      {
+        name: "Sun God",
+        epithet: "Solar Deity",
+        skill: "SUNFORGE",
+        skillDesc: "Double burn damage and shuts down regeneration.",
+        hair: "#fff3ae",
+        hairStyle: "up",
+        skin: "#ffe8f5",
+        outfit: "#c62828",
+        accent: "#ffd15e",
+        accessory: "aura",
+        eyeColor: "#ffffff",
+        burnMult: 2,
+        antiRegen: true,
+        splashBonus: 8,
+      },
+    ],
+    gale: [
+      {
+        name: "Breeze Cadet",
+        epithet: "Wind Initiate",
+        skill: "GUST PUSH",
+        skillDesc: "Baseline knockback on vacuum bursts.",
+        hair: "#4a3728",
+        hairStyle: "short",
+        skin: "#ffe8f5",
+        outfit: "#1d5b62",
+        accent: "#86f0cf",
+        accessory: "scarf",
+        eyeColor: "#86f0cf",
+      },
+      {
+        name: "Ninja Cyclone",
+        epithet: "Nine-Tail Runner",
+        skill: "SHADOW PUSH",
+        skillDesc: "+50% knockback and +1 exorcism combo on hit.",
+        hair: "#ffd15e",
+        hairStyle: "spiky",
+        skin: "#ffe8f5",
+        outfit: "#1a4a6a",
+        accent: "#ff8b52",
+        accessory: "headband",
+        eyeColor: "#5ef0ff",
+        knockbackMult: 1.5,
+        comboBonus: 1,
+      },
+      {
+        name: "Tempest Shinobi",
+        epithet: "Hurricane Scout",
+        skill: "WIND WHEEL",
+        skillDesc: "Wider splash and stronger knockback.",
+        hair: "#1a4020",
+        hairStyle: "spiky",
+        skin: "#ffe8f5",
+        outfit: "#2a5a4a",
+        accent: "#86f0cf",
+        accessory: "mask",
+        eyeColor: "#86f0cf",
+        splashBonus: 18,
+        knockbackMult: 1.35,
+      },
+      {
+        name: "Shadow Clone",
+        epithet: "Twin Fan Master",
+        skill: "CLONE STRIKE",
+        skillDesc: "Each hit lands twice — second hit at 55% damage.",
+        hair: "#ffd15e",
+        hairStyle: "spiky",
+        skin: "#ffe8f5",
+        outfit: "#1a3050",
+        accent: "#86f0cf",
+        accessory: "headband",
+        eyeColor: "#5ef0ff",
+        doubleHit: 0.55,
+        rateMult: 1.05,
+      },
+      {
+        name: "Hurricane King",
+        epithet: "Typhoon Sovereign",
+        skill: "EYE OF THE STORM",
+        skillDesc: "Pulls enemies inward, then launches them back.",
+        hair: "#e8ffff",
+        hairStyle: "up",
+        skin: "#f0ffff",
+        outfit: "#0a3848",
+        accent: "#86f0cf",
+        accessory: "crown",
+        eyeColor: "#ffffff",
+        pullRadius: 54,
+        pullDistance: 16,
+        knockbackMult: 1.65,
+        splashBonus: 10,
+      },
+    ],
+  };
+
+  function getHero(tower) {
+    return HERO_ROSTER[tower.type][tower.level - 1];
+  }
+
+  function getNextHero(tower) {
+    return tower.level < 5 ? HERO_ROSTER[tower.type][tower.level] : null;
+  }
+
+  Object.keys(TOWERS).forEach((type) => {
+    TOWERS[type].evolutions = HERO_ROSTER[type].map((hero) => hero.name);
+  });
+
   const ENEMIES = {
     mite: {
       name: "Yurei Kid",
@@ -719,6 +1197,12 @@
   function renderCodex() {
     ui.codexArsenal.innerHTML = Object.entries(TOWERS)
       .map(([type, tower]) => {
+        const heroes = HERO_ROSTER[type]
+          .map(
+            (hero, index) =>
+              `<span class="codex-hero-tier"><strong>${["I", "II", "III", "IV", "V"][index]}</strong> ${hero.name} — <em>${hero.skill}</em></span>`,
+          )
+          .join("");
         const special = tower.slow
           ? `${Math.round((1 - tower.slow) * 100)}% SLOW`
           : tower.chain
@@ -738,7 +1222,7 @@
                 <span>${tower.cost} ECTO</span><span>${tower.damage} DMG</span><span>${tower.range} RNG</span>
                 <span>${tower.rate}/S</span><span>${special}</span>
               </div>
-              <div class="codex-evolutions">I–V: ${tower.evolutions.join(" → ")}</div>
+              <div class="codex-evolutions codex-hero-list">${heroes}</div>
             </div>
           </article>`;
       })
@@ -871,13 +1355,15 @@
       recoil: 0,
       muzzle: 0,
       animOffset: Math.random() * TAU,
+      shotCount: 0,
+      skillFlash: 0,
     };
     state.towers.push(tower);
     node.tower = tower;
     state.sap -= data.cost;
     recalculateLinks();
     burst(node.x, node.y, data.color, 18, 95);
-    floating(node.x, node.y - 28, data.name.toUpperCase(), data.color);
+    floating(node.x, node.y - 28, getHero(tower).name.toUpperCase(), data.color);
     vibrate(18);
     const plantingTone = { sun: 520, dew: 430, thorn: 260, prism: 610, ember: 190, gale: 350 };
     tone(plantingTone[type], 0.18, "sine", 0.035, 120);
@@ -901,17 +1387,21 @@
 
   function towerStats(tower) {
     const base = TOWERS[tower.type];
+    const hero = getHero(tower);
     const levelScale = 1 + (tower.level - 1) * 0.35;
     return {
       range: base.range + (tower.level - 1) * 7,
-      damage: base.damage * levelScale,
-      rate: base.rate * (1 + tower.synergy * 0.12) * (state.overgrow > 0 ? 1.75 : 1),
-      splash: base.splash || 0,
-      slow: base.slow || 0,
+      damage: base.damage * levelScale * (hero.damageMult || 1),
+      rate: base.rate * (1 + tower.synergy * 0.12) * (state.overgrow > 0 ? 1.75 : 1) * (hero.rateMult || 1),
+      splash: (base.splash || 0) + (hero.splashBonus || 0),
+      slow: hero.slowOverride ?? base.slow ?? 0,
+      slowTimerBonus: hero.slowTimerBonus || 0,
       projectile: base.projectile,
-      chain: base.chain || 0,
-      burn: (base.burn || 0) * levelScale,
-      knockback: (base.knockback || 0) + (tower.level - 1) * 2,
+      chain: (base.chain || 0) + (hero.chainBonus || 0),
+      chainFalloff: hero.chainFalloff ?? 0.72,
+      burn: (base.burn || 0) * levelScale * (hero.burnMult || 1),
+      knockback: ((base.knockback || 0) + (tower.level - 1) * 2) * (hero.knockbackMult || 1),
+      hero,
     };
   }
 
@@ -928,45 +1418,152 @@
     return target;
   }
 
-  function fireTower(tower, target, stats) {
-    tower.angle = Math.atan2(target.y - tower.y, target.x - tower.x);
-    tower.pulse = 1;
-    tower.recoil = 1;
-    tower.muzzle = 1;
-    if (tower.type === "prism") {
-      chainLightning(tower, target, stats);
-      burst(
-        tower.x + Math.cos(tower.angle) * 24,
-        tower.y + Math.sin(tower.angle) * 24,
-        TOWERS.prism.color,
-        8,
-        58,
-      );
-      tone(620 + tower.level * 50, 0.055, "square", 0.008, -140);
-      return;
-    }
+  function buildProjectile(tower, target, stats, overrides = {}) {
+    const hero = stats.hero;
     const muzzleDistance = tower.type === "thorn" ? 25 : tower.type === "dew" ? 23 : 26;
-    state.projectiles.push({
-      x: tower.x + Math.cos(tower.angle) * muzzleDistance,
-      y: tower.y + Math.sin(tower.angle) * muzzleDistance,
+    const angle = overrides.angle ?? tower.angle;
+    return {
+      x: tower.x + Math.cos(angle) * muzzleDistance,
+      y: tower.y + Math.sin(angle) * muzzleDistance,
       targetId: target.id,
       targetX: target.x,
       targetY: target.y,
       type: tower.type,
       color: TOWERS[tower.type].color,
       speed: stats.projectile,
-      damage: stats.damage,
-      splash: stats.splash,
+      damage: overrides.damage ?? stats.damage,
+      splash: overrides.splash ?? stats.splash,
       slow: stats.slow,
+      slowTimerBonus: stats.slowTimerBonus,
       burn: stats.burn,
       knockback: stats.knockback,
       radius: tower.type === "gale" ? 7 : tower.type === "thorn" || tower.type === "ember" ? 5 : 3.2,
-      rotation: tower.angle,
+      rotation: angle,
       age: 0,
+      delay: overrides.delay || 0,
       trail: [],
       phase: Math.random() * TAU,
       alive: true,
-    });
+      bouncesLeft: overrides.bouncesLeft ?? hero.bounce ?? 0,
+      bounceRatio: hero.bounceRatio ?? 0.55,
+      pierceArmor: hero.pierceArmor || 0,
+      armorBonus: hero.armorBonus || 0,
+      frozenBonus: hero.frozenBonus || 0,
+      burnSpread: hero.burnSpread || 0,
+      burnStack: hero.burnStack || false,
+      antiRegen: hero.antiRegen || false,
+      pullRadius: hero.pullRadius || 0,
+      pullDistance: hero.pullDistance || 0,
+      comboBonus: hero.comboBonus || 0,
+      doubleHit: overrides.doubleHit ?? hero.doubleHit ?? 0,
+      hitIds: [],
+      sourceTowerId: tower.id,
+    };
+  }
+
+  function playTowerShotSound(type) {
+    if (type === "thorn") tone(175, 0.06, "sawtooth", 0.011, -35);
+    else if (type === "dew") tone(390, 0.07, "sine", 0.009, -80);
+    else if (type === "ember") {
+      tone(145, 0.12, "sawtooth", 0.014, 120);
+      noiseBurst(0.07, 0.01, 1100);
+    } else if (type === "gale") {
+      tone(260, 0.16, "sine", 0.012, -150);
+      noiseBurst(0.1, 0.009, 760);
+    } else tone(560, 0.045, "triangle", 0.008, 40);
+  }
+
+  function fireUltimate(tower, target, stats) {
+    const hero = stats.hero;
+    tower.skillFlash = 0.55;
+    floating(tower.x, tower.y - 42, hero.skill, hero.accent || TOWERS[tower.type].color);
+    if (hero.ultimateType === "beam") {
+      const dx = target.x - tower.x;
+      const dy = target.y - tower.y;
+      const len = Math.hypot(dx, dy) || 1;
+      state.beams.push({
+        x1: tower.x,
+        y1: tower.y,
+        x2: target.x,
+        y2: target.y,
+        life: 0.35,
+        maxLife: 0.35,
+        color: "#fff3ae",
+        seed: tower.id * 31 + state.elapsed,
+      });
+      state.enemies.forEach((enemy) => {
+        if (!enemy.alive) return;
+        const t = ((enemy.x - tower.x) * dx + (enemy.y - tower.y) * dy) / (len * len);
+        if (t < 0 || t > 1) return;
+        const px = tower.x + dx * t;
+        const py = tower.y + dy * t;
+        if (Math.hypot(enemy.x - px, enemy.y - py) > 24) return;
+        damageEnemy(enemy, stats.damage * hero.ultimateMult, TOWERS.sun.color, {
+          pierceArmor: hero.pierceArmor,
+        });
+      });
+      ring(target.x, target.y, "#fff3ae", 48);
+      state.screenShake = settings.reducedEffects ? 0 : Math.max(state.screenShake, 0.22);
+      tone(120, 0.2, "sawtooth", 0.02, -60);
+      return;
+    }
+    if (hero.ultimateType === "nuke") {
+      const projectile = buildProjectile(tower, target, stats, {
+        damage: stats.damage * hero.ultimateMult,
+        splash: hero.ultimateSplash || 58,
+      });
+      projectile.x = target.x;
+      projectile.y = target.y;
+      projectileImpact(projectile, target);
+      state.screenShake = settings.reducedEffects ? 0 : Math.max(state.screenShake, 0.35);
+      tone(95, 0.24, "sawtooth", 0.022, -40);
+      return;
+    }
+    if (hero.ultimateType === "stormPulse") {
+      ring(tower.x, tower.y, TOWERS.prism.color, stats.range);
+      state.enemies.forEach((enemy) => {
+        if (!enemy.alive || distance(tower, enemy) > stats.range) return;
+        damageEnemy(enemy, stats.damage * hero.ultimateMult, TOWERS.prism.color);
+        burst(enemy.x, enemy.y, TOWERS.prism.color, 4, 42);
+      });
+      chord([440, 554, 659]);
+      return;
+    }
+  }
+
+  function fireTower(tower, target, stats) {
+    const hero = stats.hero;
+    tower.angle = Math.atan2(target.y - tower.y, target.x - tower.x);
+    tower.pulse = 1;
+    tower.recoil = 1;
+    tower.muzzle = 1;
+    tower.shotCount += 1;
+
+    if (hero.ultimateEvery && tower.shotCount % hero.ultimateEvery === 0) {
+      fireUltimate(tower, target, stats);
+    }
+
+    if (tower.type === "prism") {
+      chainLightning(tower, target, stats);
+      burst(tower.x + Math.cos(tower.angle) * 24, tower.y + Math.sin(tower.angle) * 24, TOWERS.prism.color, 8, 58);
+      tone(620 + tower.level * 50, 0.055, "square", 0.008, -140);
+      return;
+    }
+
+    const shots = hero.volley || hero.multiShot || 1;
+    for (let i = 0; i < shots; i += 1) {
+      const spread = hero.spread ? hero.spread * (i - (shots - 1) / 2) : 0;
+      const angle = tower.angle + spread;
+      const damageMult = hero.volley ? hero.volleyMult || 0.78 : 1;
+      const projectile = buildProjectile(tower, target, stats, {
+        angle,
+        damage: stats.damage * damageMult,
+        delay: hero.volley ? i * (hero.volleyDelay || 0.06) : 0,
+      });
+      state.projectiles.push(projectile);
+    }
+
+    const muzzleDistance = tower.type === "thorn" ? 25 : tower.type === "dew" ? 23 : 26;
     burst(
       tower.x + Math.cos(tower.angle) * muzzleDistance,
       tower.y + Math.sin(tower.angle) * muzzleDistance,
@@ -974,19 +1571,7 @@
       tower.type === "thorn" ? 7 : 5,
       tower.type === "thorn" ? 85 : 48,
     );
-    if (tower.type === "thorn") {
-      tone(175, 0.06, "sawtooth", 0.011, -35);
-    } else if (tower.type === "dew") {
-      tone(390, 0.07, "sine", 0.009, -80);
-    } else if (tower.type === "ember") {
-      tone(145, 0.12, "sawtooth", 0.014, 120);
-      noiseBurst(0.07, 0.01, 1100);
-    } else if (tower.type === "gale") {
-      tone(260, 0.16, "sine", 0.012, -150);
-      noiseBurst(0.1, 0.009, 760);
-    } else {
-      tone(560, 0.045, "triangle", 0.008, 40);
-    }
+    playTowerShotSound(tower.type);
   }
 
   function chainLightning(tower, first, stats) {
@@ -1009,7 +1594,7 @@
     }
     let from = tower;
     hit.forEach((enemy, index) => {
-      const damage = stats.damage * Math.pow(0.72, index);
+      const damage = stats.damage * Math.pow(stats.chainFalloff, index);
       state.beams.push({
         x1: from.x,
         y1: from.y,
@@ -1020,20 +1605,25 @@
         color: TOWERS.prism.color,
         seed: tower.id * 17.3 + index * 11.7 + state.elapsed,
       });
-      damageEnemy(enemy, damage, TOWERS.prism.color);
+      damageEnemy(enemy, damage, TOWERS.prism.color, { frozenBonus: stats.hero.frozenBonus });
       from = enemy;
     });
   }
 
-  function damageEnemy(enemy, amount, color, ignoreArmor = false) {
+  function damageEnemy(enemy, amount, color, options = {}) {
     if (!enemy || !enemy.alive) return;
-    const actual = amount * (ignoreArmor ? 1 : 1 - enemy.armor);
+    let damage = amount;
+    if (options.armorBonus && enemy.armor > 0) damage *= 1 + options.armorBonus;
+    if (options.frozenBonus && enemy.slow < 0.72) damage *= 1 + options.frozenBonus;
+    const armorIgnore = (options.ignoreArmor ? 1 : 0) + (options.pierceArmor || 0);
+    const actual = damage * (1 - enemy.armor * Math.max(0, 1 - armorIgnore));
     enemy.hp -= actual;
-    enemy.hitFlash = 0.1;
+    enemy.hitFlash = 0.12;
     if (Math.random() < 0.35) {
       particle(enemy.x + random(-5, 5), enemy.y + random(-5, 5), color, random(-22, 22), random(-32, 4), 0.35, random(1, 2.8));
     }
     if (enemy.hp <= 0) killEnemy(enemy);
+    return actual;
   }
 
   function killEnemy(enemy) {
@@ -1101,33 +1691,69 @@
     tone(205, 0.11, "sawtooth", 0.014, 160);
   }
 
-  function projectileImpact(projectile, enemy) {
-    const applyEffects = (candidate) => {
-      if (projectile.slow) {
-        candidate.slow = projectile.slow;
-        candidate.slowTimer = 1.8;
-      }
-      if (projectile.burn) {
-        candidate.burnDamage = Math.max(candidate.burnDamage, projectile.burn);
-        candidate.burnTimer = Math.max(candidate.burnTimer, 3.2);
-        candidate.burnTick = Math.min(candidate.burnTick, 0.15);
-      }
-      if (projectile.knockback) {
-        const bossResistance = candidate.type === "sovereign" || candidate.type === "colossus" ? 0.25 : 1;
-        candidate.distance = Math.max(0, candidate.distance - projectile.knockback * bossResistance * (1 - candidate.armor));
-      }
+  function strikeEnemy(projectile, candidate, splashHit = false) {
+    const opts = {
+      pierceArmor: projectile.pierceArmor,
+      armorBonus: projectile.armorBonus,
+      frozenBonus: projectile.frozenBonus,
     };
+    damageEnemy(candidate, projectile.damage, projectile.color, opts);
+    if (projectile.doubleHit) {
+      damageEnemy(candidate, projectile.damage * projectile.doubleHit, projectile.color, opts);
+    }
+    if (projectile.comboBonus) {
+      state.combo = state.comboTimer > 0 ? state.combo + projectile.comboBonus : 1;
+      state.comboTimer = 1.45;
+    }
+    if (projectile.slow) {
+      candidate.slow = projectile.slow;
+      candidate.slowTimer = 1.8 + (projectile.slowTimerBonus || 0);
+    }
+    if (projectile.burn) {
+      if (projectile.burnStack) candidate.burnDamage = (candidate.burnDamage || 0) + projectile.burn * 0.65;
+      else candidate.burnDamage = Math.max(candidate.burnDamage || 0, projectile.burn);
+      candidate.burnTimer = Math.max(candidate.burnTimer || 0, 3.2);
+      candidate.burnTick = Math.min(candidate.burnTick ?? 0.5, 0.15);
+      if (projectile.antiRegen) candidate.regenBlocked = 3.5;
+    }
+    if (projectile.knockback) {
+      const bossResistance = candidate.type === "sovereign" || candidate.type === "colossus" ? 0.25 : 1;
+      candidate.distance = Math.max(
+        0,
+        candidate.distance - projectile.knockback * bossResistance * (1 - candidate.armor),
+      );
+    }
+    projectile.hitIds.push(candidate.id);
+  }
+
+  function projectileImpact(projectile, enemy) {
+    if (projectile.pullRadius) {
+      state.enemies.forEach((candidate) => {
+        if (!candidate.alive || distance(projectile, candidate) > projectile.pullRadius) return;
+        candidate.distance = Math.max(0, candidate.distance - projectile.pullDistance);
+      });
+      ring(projectile.x, projectile.y, "#86f0cf", projectile.pullRadius);
+    }
+
     if (projectile.splash) {
       state.enemies.forEach((candidate) => {
         if (!candidate.alive || distance(projectile, candidate) > projectile.splash) return;
-        damageEnemy(candidate, projectile.damage, projectile.color);
-        applyEffects(candidate);
+        strikeEnemy(projectile, candidate, true);
       });
       ring(projectile.x, projectile.y, projectile.color, projectile.splash);
-    } else {
-      damageEnemy(enemy, projectile.damage, projectile.color);
-      applyEffects(enemy);
+    } else if (enemy) {
+      strikeEnemy(projectile, enemy);
     }
+
+    if (projectile.burnSpread) {
+      state.enemies.forEach((candidate) => {
+        if (!candidate.alive || distance(projectile, candidate) > projectile.burnSpread) return;
+        candidate.burnDamage = Math.max(candidate.burnDamage || 0, projectile.burn * 0.85);
+        candidate.burnTimer = Math.max(candidate.burnTimer || 0, 2.8);
+        candidate.burnTick = 0.2;
+      });
+    }
+
     burst(projectile.x, projectile.y, projectile.color, projectile.type === "thorn" ? 8 : 4, 55);
     if (projectile.type === "sun") ring(projectile.x, projectile.y, "#fff1a8", 20);
     if (projectile.type === "thorn") {
@@ -1147,6 +1773,29 @@
     if (projectile.type === "wyrm") {
       noiseBurst(0.11, 0.012, 1250);
       tone(310, 0.08, "triangle", 0.01, -90);
+    }
+
+    if (projectile.bouncesLeft > 0) {
+      let bounceTarget = null;
+      let nearest = 120;
+      state.enemies.forEach((candidate) => {
+        if (!candidate.alive || projectile.hitIds.includes(candidate.id)) return;
+        const d = distance(projectile, candidate);
+        if (d < nearest) {
+          nearest = d;
+          bounceTarget = candidate;
+        }
+      });
+      if (bounceTarget) {
+        projectile.bouncesLeft -= 1;
+        projectile.damage *= projectile.bounceRatio;
+        projectile.targetId = bounceTarget.id;
+        projectile.targetX = bounceTarget.x;
+        projectile.targetY = bounceTarget.y;
+        projectile.alive = true;
+        ring(projectile.x, projectile.y, "#ffd15e", 26);
+        return;
+      }
     }
     projectile.alive = false;
   }
@@ -1182,13 +1831,14 @@
         enemy.burnTimer -= dt;
         enemy.burnTick -= dt;
         if (enemy.burnTick <= 0) {
-          damageEnemy(enemy, enemy.burnDamage * 0.5, "#ff8b52", true);
+          damageEnemy(enemy, enemy.burnDamage * 0.5, "#ff8b52", { ignoreArmor: true });
           enemy.burnTick = 0.5;
           if (enemy.alive) particle(enemy.x + random(-4, 4), enemy.y - enemy.radius, "#ffb05f", random(-8, 8), -20, 0.35, 2.2);
         }
         if (!enemy.alive) return;
       }
-      if (enemy.regen) enemy.hp = Math.min(enemy.maxHp, enemy.hp + enemy.regen * dt);
+      if (enemy.regenBlocked > 0) enemy.regenBlocked = Math.max(0, enemy.regenBlocked - dt);
+      if (enemy.regen && enemy.regenBlocked <= 0) enemy.hp = Math.min(enemy.maxHp, enemy.hp + enemy.regen * dt);
       enemy.hitFlash = Math.max(0, enemy.hitFlash - dt);
       enemy.distance += enemy.speed * enemy.slow * dt;
       const point = pointAtDistance(enemy.distance);
@@ -1203,6 +1853,7 @@
       tower.pulse = Math.max(0, tower.pulse - dt * 4);
       tower.recoil = Math.max(0, tower.recoil - dt * 7.5);
       tower.muzzle = Math.max(0, tower.muzzle - dt * 10);
+      tower.skillFlash = Math.max(0, (tower.skillFlash || 0) - dt * 2.5);
       const stats = towerStats(tower);
       const trackingTarget = findTarget(tower, stats.range);
       if (trackingTarget) {
@@ -1223,6 +1874,10 @@
 
     state.projectiles.forEach((projectile) => {
       if (!projectile.alive) return;
+      if (projectile.delay > 0) {
+        projectile.delay -= dt;
+        return;
+      }
       projectile.age += dt;
       projectile.trail.unshift({ x: projectile.x, y: projectile.y });
       projectile.trail.length = Math.min(projectile.trail.length, settings.reducedEffects ? 4 : 11);
@@ -1347,15 +2002,14 @@
     state.sap -= cost;
     tower.invested += cost;
     tower.level += 1;
-    burst(tower.x, tower.y, TOWERS[tower.type].color, 24, 125);
-    ring(tower.x, tower.y, TOWERS[tower.type].color, 70);
-    floating(
-      tower.x,
-      tower.y - 35,
-      `UPGRADED • ${TOWERS[tower.type].evolutions[tower.level - 1].toUpperCase()}`,
-      TOWERS[tower.type].color,
-    );
-    chord([330, 415, 554]);
+    const hero = getHero(tower);
+    burst(tower.x, tower.y, hero.accent || TOWERS[tower.type].color, 28, 140);
+    ring(tower.x, tower.y, hero.accent || TOWERS[tower.type].color, 80);
+    tower.skillFlash = 0.85;
+    floating(tower.x, tower.y - 38, hero.name.toUpperCase(), hero.accent || TOWERS[tower.type].color);
+    floating(tower.x, tower.y - 52, hero.skill, "#ffffff");
+    toast(`SUMMONED • ${hero.name} — ${hero.skill}`);
+    chord([330, 415, 554, 659]);
     updateSelectionPanel();
     updateUI();
   }
@@ -1469,6 +2123,182 @@
     ctx.beginPath();
     ctx.arc(0, 0, radius * pulse, 0, TAU);
     ctx.fill();
+  }
+
+  function drawTowerOperator(tower, hero, y = -6) {
+    if (!hero) return;
+    ctx.save();
+    ctx.translate(0, y);
+    if (tower.skillFlash > 0) {
+      ctx.globalAlpha = 0.35 + tower.skillFlash * 0.45;
+      drawAnimeAura(hero.accent, 22 + tower.skillFlash * 18, 0.35);
+      ctx.globalAlpha = 1;
+    }
+
+    if (hero.hairStyle !== "bald") {
+      if (hero.hairStyle === "spiky" || hero.hairStyle === "wild" || hero.hairStyle === "up") {
+        drawAnimeHairSpikes(hero.hair, hero.accent, hero.hairStyle === "wild" ? 7 : 5, 7, hero.hairStyle === "up" ? 13 : 10);
+      } else if (hero.hairStyle === "long") {
+        ctx.fillStyle = hero.hair;
+        ctx.beginPath();
+        ctx.moveTo(-8, 0);
+        ctx.quadraticCurveTo(-10, 14, -4, 18);
+        ctx.lineTo(4, 18);
+        ctx.quadraticCurveTo(10, 14, 8, 0);
+        ctx.fill();
+        animeOutline(1.2);
+        ctx.stroke();
+      } else if (hero.hairStyle === "twin") {
+        for (const side of [-1, 1]) {
+          ctx.fillStyle = hero.hair;
+          ctx.beginPath();
+          ctx.ellipse(side * 9, 2, 4, 9, side * 0.2, 0, TAU);
+          ctx.fill();
+          animeOutline(1);
+          ctx.stroke();
+        }
+      } else if (hero.hairStyle === "slick") {
+        ctx.fillStyle = hero.hair;
+        ctx.beginPath();
+        ctx.ellipse(0, -4, 9, 6, 0, Math.PI, TAU);
+        ctx.fill();
+        animeOutline(1);
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = hero.hair;
+        ctx.beginPath();
+        ctx.arc(0, -2, 8, Math.PI, TAU);
+        ctx.fill();
+        animeOutline(1);
+        ctx.stroke();
+      }
+    }
+
+    ctx.fillStyle = hero.skin;
+    ctx.beginPath();
+    ctx.arc(0, 0, 8, 0, TAU);
+    ctx.fill();
+    animeOutline(1.6);
+    ctx.stroke();
+    drawAnimeEye(-3, -1, 2.2, hero.eyeColor);
+    drawAnimeEye(3, -1, 2.2, hero.eyeColor);
+
+    ctx.fillStyle = hero.outfit;
+    ctx.beginPath();
+    ctx.moveTo(-9, 4);
+    ctx.lineTo(9, 4);
+    ctx.lineTo(7, 12);
+    ctx.lineTo(-7, 12);
+    ctx.closePath();
+    ctx.fill();
+    animeOutline(1.4);
+    ctx.stroke();
+    ctx.fillStyle = hero.accent;
+    ctx.fillRect(-9, 4, 18, 2.5);
+
+    const accessories = {
+      "straw-hat": () => {
+        ctx.fillStyle = hero.accent;
+        ctx.beginPath();
+        ctx.ellipse(0, -11, 12, 3, 0, 0, TAU);
+        ctx.fill();
+        animeOutline(1);
+        ctx.stroke();
+      },
+      headband: () => {
+        ctx.fillStyle = hero.accent;
+        ctx.fillRect(-8, -3, 16, 3);
+      },
+      bandana: () => {
+        ctx.fillStyle = hero.accent;
+        ctx.beginPath();
+        ctx.moveTo(-8, -2);
+        ctx.lineTo(8, -2);
+        ctx.lineTo(0, -10);
+        ctx.closePath();
+        ctx.fill();
+      },
+      crown: () => {
+        ctx.fillStyle = hero.accent;
+        for (let i = -1; i <= 1; i += 1) {
+          ctx.fillRect(i * 5 - 1.5, -12, 3, 5);
+        }
+      },
+      horns: () => {
+        ctx.fillStyle = hero.accent;
+        for (const side of [-1, 1]) {
+          ctx.beginPath();
+          ctx.moveTo(side * 5, -6);
+          ctx.lineTo(side * 9, -14);
+          ctx.lineTo(side * 7, -5);
+          ctx.closePath();
+          ctx.fill();
+        }
+        animeOutline(1);
+        ctx.stroke();
+      },
+      mask: () => {
+        ctx.fillStyle = hero.accent;
+        ctx.fillRect(-6, 1, 12, 4);
+      },
+      scarf: () => {
+        ctx.strokeStyle = hero.accent;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(7, 5);
+        ctx.quadraticCurveTo(14, 8, 12, 14);
+        ctx.stroke();
+      },
+      wings: () => {
+        ctx.fillStyle = `${hero.accent}88`;
+        for (const side of [-1, 1]) {
+          ctx.beginPath();
+          ctx.moveTo(side * 6, 2);
+          ctx.quadraticCurveTo(side * 16, -4, side * 10, 10);
+          ctx.fill();
+        }
+      },
+      aura: () => drawAnimeAura(hero.accent, 16, 0.2),
+      visor: () => {
+        ctx.fillStyle = hero.accent;
+        ctx.fillRect(-7, -3, 14, 3);
+      },
+      helmet: () => {
+        ctx.fillStyle = hero.outfit;
+        ctx.beginPath();
+        ctx.arc(0, -2, 9, Math.PI, TAU);
+        ctx.fill();
+        animeOutline(1.2);
+        ctx.stroke();
+      },
+      ribbon: () => {
+        ctx.fillStyle = hero.accent;
+        ctx.fillRect(-2, 4, 4, 6);
+      },
+      scar: () => {
+        ctx.strokeStyle = "#c62828";
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(2, -4);
+        ctx.lineTo(6, 0);
+        ctx.stroke();
+      },
+      clock: () => {
+        ctx.strokeStyle = hero.accent;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(7, -6, 3, 0, TAU);
+        ctx.stroke();
+      },
+      hat: () => {
+        ctx.fillStyle = hero.accent;
+        ctx.beginPath();
+        ctx.ellipse(0, -9, 8, 3, 0, 0, TAU);
+        ctx.fill();
+      },
+    };
+    if (hero.accessory && accessories[hero.accessory]) accessories[hero.accessory]();
+    ctx.restore();
   }
 
   function drawBackdrop() {
@@ -2050,11 +2880,16 @@
     }
 
     ctx.save();
-    ctx.fillStyle = data.color;
-    ctx.font = `500 ${compactRender ? 11 : 9}px 'DM Mono', monospace`;
+    const hero = getHero(tower);
+    ctx.fillStyle = hero.accent || data.color;
+    ctx.font = `bold ${compactRender ? 9 : 8}px 'M PLUS Rounded 1c', sans-serif`;
     ctx.textAlign = "center";
-    ctx.globalAlpha = 0.78;
-    ctx.fillText(["", "I", "II", "III", "IV", "V"][tower.level], tower.x, tower.y + (compactRender ? 43 : 34));
+    ctx.globalAlpha = 0.92;
+    ctx.strokeStyle = ANIME_INK;
+    ctx.lineWidth = 2;
+    const labelY = tower.y + (compactRender ? 43 : 34);
+    ctx.strokeText(hero.name.split(" ")[0].toUpperCase(), tower.x, labelY);
+    ctx.fillText(hero.name.split(" ")[0].toUpperCase(), tower.x, labelY);
     ctx.restore();
   }
 
@@ -2076,17 +2911,7 @@
     ctx.roundRect(-9, 4, 18, 4, 2);
     ctx.fill();
 
-    ctx.save();
-    ctx.translate(0, -6);
-    ctx.fillStyle = "#ffe8f5";
-    ctx.beginPath();
-    ctx.arc(0, 0, 8, 0, TAU);
-    ctx.fill();
-    animeOutline(1.6);
-    ctx.stroke();
-    drawAnimeEye(-3, -1, 2.2, "#ffd15e");
-    drawAnimeEye(3, -1, 2.2, "#ffd15e");
-    ctx.restore();
+    drawTowerOperator(tower, getHero(tower), -6);
 
     ctx.strokeStyle = "#ffd15e";
     ctx.lineWidth = 5;
@@ -2144,10 +2969,7 @@
 
     ctx.fillStyle = "#c62828";
     ctx.fillRect(-10, -2, 20, 5);
-    ctx.fillStyle = ANIME_INK;
-    ctx.font = "bold 9px 'M PLUS Rounded 1c', sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText("氷", 0, 2);
+    drawTowerOperator(tower, getHero(tower), -8);
 
     ctx.strokeStyle = "#5ef0ff";
     ctx.lineWidth = 4;
@@ -2201,15 +3023,7 @@
     animeOutline(2);
     ctx.stroke();
 
-    ctx.fillStyle = "#8c1f2f";
-    ctx.beginPath();
-    ctx.moveTo(-14, 4);
-    ctx.lineTo(0, -8);
-    ctx.lineTo(14, 4);
-    ctx.closePath();
-    ctx.fill();
-    animeOutline(1.5);
-    ctx.stroke();
+    drawTowerOperator(tower, getHero(tower), -4);
 
     ctx.strokeStyle = "#ef738f";
     ctx.lineWidth = 6 + jaw * 0.3;
@@ -2298,8 +3112,7 @@
     ctx.fill();
     animeOutline(1.4);
     ctx.stroke();
-    drawAnimeEye(-2, -4, 1.6, "#b88cff");
-    drawAnimeEye(2, -4, 1.6, "#b88cff");
+    drawTowerOperator(tower, getHero(tower), -10);
 
     if (tower.muzzle > 0) {
       ctx.globalAlpha = tower.muzzle;
@@ -2344,6 +3157,8 @@
     animeOutline(1.2);
     ctx.stroke();
     ctx.restore();
+
+    drawTowerOperator(tower, getHero(tower), -4);
 
     for (let i = 0; i < 3 + Math.min(3, tower.level); i += 1) {
       const angle = (i / (3 + Math.min(3, tower.level))) * TAU + state.elapsed * 0.35;
@@ -2401,14 +3216,7 @@
     }
     ctx.restore();
 
-    ctx.fillStyle = "#e7fff5";
-    ctx.beginPath();
-    ctx.arc(0, -6, 5, 0, TAU);
-    ctx.fill();
-    animeOutline(1.2);
-    ctx.stroke();
-    drawAnimeEye(-2, -7, 1.4, "#54aa8e");
-    drawAnimeEye(2, -7, 1.4, "#54aa8e");
+    drawTowerOperator(tower, getHero(tower), -6);
 
     if (tower.muzzle > 0) {
       ctx.globalAlpha = tower.muzzle;
@@ -3213,14 +4021,16 @@
     if (!tower) return;
     const data = TOWERS[tower.type];
     const stats = towerStats(tower);
+    const hero = stats.hero;
+    const nextHero = getNextHero(tower);
     const upgrade = getUpgradeCost(tower);
     const sell = Math.round(tower.invested * 0.65);
-    ui.selectedOrb.style.setProperty("--orb-color", data.color);
+    ui.selectedOrb.style.setProperty("--orb-color", hero.accent || data.color);
     ui.selectedType.textContent = `${data.label} • LVL ${tower.level}`;
-    ui.selectedName.textContent = data.name;
-    ui.selectedEvolution.textContent = `${["I", "II", "III", "IV", "V"][tower.level - 1]} • ${data.evolutions[tower.level - 1]}`;
+    ui.selectedName.textContent = hero.name;
+    ui.selectedEvolution.textContent = `${hero.epithet} • ${hero.skill}`;
     ui.selectedStats.textContent = `${data.role} • ${data.description}`;
-    ui.selectedTrait.textContent = `${data.trait} Best for: ${data.best}.`;
+    ui.selectedTrait.textContent = hero.skillDesc + (nextHero ? ` Next: ${nextHero.name} (${nextHero.skill}).` : " MAX RANK OPERATOR.");
     ui.statDamage.textContent = Math.round(stats.damage);
     ui.statRange.textContent = Math.round(stats.range);
     ui.statRate.textContent = `${stats.rate.toFixed(1)}/s`;
@@ -3230,7 +4040,7 @@
     ui.upgradeBtn.disabled = tower.level >= 5;
     ui.upgradeBtn.classList.toggle("needs-sap", tower.level < 5 && state.sap < upgrade);
     ui.upgradeBtn.title =
-      tower.level >= 5 ? "Maximum upgrade reached" : `Upgrade to ${data.evolutions[tower.level]}`;
+      tower.level >= 5 ? "Maximum rank reached" : nextHero ? `Summon ${nextHero.name} — ${nextHero.skill}` : `Upgrade gear`;
     ui.sellValue.textContent = `${sell} ◈`;
   }
 
